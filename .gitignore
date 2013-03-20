@@ -2,3 +2,21 @@
 /.project
 /.settings
 /bin
+=======
+#IDE specific files and directories
+.settings
+.idea
+.classpath
+.project
+*.iml
+
+#Binary files and directories
+/bin
+/libs
+/out
+
+#Tempfiles and log
+*.log
+*.swp
+*~
+.DS_Store
