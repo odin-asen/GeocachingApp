@@ -1,0 +1,21 @@
+#IDE specific files and directories
+.settings
+.idea
+.classpath
+.project
+*.iml
+
+#Binary files and directories
+/bin
+/libs
+/out
+
+#Resources
+/res/drawable-*
+*.png
+
+#Tempfiles and log
+*.log
+*.swp
+*~
+.DS_Store
