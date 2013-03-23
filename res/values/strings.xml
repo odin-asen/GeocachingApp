@@ -3,6 +3,7 @@
 
     <string name="app_name">SimpleCache</string>
     <string name="action_settings">Settings</string>
-    <string name="hello_world">Hello world!</string>
+    <string name="tab_title_map">Map</string>
+    <string name="tab_title_compass">Compass</string>
 
 </resources>
