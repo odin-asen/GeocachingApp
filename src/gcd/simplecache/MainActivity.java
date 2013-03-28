@@ -22,7 +22,7 @@ public class MainActivity extends FragmentActivity {
     mTabHost.setup(this, getSupportFragmentManager(), R.id.realtabcontent);
 
     /* Add map and compass tabs */
-    addTab(ID_TS_MAP, this.getString(R.string.tab_title_map), null, Fragment.class);
+    addTab(ID_TS_MAP, this.getString(R.string.tab_title_map), null, CacheMapFragment.class);
     addTab(ID_TS_COMPASS, this.getString(R.string.tab_title_compass), null, Fragment.class);
   }
 
