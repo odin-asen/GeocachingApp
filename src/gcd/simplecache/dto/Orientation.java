@@ -1,6 +1,7 @@
 package gcd.simplecache.dto;
 
 /**
+ * This enumeration represents an orientation like used on a compass.
  * <p/>
  * Author: Timm Herrmann<br/>
  * Date: 13.04.13

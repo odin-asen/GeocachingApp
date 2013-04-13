@@ -11,5 +11,30 @@ package gcd.simplecache.dto;
  * Date: 13.04.2013
  */
 public class GeocachingPoint {
+  public Orientation latOrientation;
+  public int latDegrees;
+  public double latMinutes;
+  public Orientation longOrientation;
+  public int longDegrees;
+  public double longMinutes;
 
+  public GeocachingPoint() {
+    latOrientation = Orientation.NORTH;
+    latDegrees = 0;
+    latMinutes = 0.0;
+    longOrientation = Orientation.EAST;
+    longDegrees = 0;
+    longMinutes = 0.0;
+  }
+
+  public GeocachingPoint(Orientation latOrientation, int latDegrees,
+                         double latMinutes, Orientation longOrientation,
+                         int longDegrees, double longMinutes) {
+    this.latDegrees = latDegrees;
+    this.latMinutes = latMinutes;
+    this.latOrientation = latOrientation;
+    this.longDegrees = longDegrees;
+    this.longMinutes = longMinutes;
+    this.longOrientation = longOrientation;
+  }
 }
