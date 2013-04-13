@@ -15,6 +15,9 @@
 /libs
 /out
 
+#Generated files
+/gen
+
 #Tempfiles and log
 *.log
 *.swp
