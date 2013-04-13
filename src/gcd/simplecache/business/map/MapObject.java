@@ -1,5 +1,6 @@
 package gcd.simplecache.business.map;
 
+import gcd.simplecache.dto.GeocachingPoint;
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.overlay.OverlayItem;
 
@@ -10,6 +11,7 @@ import org.osmdroid.views.overlay.OverlayItem;
  */
 public class MapObject extends OverlayItem {
   private ObjectType type;
+  private GeocachingPoint geocachingPoint;
 
   /* Constructors */
   public MapObject(String aTitle, String aDescription, GeoPoint aGeoPoint) {
@@ -19,12 +21,20 @@ public class MapObject extends OverlayItem {
   /* Methods */
 
   /* Getter and Setter */
-  public void setObjectType(ObjectType type) {
+  public void setType(ObjectType type) {
     this.type = type;
   }
 
-  public ObjectType getObjectType() {
+  public ObjectType getType() {
     return type;
+  }
+
+  public GeocachingPoint getGeocachingPoint() {
+    return geocachingPoint;
+  }
+
+  public void setGeocachingPoint(GeocachingPoint geocachingPoint) {
+    this.geocachingPoint = geocachingPoint;
   }
 
   /* Inner classes */
