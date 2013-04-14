@@ -75,23 +75,24 @@ abstract public class GeocachingService {
   abstract public void logout();
 
   /**
-   * Gets the whole information for a geocache. This might be something like
+   * Gets the the specified information for a geocache. This might be something like
    * the cache description, position, difficulty, etc...
    * In case of an error, null will be returned. The error can then be fetched with
    * with {@link #getError()}.
    * @param cacheID Identifier for the geocache.
+   * @param parameter Parameter object that specifies the cache information.
    * @return A Geocache representing the whole geocache.
    */
-  abstract public Geocache getCacheInfo(String cacheID);
+  abstract public Geocache getCacheInfo(String cacheID, CacheParameter parameter);
 
   /**
-   * Not yet sure, how to implement it and what parameters are needed in general.
    * Gets geocache information for a certain criteria.
    * In case of an error, null will be returned. The error can then be fetched with
-   * with {@link #getError()}.
-   * @return
+   * with {@link #getError()}. A cache will have at least the cache id, if provided.
+   * @param parameter Parameter object that specifies the cache information.
+   * @return A list of geocaches with the specified parameter.
    */
-  abstract public List<Geocache> fetchDatabase();
+  abstract public List<Geocache> fetchDatabase(CacheParameter parameter);
 
   /* Getter and Setter */
 
