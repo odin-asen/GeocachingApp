@@ -9,16 +9,24 @@ package gcd.simplecache.business.geocaching.request;
  */
 public class ComOpencachingRequestCollection
     extends RequestCollection<ComOpencachingParameter> {
+  private static final String COM_AND = "&";
+
   /* Constructors */
   /* Methods */
 
   @Override
   public String getRequestParameter() {
-    return null;  //To change body of implemented methods use File | Settings | File Templates.
+    String requestParameters = "";
+    for (ComOpencachingParameter parameter : mParameterList) {
+      if(!requestParameters.isEmpty())
+        requestParameters = requestParameters + COM_AND;
+      requestParameters = requestParameters + parameter.formatString();
+    }
+    return requestParameters;
   }
 
   @Override
   public void addParameter(ComOpencachingParameter parameter) {
-
+    mParameterList.add(parameter);
   }
 }
