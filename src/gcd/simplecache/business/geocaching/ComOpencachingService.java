@@ -41,7 +41,7 @@ public class ComOpencachingService extends GeocachingService {
   }
 
   @Override
-  public Geocache getCacheInfo(String cacheID, CacheParameter parameter) {
+  public Geocache getCacheInfo(String cacheID, RequestCollection parameter) {
     Geocache cache = null;
     final String requestURL = OPENCACHING_PAGE + TARGET_GEOCACHE
         + "/" + cacheID + parameter.getRequestParameter();
@@ -69,7 +69,7 @@ public class ComOpencachingService extends GeocachingService {
   }
 
   @Override
-  public List<Geocache> fetchDatabase(CacheParameter parameter) {
+  public List<Geocache> fetchDatabase(RequestCollection parameter) {
     return null;  //To change body of implemented methods use File | Settings | File Templates.
   }
 

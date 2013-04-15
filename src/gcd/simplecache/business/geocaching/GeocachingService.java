@@ -87,7 +87,7 @@ abstract public class GeocachingService {
    * @param parameter Parameter object that specifies the cache information.
    * @return A Geocache representing the whole geocache.
    */
-  abstract public Geocache getCacheInfo(String cacheID, CacheParameter parameter);
+  abstract public Geocache getCacheInfo(String cacheID, RequestCollection parameter);
 
   /**
    * Gets geocache information for a certain criteria.
@@ -96,7 +96,7 @@ abstract public class GeocachingService {
    * @param parameter Parameter object that specifies the cache information.
    * @return A list of geocaches with the specified parameter.
    */
-  abstract public List<Geocache> fetchDatabase(CacheParameter parameter);
+  abstract public List<Geocache> fetchDatabase(RequestCollection parameter);
 
   /* Getter and Setter */
 
