@@ -1,4 +1,4 @@
-package gcd.simplecache.business.geocaching.parameter;
+package gcd.simplecache.business.geocaching.request;
 
 /**
  * An object of this class specifies a parameter for a request to a geocaching
@@ -9,7 +9,15 @@ package gcd.simplecache.business.geocaching.parameter;
  * Date: 15.04.13
  */
 abstract public class Parameter {
+  private String name;
+  private String value;
+
   /* Constructors */
+  protected Parameter(String name, String value) {
+    this.name = name;
+    this.value = value;
+  }
+
   /* Methods */
-  /* Getter and Setter */
+  abstract public String formatString();
 }

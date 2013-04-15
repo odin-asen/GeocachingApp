@@ -1,6 +1,6 @@
-package gcd.simplecache.business.geocaching;
+package gcd.simplecache.business.geocaching.request;
 
-import gcd.simplecache.business.geocaching.parameter.Parameter;
+import gcd.simplecache.business.geocaching.request.Parameter;
 
 import java.util.List;
 
@@ -8,7 +8,7 @@ import java.util.List;
  * An object of this class contains the parameters for a request to a geocaching
  * service. It formats the request parameters to an appropriate format.
  * Parameters can be sub classes of
- * {@link gcd.simplecache.business.geocaching.parameter.Parameter}.
+ * {@link gcd.simplecache.business.geocaching.request.Parameter}.
  * <p/>
  * An example for a string might look like this:<br/>
  * {@code ?name="Hide and seek"&description=none&bbox=45.23,-21.56,44.65,25.2"}

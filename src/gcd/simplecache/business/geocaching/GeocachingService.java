@@ -1,5 +1,7 @@
 package gcd.simplecache.business.geocaching;
 
+import gcd.simplecache.business.geocaching.request.RequestCollection;
+
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;

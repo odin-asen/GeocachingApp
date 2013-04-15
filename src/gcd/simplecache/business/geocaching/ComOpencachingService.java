@@ -1,6 +1,7 @@
 package gcd.simplecache.business.geocaching;
 
 import android.util.Log;
+import gcd.simplecache.business.geocaching.request.RequestCollection;
 
 import java.io.IOException;
 import java.io.InputStream;
