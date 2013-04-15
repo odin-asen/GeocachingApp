@@ -16,20 +16,20 @@ import java.util.List;
  * Date: 14.04.13
  */
 abstract public class GeocachingService {
-  protected String error;
-  protected HttpURLConnection httpConn;
+  protected String mError;
+  protected HttpURLConnection mHttpConn;
 
   /* Constructors */
   protected GeocachingService() {
-    error = "";
-    httpConn = null;
+    mError = "";
+    mHttpConn = null;
   }
 
   /* Methods */
 
   /**
    * Opens an http connection to a specified url
-   * and stores it to {@link #httpConn}.<br/>
+   * and stores it to {@link #mHttpConn}.<br/>
    * The method first creates an {@link HttpURLConnection} object,
    * sets values to follow redirects and the request method to 'GET'.
    * The a connection will be established.
@@ -44,20 +44,24 @@ abstract public class GeocachingService {
       throw new IOException("Not an HTTP connection");
 
     /* setup http connection */
-    httpConn = (HttpURLConnection) conn;
-    httpConn.setInstanceFollowRedirects(true);
-    httpConn.setRequestMethod("GET");
-    httpConn.connect();
+    try {
+      mHttpConn = (HttpURLConnection) conn;
+      mHttpConn.setInstanceFollowRedirects(true);
+      mHttpConn.setRequestMethod("GET");
+      mHttpConn.connect();
+    } catch (IOException e) {
+      throw new IOException("Error during connect.");
+    }
   }
 
   /**
    * Disconnects the http connection. Does nothing if no connection is
-   * established. {@link #httpConn} is null after this method was called.
+   * established. {@link #mHttpConn} is null after this method was called.
    */
   protected void closeHttpConnection() {
-    if(httpConn != null) {
-      httpConn.disconnect();
-      httpConn = null;
+    if(mHttpConn != null) {
+      mHttpConn.disconnect();
+      mHttpConn = null;
     }
   }
 
@@ -97,6 +101,6 @@ abstract public class GeocachingService {
   /* Getter and Setter */
 
   public String getError() {
-    return error;
+    return mError;
   }
 }

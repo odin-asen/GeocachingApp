@@ -8,8 +8,11 @@ package gcd.simplecache.business.geocaching;
  * Author: Timm Herrmann<br/>
  * Date: 15.04.13
  */
-public class CacheParameter {
+abstract public class CacheParameter {
   /* Constructors */
   /* Methods */
+
+  abstract public String getRequestParameter();
+
   /* Getter and Setter */
 }
