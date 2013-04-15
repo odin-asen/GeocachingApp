@@ -8,5 +8,8 @@ package gcd.simplecache.business.geocaching.request;
  * Author: Timm Herrmann<br/>
  * Date: 15.04.13
  */
-abstract public class ComOpencachingParameter {
+abstract public class ComOpencachingParameter extends Parameter {
+  protected ComOpencachingParameter(String name, String value) {
+    super(name, value);
+  }
 }

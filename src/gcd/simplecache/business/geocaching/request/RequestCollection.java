@@ -1,7 +1,5 @@
 package gcd.simplecache.business.geocaching.request;
 
-import gcd.simplecache.business.geocaching.request.Parameter;
-
 import java.util.List;
 
 /**
@@ -15,10 +13,11 @@ import java.util.List;
  * <p/>
  * Author: Timm Herrmann<br/>
  * Date: 15.04.13
+ * @param <T> Class type of what the sub class of {@code RequestCollection} depends on.
  */
-abstract public class RequestCollection {
-  protected List<Parameter> parameterList;
+abstract public class RequestCollection<T extends Parameter> {
+  protected List<T> mParameterList;
 
   abstract public String getRequestParameter();
-  abstract public void addParameter(Parameter parameter);
+  abstract public void addParameter(T parameter);
 }
