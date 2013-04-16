@@ -9,8 +9,8 @@ package gcd.simplecache.business.geocaching.request;
  * Date: 15.04.13
  */
 abstract public class Parameter {
-  private String name;
-  private String value;
+  protected String name;
+  protected String value;
 
   /* Constructors */
   protected Parameter(String name, String value) {
