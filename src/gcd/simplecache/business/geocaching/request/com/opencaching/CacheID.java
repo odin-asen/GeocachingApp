@@ -12,7 +12,6 @@ public class CacheID extends Parameter {
   private static final String NAME = "oxcode";
   private static final String SEPARATOR = ",";
   private static final String EQUALS = "=";
-  private boolean mExclude;
 
   /* Constructors */
   /**
