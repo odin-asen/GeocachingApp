@@ -1,6 +1,6 @@
 package gcd.simplecache.business.geocaching.request.com.opencaching;
 
-import gcd.simplecache.business.geocaching.request.Parameter;
+import gcd.simplecache.business.geocaching.request.ComOpencachingParameter;
 
 /**
  * Returns a list of geocaches inside or outside the specified bounding box
@@ -9,7 +9,7 @@ import gcd.simplecache.business.geocaching.request.Parameter;
  * Author: Timm Herrmann<br/>
  * Date: 16.04.13
  */
-public class BBox extends Parameter {
+public class BBox extends ComOpencachingParameter {
   private static final String EXCLUDE = "exclude_";
   private static final String NAME = "bbox";
   private static final String SEPARATOR = ",";

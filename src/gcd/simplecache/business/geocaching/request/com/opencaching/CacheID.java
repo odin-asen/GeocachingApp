@@ -1,6 +1,6 @@
 package gcd.simplecache.business.geocaching.request.com.opencaching;
 
-import gcd.simplecache.business.geocaching.request.Parameter;
+import gcd.simplecache.business.geocaching.request.ComOpencachingParameter;
 
 /**
  * Limits returned geocaches to those caches that have an oxcode that is in the list.
@@ -8,7 +8,7 @@ import gcd.simplecache.business.geocaching.request.Parameter;
  * Author: Timm Herrmann<br/>
  * Date: 16.04.13
  */
-public class CacheID extends Parameter {
+public class CacheID extends ComOpencachingParameter {
   private static final String NAME = "oxcode";
   private static final String SEPARATOR = ",";
   private static final String EQUALS = "=";

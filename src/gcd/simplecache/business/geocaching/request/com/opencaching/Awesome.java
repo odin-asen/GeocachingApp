@@ -1,6 +1,6 @@
 package gcd.simplecache.business.geocaching.request.com.opencaching;
 
-import gcd.simplecache.business.geocaching.request.Parameter;
+import gcd.simplecache.business.geocaching.request.ComOpencachingParameter;
 
 /**
  * Limits returned geocache to those with a awesomeness rating between
@@ -9,7 +9,7 @@ import gcd.simplecache.business.geocaching.request.Parameter;
  * Author: Timm Herrmann<br/>
  * Date: 16.04.13
  */
-public class Awesome extends Parameter {
+public class Awesome extends ComOpencachingParameter {
   private static final String NAME = "awesome";
   private static final String SEPARATOR = "-";
   private static final String EQUALS = "=";

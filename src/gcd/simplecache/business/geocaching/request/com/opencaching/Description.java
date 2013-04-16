@@ -1,6 +1,6 @@
 package gcd.simplecache.business.geocaching.request.com.opencaching;
 
-import gcd.simplecache.business.geocaching.request.Parameter;
+import gcd.simplecache.business.geocaching.request.ComOpencachingParameter;
 
 /**
  * Fetch the description for the cache or the caches in the list.
@@ -13,7 +13,7 @@ import gcd.simplecache.business.geocaching.request.Parameter;
  * Author: Timm Herrmann<br/>
  * Date: 16.04.13
  */
-public class Description extends Parameter {
+public class Description extends ComOpencachingParameter {
   private static final String NAME = "description";
   private static final String EQUALS = "=";
   public static final String HTML = "html";
