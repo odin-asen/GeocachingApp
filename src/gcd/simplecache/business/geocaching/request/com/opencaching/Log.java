@@ -1,24 +1,43 @@
 package gcd.simplecache.business.geocaching.request.com.opencaching;
 
+import gcd.simplecache.business.geocaching.request.ComOpencachingParameter;
+
 /**
- * log_limit=log_limit
-
- The number of logs that will be returned with each geocache.
- log_comment=true/false
-
- This parameter can be used to reduce the amount of data that is returned.  This parameter can be used if need to know if the geocache has had any recent Found or Did Not Find logs, but don't care about the description.
-
- log_comment = true:
- Logs that are returned for the geocache will include the log comment.
-
- log_comment = false:
- No comment will be included for logs that are returned as part of the geocache.
+ * Limits the number of logs that will be returned with each geocache.
+ * It can also enable or disable log the log descriptions from the returned logs.
+ * This is useful if only the information that a cache was found or not found is important
+ * without the description of the log.
  * <p/>
  * Author: Timm Herrmann<br/>
  * Date: 16.04.13
  */
-public class Log {
+public class Log extends ComOpencachingParameter {
+  private static final String NAME_LIMIT = "log_limit";
+  private static final String NAME_COMMENT = "log_comment";
+  private static final String SEPARATOR = "&";
+  private static final String EQUALS = "=";
+  private boolean mDescription;
+
   /* Constructors */
+  /**
+   * Creates the log_limit and log_comment parameters.
+   * {@code limit} defines the amount of logs per cache.
+   * {@code description} Enables or disables the return of the description of
+   * the cache logs.
+   * @param limit Limit for the number of logs returned for a cache.
+   * @param description Send or do not send the description of the logs.
+   */
+  public Log(int limit, boolean description) {
+    super(NAME_LIMIT, Integer.toString(limit));
+    mDescription = description;
+  }
+
   /* Methods */
-  /* Getter and Setter */
+
+  @Override
+  public String formatString() {
+    return name + EQUALS + value
+        + SEPARATOR + NAME_COMMENT + EQUALS
+        + Boolean.toString(mDescription);
+  }
 }
