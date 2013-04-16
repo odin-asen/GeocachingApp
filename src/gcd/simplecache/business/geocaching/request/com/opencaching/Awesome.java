@@ -13,33 +13,21 @@ public class Awesome extends Parameter {
   private static final String NAME = "awesome";
   private static final String SEPARATOR = "-";
   private static final String EQUALS = "=";
-  private Float mMin;
-  private Float mMax;
 
   /* Constructors */
   /**
    * Creates the awesome parameter. {@code min} should be smaller than or equal to {@code max}.
    * The domain of these values are decimal numbers from 1 to 5.
    * @param min Minimum value of the range.
-   * @param max Maximum value of the range
+   * @param max Maximum value of the range.
    */
   public Awesome(float min, float max) {
-    super(NAME, "");
-    setValues(min, max);
+    super(NAME, Float.toString(min)+SEPARATOR+Float.toString(max));
   }
 
   /* Methods */
-  private void setValues(float min, float max) {
-    if(min < 0.0f)
-      mMin = 0.0f;
-    else mMin = min;
-    if(max > 5.0f)
-      mMax = 5.0f;
-    else mMax = max;
-  }
-
   @Override
   public String formatString() {
-    return name+ EQUALS +mMin.toString()+ SEPARATOR +mMax.toString();
+    return name+ EQUALS +value;
   }
 }
