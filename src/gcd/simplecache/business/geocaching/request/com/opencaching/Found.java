@@ -1,25 +1,33 @@
 package gcd.simplecache.business.geocaching.request.com.opencaching;
 
+import gcd.simplecache.business.geocaching.request.ComOpencachingParameter;
+
 /**
- * found=true/false
-
- A user must be logged in for this parameter to have any affect.
-
- found = true:
- Only geocaches the user has already logged as found will be returned.
-
- found = false:
- Only geocaches the user has not already logged as found will be returned.
-
- found not specified:
- Both geocaches the user and marked as found and those not marked as found will be return.
-
+ * A user must be logged in for this parameter to have any affect.
+ * Fetches caches depending on the found state of the user for a geocache.
  * <p/>
  * Author: Timm Herrmann<br/>
  * Date: 16.04.13
  */
-public class Found {
+public class Found extends ComOpencachingParameter {
+  private static final String NAME = "found";
+  private static final String EQUALS = "=";
+  private boolean mExclude;
+
   /* Constructors */
+  /**
+   * Creates the found parameter. To fetch caches independent of the found criteria,
+   * do not create this parameter.
+   * @param found Specifies whether found or not found caches should be fetched.
+   */
+  public Found(boolean found) {
+    super(NAME, Boolean.toString(found));
+  }
+
   /* Methods */
-  /* Getter and Setter */
+
+  @Override
+  public String formatString() {
+    return name+ EQUALS + value;
+  }
 }
