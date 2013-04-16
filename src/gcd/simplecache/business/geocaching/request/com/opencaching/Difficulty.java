@@ -3,6 +3,12 @@ package gcd.simplecache.business.geocaching.request.com.opencaching;
 import gcd.simplecache.business.geocaching.request.ComOpencachingParameter;
 
 /**
+ * difficulty=min_difficulty-max_difficulty
+
+ Limits returned geocache to those with a difficulty rating between min_difficulty and max_difficulty inclusive.
+
+ Min and max difficulty are decimal numbers that can range from 1 to 5
+
  * Represents the min and max difficulty values for a cache in a request.
  * <p/>
  * Author: Timm Herrmann<br/>
