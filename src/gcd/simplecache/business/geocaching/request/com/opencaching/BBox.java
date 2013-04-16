@@ -12,7 +12,7 @@ import gcd.simplecache.business.geocaching.request.Parameter;
 public class BBox extends Parameter {
   private static final String EXCLUDE = "exclude_";
   private static final String NAME = "bbox";
-  private static final String SEPARATOR = "-";
+  private static final String SEPARATOR = ",";
   private static final String EQUALS = "=";
   private boolean mExclude;
 
