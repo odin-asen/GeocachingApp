@@ -3,7 +3,7 @@ package gcd.simplecache.business.geocaching.request.com.opencaching;
 import gcd.simplecache.business.geocaching.request.ComOpencachingParameter;
 
 /**
- * Limits returned geocache to those with a awesomeness rating between
+ * Limits returned geocache to those with an awesomeness rating between
  * a minimum and a maximum value inclusive.
  * <p/>
  * Author: Timm Herrmann<br/>
