@@ -18,8 +18,10 @@ import java.util.List;
 public class ComOpencachingService extends GeocachingService {
   private static final String LOG_TAG = ComOpencachingService.class.getName();
   private static final String AUTHENTICATION_KEY = "tIklJ776J534DNNI";
-  private static final String OPENCACHING_PAGE = "http://www.opencaching.com";
+  private static final String OPENCACHING_PAGE = "http://test.opencaching.com";
   private static final String TARGET_GEOCACHE = "/api/geocache";
+  private static final String QUESTION_MARK = "?";
+  private static final String COM_AND = "&";
 
   private String mUserName;
   private String mPassword;
@@ -41,11 +43,19 @@ public class ComOpencachingService extends GeocachingService {
 
   }
 
+
+  /**
+   * Gets information for a geocache of the opencaching.com homepage.
+   * {@code parameter} should be of class ComOpencachingRequestCollection to get an
+   * appropriate request string for this database.
+   * @param cacheID Identifier for the geocache.
+   * @param parameter Parameter object that specifies the cache information.
+   * @return A Geocache object filled with the desired data.
+   */
   @Override
   public Geocache getCacheInfo(String cacheID, RequestCollection parameter) {
     Geocache cache = null;
-    final String requestURL = OPENCACHING_PAGE + TARGET_GEOCACHE
-        + "/" + cacheID + parameter.getRequestParameter();
+    final String requestURL = buildRequestParameters(cacheID, parameter);
     final InputStream in = open(requestURL);
     if(in != null) {
       /* Read data from input stream */
@@ -53,6 +63,13 @@ public class ComOpencachingService extends GeocachingService {
     }
 
     return cache;
+  }
+
+  /* build a request for one cache in json format */
+  private String buildRequestParameters(String cacheID, RequestCollection parameter) {
+    return OPENCACHING_PAGE + TARGET_GEOCACHE
+        + "/" + cacheID + QUESTION_MARK + parameter.getRequestParameter()
+        + COM_AND + AUTHENTICATION_KEY;
   }
 
   /* Open the http connection */

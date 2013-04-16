@@ -12,13 +12,16 @@ public class Geocache {
   /**
    * Unique identifier of this cache for a certain geocaching service.
    */
-  private String id;
+  private String mId;
   /** Position of the geocache. */
-  private GeocachingPoint point;
-  private String name;
-  private String description;
-  private float difficulty;
-  private float terrain;
+  private GeocachingPoint mPoint;
+  private String mName;
+  private String mOwner;
+  private String mDescription;
+  private float mDifficulty;
+  private float mTerrain;
+  private float mAwesomeness;
+  private float mSize;
 
   /* Constructors */
 
@@ -27,50 +30,74 @@ public class Geocache {
   /* Getter and Setter */
 
   public GeocachingPoint getPoint() {
-    return point;
+    return mPoint;
   }
 
   public void setPoint(GeocachingPoint point) {
-    this.point = point;
+    this.mPoint = point;
   }
 
   public float getDifficulty() {
-    return difficulty;
+    return mDifficulty;
   }
 
   public void setDifficulty(float difficulty) {
-    this.difficulty = difficulty;
+    this.mDifficulty = difficulty;
   }
 
   public float getTerrain() {
-    return terrain;
+    return mTerrain;
   }
 
   public void setTerrain(float terrain) {
-    this.terrain = terrain;
+    this.mTerrain = terrain;
   }
 
   public String getId() {
-    return id;
+    return mId;
   }
 
   public void setId(String id) {
-    this.id = id;
+    this.mId = id;
   }
 
   public String getName() {
-    return name;
+    return mName;
   }
 
   public void setName(String name) {
-    this.name = name;
+    this.mName = name;
   }
 
   public String getDescription() {
-    return description;
+    return mDescription;
   }
 
   public void setDescription(String description) {
-    this.description = description;
+    this.mDescription = description;
+  }
+
+  public float getAwesomeness() {
+    return mAwesomeness;
+  }
+
+  public void setAwesomeness(float awesomeness) {
+    this.mAwesomeness = awesomeness;
+  }
+
+  public String getOwner() {
+    return mOwner;
+  }
+
+  public void setOwner(String owner) {
+    this.mOwner = owner;
+  }
+
+  public float getSize() {
+    return mSize;
+  }
+
+  public void setSize(float size) {
+    this.mSize = size;
   }
 }
