@@ -11,7 +11,9 @@ public class CompassView extends View {
 
   private Paint paint;
   private float position = 0;
-
+  private double longitude = 43.5;
+  private double latitude = 18.3;
+  
   public CompassView(Context context) {
     super(context);
     init();
@@ -33,7 +35,10 @@ public class CompassView extends View {
     paint.setStrokeWidth(2);
     paint.setTextSize(25);
     paint.setStyle(Paint.Style.STROKE);
-    paint.setColor(Color.BLACK);
+    paint.setColor(Color.BLACK);  
+//    GPSTracker gps = new GPSTracker(getContext());
+//    longitude = gps.getLongitude();
+//    latitude = gps.getLatitude();
   }
 
   @Override
@@ -45,7 +50,6 @@ public class CompassView extends View {
     canvas.drawCircle(xPoint, yPoint, radius, paint);
     canvas.drawRect(0, 0, getMeasuredWidth(), getMeasuredHeight(), paint);
 
-    // 3.143 is a good approximation for the circle
     canvas.drawLine(xPoint,
         yPoint,
         (float) (xPoint + radius
@@ -53,12 +57,24 @@ public class CompassView extends View {
         (float) (yPoint - radius
             * Math.cos((double) (-position) / 180 * 3.143)), paint);
 
-    canvas.drawText(String.valueOf(position), xPoint, yPoint, paint);
+    canvas.drawText(String.valueOf(position), xPoint, yPoint, paint);  
+    canvas.drawText(String.valueOf(longitude), 50, 50, paint);
+    canvas.drawText(String.valueOf(latitude), 100, 100, paint);
   }
 
   public void updateData(float position) {
     this.position = position;
     invalidate();
+  }
+  
+  public void setLongitude(Double longitude) {
+	this.longitude = longitude;
+	invalidate();
+  }
+  
+  public void setLatitude(Double latitude) {
+	this.latitude = latitude;
+	invalidate();
   }
 
 } 
