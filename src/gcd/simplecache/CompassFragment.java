@@ -23,26 +23,13 @@ import android.widget.Toast;
 
 	  
 	  @Override
-	  public View onCreateView(LayoutInflater inflater, ViewGroup container,
-	                           Bundle savedInstanceState) {
-		  
+	  public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {  
 		  //View view = inflater.inflate(R.layout.fragment_compass, container, false);
 		  view = new CompassView(getActivity());
 		  return view;
 	}
 	  
-//	  @Override
-//	  public void onActivityCreated(Bundle savedInstanceState) {
-//		  
-//		  super.onActivityCreated(savedInstanceState);
-//		  GPSTracker gps = new GPSTracker(getActivity());
-//		  double bla = gps.getLatitude();
-//		  double blub = gps.getLongitude();
-//		  CompassView view = new CompassView(getActivity());
-//		  view.setLatitude(bla);
-//		  view.setLongitude(blub);
-//	        
-//	  }
+
 	  
 	  public void update (Double lat) {
 		  view.setLatitude(lat);

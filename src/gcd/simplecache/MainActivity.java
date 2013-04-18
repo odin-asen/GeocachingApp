@@ -17,9 +17,10 @@ public class MainActivity extends FragmentActivity  {
   private static final String ID_TS_MAP = "map";
   private static final String ID_TS_COMPASS = "compass";
   private FragmentTabHost mTabHost;
-  private GPSTracker gps;
-  newLocation myReceiver = null;
-  Boolean myReceiverIsRegistered = false;
+  private GPSManager gps;
+  private CompassManager compass;
+  messageReceiver receiver = null;
+  Boolean receiverRegistered = false;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -33,25 +34,26 @@ public class MainActivity extends FragmentActivity  {
     addTab(ID_TS_MAP, this.getString(R.string.tab_title_map), null, Fragment.class);
     addTab(ID_TS_COMPASS, this.getString(R.string.tab_title_compass), null, CompassFragment.class); 
     
-    myReceiver = new newLocation();
+    receiver = new messageReceiver();
     
-    gps = new GPSTracker(this);
+    gps = new GPSManager(this);
+    compass = new CompassManager(this);
     
 }
 
   	@Override
   	protected void onPause() {
   		super.onPause();
-  		if(myReceiverIsRegistered) {
-  			unregisterReceiver(myReceiver);
+  		if(receiverRegistered) {
+  			unregisterReceiver(receiver);
   		}
   	}
   	
  	@Override
   	protected void onResume() {
  		super.onResume();
- 		if(!myReceiverIsRegistered) {
-  			registerReceiver(myReceiver, new IntentFilter("bla"));
+ 		if(!receiverRegistered) {
+  			registerReceiver(receiver, new IntentFilter("LocationChanged"));
   		}
   	}
 
@@ -69,18 +71,15 @@ public class MainActivity extends FragmentActivity  {
     mTabHost.addTab(tabSpec, fragmentClass, null);
   }
   
-  public class newLocation extends BroadcastReceiver {
+  public class messageReceiver extends BroadcastReceiver {
 
 		@Override
 		public void onReceive(Context context, Intent intent) {
 			// TODO Auto-generated method stub
-			Log.d("get","intent");
-			Bundle extras = intent.getExtras();
-			Double lat = extras.getDouble("lat");
-			if(mTabHost.getCurrentTabTag() == "compass") {
-			CompassFragment compass = (CompassFragment) getSupportFragmentManager().findFragmentByTag(ID_TS_COMPASS);
-			System.out.println(compass);
-			compass.update(lat);
+			if (intent.getAction() == "LocationChanged"){
+				Log.d("Loc","Changed");
+			} if (intent.getAction() == "SensorChanged") {	
+				Log.d("Sensor", "Changed");
 			}
 		}
 	}

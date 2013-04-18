@@ -11,8 +11,8 @@ public class CompassView extends View {
 
   private Paint paint;
   private float position = 0;
-  private double longitude = 43.5;
-  private double latitude = 18.3;
+  private double longitude = 0.0;
+  private double latitude = 0.0;
   
   public CompassView(Context context) {
     super(context);
