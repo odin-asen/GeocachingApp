@@ -1,6 +1,7 @@
 package gcd.simplecache.dto.geocache;
 
 /**
+ * This data transfer object represents a global location.
  * <p/>
  * Author: Timm Herrmann<br/>
  * Date: 17.04.13

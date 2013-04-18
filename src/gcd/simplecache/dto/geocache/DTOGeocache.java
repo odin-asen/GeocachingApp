@@ -1,7 +1,7 @@
 package gcd.simplecache.dto.geocache;
 
 /**
- * This data transfer object can be used to store information about a geo cache.
+ * This data transfer object can be used to store information about a geocache.
  * <p/>
  * Author: Timm Herrmann<br/>
  * Date: 16.04.13
