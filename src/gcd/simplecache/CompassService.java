@@ -36,20 +36,17 @@ public class CompassService extends Service implements SensorEventListener {
 	
 	@Override
 	public void onAccuracyChanged(Sensor arg0, int arg1) {
-		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void onSensorChanged(SensorEvent arg0) {
-		// TODO Auto-generated method stub
 		Intent intent = new Intent(ACTION_ID_COMPASS);
 		mContext.sendBroadcast(intent);	
 	}
 
 	@Override
 	public IBinder onBind(Intent intent) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
