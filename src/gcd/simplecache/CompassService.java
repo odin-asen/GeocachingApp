@@ -10,13 +10,15 @@ import android.hardware.SensorManager;
 import android.os.IBinder;
 import android.util.Log;
 
-public class CompassManager extends Service implements SensorEventListener {
+public class CompassService extends Service implements SensorEventListener {
 	
 	private final Context mContext;
 	private static SensorManager sensorService;
 	private Sensor sensor;
+	
+	private static final String ACTION_ID_COMPASS = "SensorChanged";
 	  
-	public CompassManager(Context context) {
+	public CompassService(Context context) {
 		this.mContext = context;
 		registerSensor();
 	}
@@ -41,7 +43,7 @@ public class CompassManager extends Service implements SensorEventListener {
 	@Override
 	public void onSensorChanged(SensorEvent arg0) {
 		// TODO Auto-generated method stub
-		Intent intent = new Intent("SensorChanged");
+		Intent intent = new Intent(ACTION_ID_COMPASS);
 		mContext.sendBroadcast(intent);	
 	}
 

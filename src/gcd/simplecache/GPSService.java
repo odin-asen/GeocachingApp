@@ -13,7 +13,7 @@ import android.os.IBinder;
 import android.provider.Settings;
 import android.util.Log;
  
-public class GPSManager extends Service implements LocationListener {
+public class GPSService extends Service implements LocationListener {
  
     private final Context mContext;
  
@@ -35,12 +35,16 @@ public class GPSManager extends Service implements LocationListener {
     private static final long MIN_DISTANCE_CHANGE_FOR_UPDATES = 10; // 10 meters
  
     // The minimum time between updates in milliseconds
-    private static final long MIN_TIME_BW_UPDATES = 10 * 60 * 1; // 1 minute
+    private static final long MIN_TIME_BW_UPDATES = 10 * 60 * 1; 
  
+    private static final String ACTION_ID_GPS = "LocationChanged";
+    
     // Declaring a Location Manager
     protected LocationManager locationManager;
+    
+    
  
-    public GPSManager(Context context) {
+    public GPSService(Context context) {
     	this.mContext = context;
     	getLocation();
     }
@@ -110,7 +114,7 @@ public class GPSManager extends Service implements LocationListener {
      * */
     public void stopUsingGPS(){
         if(locationManager != null){
-            locationManager.removeUpdates(GPSManager.this);
+            locationManager.removeUpdates(GPSService.this);
         }
     }
  
@@ -182,7 +186,7 @@ public class GPSManager extends Service implements LocationListener {
     public void onLocationChanged(Location location) {
     	latitude = location.getLatitude();
     	longitude = location.getLongitude();
-    	Intent intent = new Intent("LocationChanged");
+    	Intent intent = new Intent(ACTION_ID_GPS);
     	intent.putExtra("lat", latitude);
     	mContext.sendBroadcast(intent);
     }

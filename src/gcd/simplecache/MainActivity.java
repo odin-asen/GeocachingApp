@@ -16,9 +16,13 @@ import android.widget.TabHost;
 public class MainActivity extends FragmentActivity  {
   private static final String ID_TS_MAP = "map";
   private static final String ID_TS_COMPASS = "compass";
+  
+  private static final String ACTION_ID_GPS = "LocationChanged";
+  private static final String ACTION_ID_COMPASS = "SensorChanged";  
+  
   private FragmentTabHost mTabHost;
-  private GPSManager gps;
-  private CompassManager compass;
+  private GPSService gps;
+  private CompassService compass;
   messageReceiver receiver = null;
   Boolean receiverRegistered = false;
 
@@ -36,8 +40,8 @@ public class MainActivity extends FragmentActivity  {
     
     receiver = new messageReceiver();
     
-    gps = new GPSManager(this);
-    compass = new CompassManager(this);
+    gps = new GPSService(this);
+    compass = new CompassService(this);
     
 }
 
@@ -76,9 +80,9 @@ public class MainActivity extends FragmentActivity  {
 		@Override
 		public void onReceive(Context context, Intent intent) {
 			// TODO Auto-generated method stub
-			if (intent.getAction() == "LocationChanged"){
+			if (intent.getAction() == ACTION_ID_GPS){
 				Log.d("Loc","Changed");
-			} if (intent.getAction() == "SensorChanged") {	
+			} if (intent.getAction() == ACTION_ID_COMPASS) {	
 				Log.d("Sensor", "Changed");
 			}
 		}
