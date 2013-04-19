@@ -1,17 +1,20 @@
 package gcd.simplecache;
 
+import android.content.res.Resources;
 import android.location.Location;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import gcd.simplecache.business.map.GeoCoordinateConverter;
 import gcd.simplecache.business.map.MapObject;
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.MapController;
 import org.osmdroid.views.MapView;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -25,8 +28,10 @@ public class CacheMapFragment extends Fragment {
   private MapController controller;
   private GeoPoint lastPoint;
   private int lastZoomLevel;
+  private ArrayList<MapObject> mapObjects;
 
   public CacheMapFragment() {
+    mapObjects = null;
     lastZoomLevel = 13;
     lastPoint = new GeoPoint(0.0,0.0);
   }
@@ -38,7 +43,18 @@ public class CacheMapFragment extends Fragment {
   }
 
   public void updateUserPosition(Location location) {
+    GeoCoordinateConverter converter = new GeoCoordinateConverter();
+    GeoPoint currentPoint =
+        converter.geocachingToGeoPoint(converter.locationToGeocaching(location));
 
+    /* set the user object to the map */
+    Resources res = getActivity().getResources();
+    MapObject userObject = new MapObject("Geocacher", "Current Position", currentPoint);
+    userObject.setMarker(res.getDrawable(R.drawable.position_cross));
+    removeUserObject();
+    mapObjects.add(userObject);
+
+    saveLastPointAndZoom(currentPoint);
   }
 
   @Override
@@ -78,6 +94,22 @@ public class CacheMapFragment extends Fragment {
     controller.setZoom(zoom);
   }
 
+  /* save last point and zoom to instance variables */
+  private void saveLastPointAndZoom(GeoPoint geoPoint) {
+    lastZoomLevel = mapView.getZoomLevel();
+    lastPoint = geoPoint;
+  }
+
+  /* Removes the first user object from the map array */
+  private void removeUserObject() {
+    if(mapObjects == null)
+      return;
+    for (int index = 0; index < mapObjects.size(); index++) {
+      if(mapObjects.get(index).getType().isUser())
+        mapObjects.remove(index);
+    }
+  }
+
   /**
    * <b>This is not yet functional.</b>
    * This method takes a list of cache information and displays it on the map.
@@ -85,27 +117,5 @@ public class CacheMapFragment extends Fragment {
    */
   public void loadMapObjects(List<Object> cacheList) {
 
-  }
-}
-
-class MapObjectFactory {
-  static MapObject createAim() {
-    return null;
-  }
-
-  static MapObject createMultiCache() {
-    return null;
-  }
-
-  static MapObject createRiddleCache() {
-    return null;
-  }
-
-  static MapObject createTraditionalCache() {
-    return null;
-  }
-
-  static MapObject createUserObject() {
-    return null;
   }
 }

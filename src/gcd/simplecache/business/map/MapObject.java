@@ -14,8 +14,8 @@ public class MapObject extends OverlayItem {
   private GeocachingPoint geocachingPoint;
 
   /* Constructors */
-  public MapObject(String aTitle, String aDescription, GeoPoint aGeoPoint) {
-    super(aTitle, aDescription, aGeoPoint);
+  public MapObject(String title, String description, GeoPoint geoPoint) {
+    super(title, description, geoPoint);
   }
 
   /* Methods */
@@ -47,6 +47,10 @@ public class MapObject extends OverlayItem {
 
     public boolean isGeocache() {
       return !(this.equals(AIM) || this.equals(USER));
+    }
+
+    public boolean isUser() {
+      return !this.isGeocache() && !this.equals(AIM);
     }
   }
 }
