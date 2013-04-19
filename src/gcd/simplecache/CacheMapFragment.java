@@ -18,10 +18,18 @@ import java.util.List;
  * Map view fragment. This map view shows the caches on a map.
  */
 public class CacheMapFragment extends Fragment {
+  private static final String LAST_POINT = "point";
+  private static final String LAST_ZOOM = "zoom";
+
   private MapView mapView;
   private MapController controller;
   private GeoPoint lastPoint;
   private int lastZoomLevel;
+
+  public CacheMapFragment() {
+    lastZoomLevel = 13;
+    lastPoint = new GeoPoint(0.0,0.0);
+  }
 
   @Override
   public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -36,7 +44,9 @@ public class CacheMapFragment extends Fragment {
   @Override
   public void onActivityCreated(Bundle savedInstance) {
     super.onActivityCreated(savedInstance);
-    lastPoint = null;
+    if(lastPoint != null)
+      lastPoint = (GeoPoint) savedInstance.getSerializable(LAST_POINT);
+    lastZoomLevel = savedInstance.getInt(LAST_ZOOM);
     initMap();
   }
 
@@ -45,10 +55,15 @@ public class CacheMapFragment extends Fragment {
     super.onStart();
 
     /* Go to the last point */
-    if(lastPoint != null) {
-      controller.setZoom(lastZoomLevel);
-      controller.setCenter(lastPoint);
-    }
+    controller.setZoom(lastZoomLevel);
+    controller.setCenter(lastPoint);
+  }
+
+  @Override
+  public void onSaveInstanceState(Bundle outState) {
+    super.onSaveInstanceState(outState);
+    outState.putSerializable(LAST_POINT, lastPoint);
+    outState.putInt(LAST_ZOOM, lastZoomLevel);
   }
 
   /* Initialise MapView and MapController objects */
