@@ -17,6 +17,9 @@ import java.util.IllegalFormatException;
  * Date: 18.04.13
  */
 public class ComOpencachingReader implements JSONReader, GPXReader {
+
+  private static final String STRING_GEOCACHE = "geocache";
+
   /* Constructors */
   /* Methods */
   @Override
@@ -28,12 +31,21 @@ public class ComOpencachingReader implements JSONReader, GPXReader {
   @Override
   public DTOGeocache readJSON(String jsonString) throws IllegalFormatException {
     XStream xStream = initJSONXStream();
+    if(!hasGeocacheTag(jsonString))
+      jsonString = "{"+ STRING_GEOCACHE +":"+jsonString+"}";
     return (DTOGeocache) xStream.fromXML(jsonString);
+  }
+
+  /* Test for a geocache json tag at the beginning of the string */
+  private boolean hasGeocacheTag(String string) {
+    /* Validates the start beginning with a geocache tag */
+    String geocacheTagRegex = "\\A(\\s*\\{\\s*geocache:)\\S*";
+    return string.matches(geocacheTagRegex);
   }
 
   private XStream initJSONXStream() {
     XStream xStream = new IgnoringXStream(new JettisonMappedXmlDriver());
-    xStream.alias("geocache", DTOGeocache.class);
+    xStream.alias(STRING_GEOCACHE, DTOGeocache.class);
     xStream.alias("location", DTOLocation.class);
     xStream.aliasField("oxcode", DTOGeocache.class, "id");
     xStream.aliasField("hidden_by", DTOGeocache.class, "owner");
