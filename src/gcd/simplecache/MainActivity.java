@@ -1,17 +1,29 @@
 package gcd.simplecache;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTabHost;
+import android.util.Log;
 import android.view.Menu;
 import android.widget.TabHost;
 
 public class MainActivity extends FragmentActivity {
   private static final String ID_TS_MAP = "map";
   private static final String ID_TS_COMPASS = "compass";
+  
+  private static final String ACTION_ID_GPS = "LocationChanged";
+  private static final String ACTION_ID_COMPASS = "SensorChanged";  
+  
   private FragmentTabHost mTabHost;
+  private GPSService gps;
+  private CompassService compass;
+  private MessageReceiver receiver;
+  private Boolean receiverRegistered;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -23,8 +35,24 @@ public class MainActivity extends FragmentActivity {
 
     /* Add map and compass tabs */
     addTab(ID_TS_MAP, this.getString(R.string.tab_title_map), null, CacheMapFragment.class);
-    addTab(ID_TS_COMPASS, this.getString(R.string.tab_title_compass), null, Fragment.class);
+    addTab(ID_TS_COMPASS, this.getString(R.string.tab_title_compass), null, CompassFragment.class);
   }
+
+  @Override
+  protected void onPause() {
+    super.onPause();
+    if(receiverRegistered) {
+      unregisterReceiver(receiver);
+    }
+  }
+  	
+ 	@Override
+  	protected void onResume() {
+ 		super.onResume();
+ 		if(!receiverRegistered) {
+  			registerReceiver(receiver, new IntentFilter("LocationChanged"));
+  		}
+  	}
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
@@ -39,4 +67,28 @@ public class MainActivity extends FragmentActivity {
     tabSpec.setIndicator(title, icon);
     mTabHost.addTab(tabSpec, fragmentClass, null);
   }
+  
+  public class MessageReceiver extends BroadcastReceiver {
+
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			if (intent.getAction() == ACTION_ID_GPS){
+				Bundle extras = intent.getExtras();
+				Double lat = extras.getDouble("lat");
+				Double lon = extras.getDouble("lon");
+				if (mTabHost.getCurrentTabTag() == ID_TS_COMPASS) {
+					CompassFragment compass = (CompassFragment) getSupportFragmentManager().findFragmentByTag(ID_TS_COMPASS);
+					compass.update(lat, lon);
+				}
+				Log.d("Loc","Changed");
+			} if (intent.getAction() == ACTION_ID_COMPASS) {	
+				Log.d("Sensor", "Changed");
+			}
+		}
+	}
 }
+
+
+  
+  
+  
