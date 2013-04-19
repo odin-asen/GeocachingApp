@@ -188,6 +188,7 @@ public class GPSService extends Service implements LocationListener {
     	longitude = location.getLongitude();
     	Intent intent = new Intent(ACTION_ID_GPS);
     	intent.putExtra("lat", latitude);
+    	intent.putExtra("lon", longitude);
     	mContext.sendBroadcast(intent);
     }
  

@@ -31,8 +31,9 @@ import android.widget.Toast;
 	  
 
 	  
-	  public void update (Double lat) {
+	  public void update (Double lat, Double lon) {
 		  view.setLatitude(lat);
+		  view.setLongitude(lon);
 	  }
   
 	  

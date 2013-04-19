@@ -81,6 +81,13 @@ public class MainActivity extends FragmentActivity  {
 		public void onReceive(Context context, Intent intent) {
 			// TODO Auto-generated method stub
 			if (intent.getAction() == ACTION_ID_GPS){
+				Bundle extras = intent.getExtras();
+				Double lat = extras.getDouble("lat");
+				Double lon = extras.getDouble("lon");
+				if (mTabHost.getCurrentTabTag() == ID_TS_COMPASS) {
+					CompassFragment compass = (CompassFragment) getSupportFragmentManager().findFragmentByTag(ID_TS_COMPASS);
+					compass.update(lat, lon);
+				}
 				Log.d("Loc","Changed");
 			} if (intent.getAction() == ACTION_ID_COMPASS) {	
 				Log.d("Sensor", "Changed");

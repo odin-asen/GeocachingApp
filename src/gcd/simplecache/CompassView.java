@@ -76,5 +76,8 @@ public class CompassView extends View {
 	this.latitude = latitude;
 	invalidate();
   }
+  
+ 
+  
 
 } 
