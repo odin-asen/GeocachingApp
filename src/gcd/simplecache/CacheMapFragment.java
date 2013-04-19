@@ -7,6 +7,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import gcd.simplecache.business.map.MapObject;
+import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
+import org.osmdroid.util.GeoPoint;
+import org.osmdroid.views.MapController;
+import org.osmdroid.views.MapView;
 
 import java.util.List;
 
@@ -14,6 +18,11 @@ import java.util.List;
  * Map view fragment. This map view shows the caches on a map.
  */
 public class CacheMapFragment extends Fragment {
+  private MapView mapView;
+  private MapController controller;
+  private GeoPoint lastPoint;
+  private int lastZoomLevel;
+
   @Override
   public View onCreateView(LayoutInflater inflater, ViewGroup container,
                            Bundle savedInstanceState) {
@@ -22,6 +31,36 @@ public class CacheMapFragment extends Fragment {
 
   public void updateUserPosition(Location location) {
 
+  }
+
+  @Override
+  public void onActivityCreated(Bundle savedInstance) {
+    super.onActivityCreated(savedInstance);
+    lastPoint = null;
+    initMap();
+  }
+
+  @Override
+  public void onStart() {
+    super.onStart();
+
+    /* Go to the last point */
+    if(lastPoint != null) {
+      controller.setZoom(lastZoomLevel);
+      controller.setCenter(lastPoint);
+    }
+  }
+
+  /* Initialise MapView and MapController objects */
+  private void initMap() {
+    mapView = (MapView) getActivity().findViewById(R.id.cachemap);
+    controller = mapView.getController();
+    int zoom = 13;
+
+    mapView.setTileSource(TileSourceFactory.MAPNIK);
+    mapView.setBuiltInZoomControls(true);
+    mapView.setMultiTouchControls(true);
+    controller.setZoom(zoom);
   }
 
   /**
