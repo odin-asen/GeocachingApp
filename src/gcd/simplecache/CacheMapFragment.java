@@ -1,18 +1,21 @@
 package gcd.simplecache;
 
-import android.content.res.Resources;
 import android.location.Location;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import gcd.simplecache.business.geocaching.Geocache;
 import gcd.simplecache.business.map.GeoCoordinateConverter;
 import gcd.simplecache.business.map.MapObject;
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.MapController;
 import org.osmdroid.views.MapView;
+import org.osmdroid.views.overlay.ItemizedIconOverlay;
+import org.osmdroid.views.overlay.ItemizedOverlay;
+import org.osmdroid.views.overlay.ItemizedOverlayWithFocus;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,10 +31,16 @@ public class CacheMapFragment extends Fragment {
   private MapController controller;
   private GeoPoint lastPoint;
   private int lastZoomLevel;
-  private ArrayList<MapObject> mapObjects;
+
+  /* Map overlay variables */
+  private ItemizedIconOverlay<MapObject> userOverlay;
+  private ItemizedOverlay<MapObject> cacheOverlay;
+  private ItemizedOverlay<MapObject> aimOverlay;
 
   public CacheMapFragment() {
-    mapObjects = null;
+    userOverlay = null;
+    cacheOverlay = null;
+    aimOverlay = null;
     lastZoomLevel = 13;
     lastPoint = new GeoPoint(0.0,0.0);
   }
@@ -43,18 +52,34 @@ public class CacheMapFragment extends Fragment {
   }
 
   public void updateUserPosition(Location location) {
+    mapView.getOverlayManager().remove(userOverlay);
+
     GeoCoordinateConverter converter = new GeoCoordinateConverter();
     GeoPoint currentPoint =
         converter.geocachingToGeoPoint(converter.locationToGeocaching(location));
 
     /* set the user object to the map */
-    Resources res = getActivity().getResources();
     MapObject userObject = new MapObject("Geocacher", "Current Position", currentPoint);
-    userObject.setMarker(res.getDrawable(R.drawable.position_cross));
-    removeUserObject();
-    mapObjects.add(userObject);
+    userObject.setMarker(getActivity().getResources().getDrawable(R.drawable.position_cross));
+    final List<MapObject> objectList = new ArrayList<MapObject>(1);
+    objectList.add(userObject);
+
+    /* add overlay to the map */
+    userOverlay = new ItemizedOverlayWithFocus<MapObject>(
+        getActivity(), objectList, new MapItemListener());
+    userOverlay.addItem(userObject);
+    mapView.getOverlayManager().add(userOverlay);
 
     saveLastPointAndZoom(currentPoint);
+  }
+
+  /**
+   * <b>This is not yet functional.</b>
+   * This method takes a list of cache information and displays it on the map.
+   * @param cacheList List with caches to show on the map.
+   */
+  public void updateGeocacheObjects(List<Geocache> cacheList) {
+
   }
 
   @Override
@@ -100,22 +125,17 @@ public class CacheMapFragment extends Fragment {
     lastPoint = geoPoint;
   }
 
-  /* Removes the first user object from the map array */
-  private void removeUserObject() {
-    if(mapObjects == null)
-      return;
-    for (int index = 0; index < mapObjects.size(); index++) {
-      if(mapObjects.get(index).getType().isUser())
-        mapObjects.remove(index);
+  /* Inner classes */
+  /* Reacts on touching event on the map objects */
+  private class MapItemListener implements ItemizedIconOverlay.OnItemGestureListener<MapObject> {
+    @Override
+    public boolean onItemSingleTapUp(int i, MapObject mapObject) {
+      return false;
     }
-  }
 
-  /**
-   * <b>This is not yet functional.</b>
-   * This method takes a list of cache information and displays it on the map.
-   * @param cacheList List with caches to show on the map.
-   */
-  public void loadMapObjects(List<Object> cacheList) {
-
+    @Override
+    public boolean onItemLongPress(int i, MapObject mapObject) {
+      return false;
+    }
   }
 }
