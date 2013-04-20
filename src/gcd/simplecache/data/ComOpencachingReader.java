@@ -8,6 +8,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.IllegalFormatException;
+import java.util.List;
 
 /**
  * An object of this file can read files that are created from
@@ -52,6 +53,11 @@ public class ComOpencachingReader implements JSONReader, GPXReader {
     }
 
     return dtoCache;
+  }
+
+  @Override
+  public List<DTOGeocache> readManyJSON(String jsonString) {
+    return null;  //To change body of implemented methods use File | Settings | File Templates.
   }
 
   /* fill a DTOGeocache object with data from a json file */

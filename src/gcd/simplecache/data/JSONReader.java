@@ -2,7 +2,7 @@ package gcd.simplecache.data;
 
 import gcd.simplecache.dto.geocache.DTOGeocache;
 
-import java.util.IllegalFormatException;
+import java.util.List;
 
 /**
  * A JSONReader object should be able to interpret a json formatted geocache file.
@@ -12,11 +12,17 @@ import java.util.IllegalFormatException;
  */
 public interface JSONReader {
   /**
-   * Reads a json formatted string containing the geocache data.
+   * Reads a json formatted string containing the geocache data. Returns
+   * null if a problem with the syntax of the file occurred.
    * @param jsonString Json formatted string to read.
    * @return A {@link DTOGeocache} object that represents the geocache.
-   * @throws IllegalFormatException If a problem with the syntax of the file
-   * occurred.
    */
-  public DTOGeocache readJSON(String jsonString) throws IllegalFormatException;
+  public DTOGeocache readJSON(String jsonString);
+  /**
+   * Reads a json formatted string containing many geocaches. Returns
+   * null if a problem with the syntax of the file occurred.
+   * @param jsonString Json formatted string to read.
+   * @return A {@link DTOGeocache} object that represents the geocache.
+   */
+  public List<DTOGeocache> readManyJSON(String jsonString);
 }
