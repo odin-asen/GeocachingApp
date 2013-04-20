@@ -44,6 +44,10 @@ public class CacheMapFragment extends Fragment {
   private ItemizedOverlay<MapObject> cacheOverlay;
   private ItemizedOverlay<MapObject> aimOverlay;
 
+  /****************/
+  /* Constructors */
+  /****************/
+
   public CacheMapFragment() {
     userOverlay = null;
     cacheOverlay = null;
@@ -51,6 +55,10 @@ public class CacheMapFragment extends Fragment {
     mLastZoomLevel = 0;
     mLastPoint = new GeoPoint(0.0,0.0);
   }
+
+  /***********/
+  /* Methods */
+  /***********/
 
   @Override
   public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -68,12 +76,13 @@ public class CacheMapFragment extends Fragment {
   public void updateUserPosition(Location location) {
     mMapView.getOverlayManager().remove(userOverlay);
 
-    GeoCoordinateConverter converter = new GeoCoordinateConverter();
-    GeoPoint currentPoint =
+    final GeoCoordinateConverter converter = new GeoCoordinateConverter();
+    final GeoPoint currentPoint =
         converter.geocachingToGeoPoint(converter.locationToGeocaching(location));
 
     /* set the user object to the map */
     MapObject userObject = new MapObject("Geocacher", "Current Position", currentPoint);
+    userObject.setType(MapObject.ObjectType.USER);
     userObject.setMarker(getActivity().getResources().getDrawable(R.drawable.position_cross));
     final List<MapObject> objectList = new ArrayList<MapObject>(1);
     objectList.add(userObject);
@@ -89,12 +98,23 @@ public class CacheMapFragment extends Fragment {
   }
 
   /**
-   * <b>This is not yet functional.</b>
    * This method takes a list of cache information and displays it on the map.
    * @param cacheList List with caches to show on the map.
    */
   public void updateGeocacheObjects(List<Geocache> cacheList) {
+    if(cacheList == null)
+      return;
+    mMapView.getOverlayManager().remove(cacheOverlay);
 
+    final List<MapObject> objectList = new ArrayList<MapObject>(cacheList.size());
+    fillMapObjectList(cacheList, objectList);
+
+    /* add overlay to the map */
+    cacheOverlay = new ItemizedOverlayWithFocus<MapObject>(
+        getActivity(), objectList, null);
+    mMapView.getOverlayManager().add(cacheOverlay);
+
+    mMapView.invalidate();
   }
 
   @Override
@@ -128,6 +148,10 @@ public class CacheMapFragment extends Fragment {
     Log.d("map", "save instance");
   }
 
+  /*******************/
+  /* private methods */
+  /*******************/
+
   /* Initialise settings for MapView object */
   private void initMap() {
     mMapView.setTileSource(TileSourceFactory.MAPNIK);
@@ -139,6 +163,27 @@ public class CacheMapFragment extends Fragment {
   private void saveLastPointAndZoom(GeoPoint geoPoint) {
     mLastZoomLevel = mMapView.getZoomLevel();
     mLastPoint = geoPoint;
+  }
+
+  /* fills a map object list with geocache objects */
+  private void fillMapObjectList(List<Geocache> cacheList, List<MapObject> objectList) {
+    final GeoCoordinateConverter converter = new GeoCoordinateConverter();
+    for (Geocache geocache : cacheList) {
+      final MapObject cacheObject = new MapObject(
+          geocache.getName(),
+          getCacheMapObjectDescription(geocache),
+          converter.geocachingToGeoPoint(geocache.getPoint()));
+      cacheObject.setMarker(getActivity().getResources().getDrawable(R.drawable.treasure));
+      cacheObject.setType(MapObject.ObjectType.TRADITIONAL);
+      objectList.add(cacheObject);
+    }
+  }
+
+  /* formats the string for the description of a map object */
+  private String getCacheMapObjectDescription(Geocache geocache) {
+    return geocache.getId()+" - "+geocache.getOwner()+"\n"
+        +"Difficulty: "+geocache.getDifficulty()+"\n"
+        +"Terrain: "+geocache.getTerrain();
   }
 
   /* Inner classes */
