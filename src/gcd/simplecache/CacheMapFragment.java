@@ -3,12 +3,17 @@ package gcd.simplecache;
 import android.location.Location;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import gcd.simplecache.business.geocaching.Geocache;
 import gcd.simplecache.business.map.GeoCoordinateConverter;
 import gcd.simplecache.business.map.MapObject;
+import org.osmdroid.events.DelayedMapListener;
+import org.osmdroid.events.MapListener;
+import org.osmdroid.events.ScrollEvent;
+import org.osmdroid.events.ZoomEvent;
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.MapController;
@@ -27,10 +32,12 @@ public class CacheMapFragment extends Fragment {
   private static final String LAST_POINT = "point";
   private static final String LAST_ZOOM = "zoom";
 
-  private MapView mapView;
-  private MapController controller;
-  private GeoPoint lastPoint;
-  private int lastZoomLevel;
+  /* saved values */
+  private GeoPoint mLastPoint;
+  private int mLastZoomLevel;
+
+  private MapView mMapView;
+  private MapController mController;
 
   /* Map overlay variables */
   private ItemizedIconOverlay<MapObject> userOverlay;
@@ -41,18 +48,25 @@ public class CacheMapFragment extends Fragment {
     userOverlay = null;
     cacheOverlay = null;
     aimOverlay = null;
-    lastZoomLevel = 13;
-    lastPoint = new GeoPoint(0.0,0.0);
+    mLastZoomLevel = 0;
+    mLastPoint = new GeoPoint(0.0,0.0);
   }
 
   @Override
   public View onCreateView(LayoutInflater inflater, ViewGroup container,
                            Bundle savedInstanceState) {
-    return inflater.inflate(R.layout.fragment_cachemap, container, false);
+    View view = inflater.inflate(R.layout.fragment_cachemap, container, false);
+    mMapView = (MapView) view.findViewById(R.id.cachemap);
+    mController = mMapView.getController();
+
+    /* Save zoom level after user input */
+    mMapView.setMapListener(new DelayedMapListener(new ScrollZoomListener(), 500L));
+
+    return view;
   }
 
   public void updateUserPosition(Location location) {
-    mapView.getOverlayManager().remove(userOverlay);
+    mMapView.getOverlayManager().remove(userOverlay);
 
     GeoCoordinateConverter converter = new GeoCoordinateConverter();
     GeoPoint currentPoint =
@@ -66,11 +80,12 @@ public class CacheMapFragment extends Fragment {
 
     /* add overlay to the map */
     userOverlay = new ItemizedOverlayWithFocus<MapObject>(
-        getActivity(), objectList, new MapItemListener());
+        getActivity(), objectList, null);
     userOverlay.addItem(userObject);
-    mapView.getOverlayManager().add(userOverlay);
+    mMapView.getOverlayManager().add(userOverlay);
 
     saveLastPointAndZoom(currentPoint);
+    mMapView.invalidate();
   }
 
   /**
@@ -85,9 +100,12 @@ public class CacheMapFragment extends Fragment {
   @Override
   public void onActivityCreated(Bundle savedInstance) {
     super.onActivityCreated(savedInstance);
-    if(lastPoint != null)
-      lastPoint = (GeoPoint) savedInstance.getSerializable(LAST_POINT);
-    lastZoomLevel = savedInstance.getInt(LAST_ZOOM);
+
+    if(savedInstance != null) {
+      if(mLastPoint != null)
+        mLastPoint = (GeoPoint) savedInstance.getSerializable(LAST_POINT);
+      mLastZoomLevel = savedInstance.getInt(LAST_ZOOM);
+    }
     initMap();
   }
 
@@ -96,33 +114,31 @@ public class CacheMapFragment extends Fragment {
     super.onStart();
 
     /* Go to the last point */
-    controller.setZoom(lastZoomLevel);
-    controller.setCenter(lastPoint);
+    mController.setZoom(mLastZoomLevel);
+    mController.setCenter(mLastPoint);
+
+    mMapView.invalidate();
   }
 
   @Override
   public void onSaveInstanceState(Bundle outState) {
     super.onSaveInstanceState(outState);
-    outState.putSerializable(LAST_POINT, lastPoint);
-    outState.putInt(LAST_ZOOM, lastZoomLevel);
+    outState.putSerializable(LAST_POINT, mLastPoint);
+    outState.putInt(LAST_ZOOM, mLastZoomLevel);
+    Log.d("map", "save instance");
   }
 
-  /* Initialise MapView and MapController objects */
+  /* Initialise settings for MapView object */
   private void initMap() {
-    mapView = (MapView) getActivity().findViewById(R.id.cachemap);
-    controller = mapView.getController();
-    int zoom = 13;
-
-    mapView.setTileSource(TileSourceFactory.MAPNIK);
-    mapView.setBuiltInZoomControls(true);
-    mapView.setMultiTouchControls(true);
-    controller.setZoom(zoom);
+    mMapView.setTileSource(TileSourceFactory.MAPNIK);
+    mMapView.setBuiltInZoomControls(true);
+    mMapView.setMultiTouchControls(true);
   }
 
   /* save last point and zoom to instance variables */
   private void saveLastPointAndZoom(GeoPoint geoPoint) {
-    lastZoomLevel = mapView.getZoomLevel();
-    lastPoint = geoPoint;
+    mLastZoomLevel = mMapView.getZoomLevel();
+    mLastPoint = geoPoint;
   }
 
   /* Inner classes */
@@ -136,6 +152,18 @@ public class CacheMapFragment extends Fragment {
     @Override
     public boolean onItemLongPress(int i, MapObject mapObject) {
       return false;
+    }
+  }
+
+  private class ScrollZoomListener implements MapListener {
+    public boolean onScroll(ScrollEvent scrollEvent) {
+      mLastPoint = (GeoPoint) mMapView.getMapCenter();
+      return true;
+    }
+
+    public boolean onZoom(ZoomEvent zoomEvent) {
+      mLastZoomLevel = zoomEvent.getZoomLevel();
+      return true;
     }
   }
 }
