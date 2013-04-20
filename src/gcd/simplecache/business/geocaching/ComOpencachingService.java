@@ -17,7 +17,7 @@ import java.util.List;
  */
 public class ComOpencachingService extends GeocachingService {
   private static final String LOG_TAG = ComOpencachingService.class.getName();
-  private static final String AUTHENTICATION_KEY = "tIklJ776J534DNNI";
+  private static final String AUTHENTICATION_KEY = "Authorization=tIklJ776J534DNNI";
   private static final String OPENCACHING_PAGE = "http://test.opencaching.com";
   private static final String TARGET_GEOCACHE = "/api/geocache";
   private static final String QUESTION_MARK = "?";
