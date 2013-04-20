@@ -4,9 +4,11 @@ import android.util.Log;
 import gcd.simplecache.dto.geocache.DTOCacheOwner;
 import gcd.simplecache.dto.geocache.DTOGeocache;
 import gcd.simplecache.dto.geocache.DTOLocation;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.IllegalFormatException;
 import java.util.List;
 
@@ -57,7 +59,20 @@ public class ComOpencachingReader implements JSONReader, GPXReader {
 
   @Override
   public List<DTOGeocache> readManyJSON(String jsonString) {
-    return null;  //To change body of implemented methods use File | Settings | File Templates.
+    List<DTOGeocache> cacheList = null;
+    try {
+      JSONArray jsonArray = new JSONArray(jsonString);
+      cacheList = new ArrayList<DTOGeocache>(jsonArray.length());
+      for (int index = 0; index < jsonArray.length(); index++) {
+        final DTOGeocache cache = new DTOGeocache();
+        fillDTOCache(cache, jsonArray.getJSONObject(index));
+        cacheList.add(cache);
+      }
+    } catch (Exception e) {
+      Log.e(ComOpencachingReader.class.getName(), "Could not read json array");
+    }
+
+    return cacheList;
   }
 
   /* fill a DTOGeocache object with data from a json file */
