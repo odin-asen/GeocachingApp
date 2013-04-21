@@ -1,13 +1,16 @@
 package gcd.simplecache.data;
 
-import com.thoughtworks.xstream.XStream;
-import com.thoughtworks.xstream.io.HierarchicalStreamDriver;
-import com.thoughtworks.xstream.io.json.JettisonMappedXmlDriver;
-import com.thoughtworks.xstream.mapper.MapperWrapper;
+import android.util.Log;
+import gcd.simplecache.dto.geocache.DTOCacheOwner;
 import gcd.simplecache.dto.geocache.DTOGeocache;
 import gcd.simplecache.dto.geocache.DTOLocation;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.IllegalFormatException;
+import java.util.List;
 
 /**
  * An object of this file can read files that are created from
@@ -17,8 +20,20 @@ import java.util.IllegalFormatException;
  * Date: 18.04.13
  */
 public class ComOpencachingReader implements JSONReader, GPXReader {
-
-  private static final String STRING_GEOCACHE = "geocache";
+  /* json attribute keys */
+  private static final String ATTR_DESCRIPTION = "description";
+  private static final String ATTR_DIFFICULTY = "difficulty";
+  private static final String ATTR_HINT = "hint";
+  private static final String ATTR_CACHE_ID= "oxcode";
+  private static final String OBJECT_LOCATION = "location";
+  private static final String ATTR_LATITUDE = "lat";
+  private static final String ATTR_LONGITUDE = "lon";
+  private static final String ATTR_NAME = "name";
+  private static final String OBJECT_OWNER = "hidden_by";
+  private static final String ATTR_OWNER_ID = "id";
+  private static final String ATTR_SIZE = "size";
+  private static final String ATTR_TERRAIN = "terrain";
+  private static final String ATTR_TYPE = "type";
 
   /* Constructors */
   /* Methods */
@@ -30,63 +45,57 @@ public class ComOpencachingReader implements JSONReader, GPXReader {
 
   @Override
   public DTOGeocache readJSON(String jsonString) throws IllegalFormatException {
-    XStream xStream = initJSONXStream();
-    if(!hasGeocacheTag(jsonString))
-      jsonString = "{"+ STRING_GEOCACHE +":"+jsonString+"}";
-    return (DTOGeocache) xStream.fromXML(jsonString);
+    final DTOGeocache dtoCache = new DTOGeocache();
+
+    try {
+      JSONObject jsonCache = new JSONObject(jsonString);
+      fillDTOCache(dtoCache, jsonCache);
+    } catch (Exception e) {
+      Log.e(ComOpencachingReader.class.getName(), "Could not read json object");
+    }
+
+    return dtoCache;
   }
 
-  /* Test for a geocache json tag at the beginning of the string */
-  private boolean hasGeocacheTag(String string) {
-    /* Validates the start beginning with a geocache tag */
-    String geocacheTagRegex = "\\A(\\s*\\{\\s*geocache:)\\S*";
-    return string.matches(geocacheTagRegex);
+  @Override
+  public List<DTOGeocache> readManyJSON(String jsonString) {
+    List<DTOGeocache> cacheList = null;
+    try {
+      JSONArray jsonArray = new JSONArray(jsonString);
+      cacheList = new ArrayList<DTOGeocache>(jsonArray.length());
+      for (int index = 0; index < jsonArray.length(); index++) {
+        final DTOGeocache cache = new DTOGeocache();
+        fillDTOCache(cache, jsonArray.getJSONObject(index));
+        cacheList.add(cache);
+      }
+    } catch (Exception e) {
+      Log.e(ComOpencachingReader.class.getName(), "Could not read json array");
+    }
+
+    return cacheList;
   }
 
-  private XStream initJSONXStream() {
-    XStream xStream = new IgnoringXStream(new JettisonMappedXmlDriver());
-    xStream.alias(STRING_GEOCACHE, DTOGeocache.class);
-    xStream.alias("location", DTOLocation.class);
-    xStream.aliasField("oxcode", DTOGeocache.class, "id");
-    xStream.aliasField("hidden_by", DTOGeocache.class, "owner");
-    xStream.aliasField("lat", DTOLocation.class, "latitude");
-    xStream.aliasField("lon", DTOLocation.class, "longitude");
-    xStream.setMode(XStream.NO_REFERENCES);
-    return xStream;
-  }
+  /* fill a DTOGeocache object with data from a json file */
+  private void fillDTOCache(DTOGeocache dtoCache, JSONObject jsonCache) throws JSONException {
+    dtoCache.description = jsonCache.getString(ATTR_DESCRIPTION);
+    dtoCache.difficulty = (float) jsonCache.getDouble(ATTR_DIFFICULTY);
+    dtoCache.hint = jsonCache.getString(ATTR_HINT);
+    dtoCache.id = jsonCache.getString(ATTR_CACHE_ID);
 
-  private XStream initGPXXStream() {
-    XStream xStream = new IgnoringXStream();
-    return xStream;
+    JSONObject dummy = jsonCache.getJSONObject(OBJECT_LOCATION);
+    dtoCache.location = new DTOLocation(dummy.getDouble(ATTR_LATITUDE),
+        dummy.getDouble(ATTR_LONGITUDE));
+
+    dtoCache.name = jsonCache.getString(ATTR_NAME);
+
+    dummy = jsonCache.getJSONObject(OBJECT_OWNER);
+    dtoCache.owner = new DTOCacheOwner(dummy.getString(ATTR_OWNER_ID),
+        dummy.getString(ATTR_NAME));
+
+    dtoCache.size = (float) jsonCache.getDouble(ATTR_SIZE);
+    dtoCache.terrain = (float) jsonCache.getDouble(ATTR_TERRAIN);
+    dtoCache.type = jsonCache.getString(ATTR_TYPE);
   }
 
   /* Getter and Setter */
-
-  /* Inner classes */
-  /**
-   * Create an XStream object that accepts unknown attributes
-   * that are not specified in the data model.
-   */
-  private class IgnoringXStream extends XStream {
-    public IgnoringXStream() {
-      super();
-    }
-
-    private IgnoringXStream(HierarchicalStreamDriver hierarchicalStreamDriver) {
-      super(hierarchicalStreamDriver);
-    }
-
-    protected MapperWrapper wrapMapper(MapperWrapper next) {
-      return new MapperWrapper(next) {
-        @Override
-        public boolean shouldSerializeMember(Class definedIn,
-                                             String fieldName) {
-          if (definedIn == Object.class) {
-            return false;
-          }
-          return super.shouldSerializeMember(definedIn, fieldName);
-        }
-      };
-    }
-  }
 }

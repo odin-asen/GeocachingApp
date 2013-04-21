@@ -1,5 +1,6 @@
 package gcd.simplecache.business.geocaching.request;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -17,6 +18,10 @@ import java.util.List;
  */
 abstract public class RequestCollection<T extends Parameter> {
   protected List<T> mParameterList;
+
+  public RequestCollection() {
+    mParameterList = new ArrayList<T>();
+  }
 
   abstract public String getRequestParameter();
   abstract public void addParameter(T parameter);

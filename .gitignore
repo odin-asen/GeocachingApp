@@ -16,6 +16,8 @@
 /out
 
 #Generated files
+/gen/gcd/simplecache/R.java
+/gen/gcd/simplecache/BuildConfig.java
 /gen
 
 #Tempfiles and log
