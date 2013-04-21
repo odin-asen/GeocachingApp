@@ -1,6 +1,9 @@
 package gcd.simplecache.business.geocaching;
 
+import gcd.simplecache.business.map.GeoCoordinateConverter;
 import gcd.simplecache.dto.GeocachingPoint;
+import gcd.simplecache.dto.geocache.DTOGeocache;
+import org.osmdroid.util.GeoPoint;
 
 /**
  * This class represents a geocache.
@@ -9,6 +12,7 @@ import gcd.simplecache.dto.GeocachingPoint;
  * Date: 14.04.13
  */
 public class Geocache {
+  private static final String ATTRIBUTE_SEPARATOR = " - ";
   /**
    * Unique identifier of this cache for a certain geocaching service.
    */
@@ -99,5 +103,26 @@ public class Geocache {
 
   public void setSize(float size) {
     this.mSize = size;
+  }
+
+  public static Geocache toGeocache(DTOGeocache dto) {
+    final Geocache geocache = new Geocache();
+    final GeoCoordinateConverter converter = new GeoCoordinateConverter();
+
+    geocache.setDescription(dto.description);
+    geocache.setDifficulty(dto.difficulty);
+    geocache.setId(dto.id);
+    geocache.setName(dto.name);
+    geocache.setOwner(dto.owner.name + ATTRIBUTE_SEPARATOR +dto.owner.id);
+
+    /* Write own method to convert from lat and long to GeocachingPoint */
+    final GeocachingPoint point =
+        converter.geoPointToGeocaching(new GeoPoint(dto.location.latitude, dto.location.longitude));
+    geocache.setPoint(point);
+
+    geocache.setSize(dto.size);
+    geocache.setTerrain(dto.terrain);
+
+    return geocache;
   }
 }

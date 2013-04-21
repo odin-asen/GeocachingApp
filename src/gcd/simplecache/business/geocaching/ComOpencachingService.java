@@ -2,10 +2,14 @@ package gcd.simplecache.business.geocaching;
 
 import android.util.Log;
 import gcd.simplecache.business.geocaching.request.RequestCollection;
+import gcd.simplecache.data.ComOpencachingReader;
+import gcd.simplecache.data.JSONReader;
+import gcd.simplecache.dto.geocache.DTOGeocache;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -65,6 +69,13 @@ public class ComOpencachingService extends GeocachingService {
     return cache;
   }
 
+  /* build a request for a database fetch in json format */
+  private String buildRequestParameters(RequestCollection parameter) {
+    return OPENCACHING_PAGE + TARGET_GEOCACHE
+        + QUESTION_MARK + parameter.getRequestParameter()
+        + COM_AND + AUTHENTICATION_KEY;
+  }
+
   /* build a request for one cache in json format */
   private String buildRequestParameters(String cacheID, RequestCollection parameter) {
     return OPENCACHING_PAGE + TARGET_GEOCACHE
@@ -88,7 +99,24 @@ public class ComOpencachingService extends GeocachingService {
 
   @Override
   public List<Geocache> fetchDatabase(RequestCollection parameter) {
-    return null;  //To change body of implemented methods use File | Settings | File Templates.
+    final List<Geocache> geocaches;
+    final String requestURL = buildRequestParameters(parameter);
+    final InputStream in = open(requestURL);
+
+    if(in != null) {
+      /* Read data from input stream */
+      JSONReader reader = new ComOpencachingReader();
+      String result = ""; //read string from http connection
+      final List<DTOGeocache> dtoGeocaches = reader.readManyJSON(result);
+      geocaches = new ArrayList<Geocache>(dtoGeocaches.size());
+      for (DTOGeocache dto : dtoGeocaches) {
+        geocaches.add(Geocache.toGeocache(dto));
+      }
+
+      closeHttpConnection();
+    } else geocaches = new ArrayList<Geocache>();
+
+    return geocaches;
   }
 
   /* Getter and Setter */
