@@ -8,6 +8,10 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.IllegalFormatException;
 import java.util.List;
@@ -20,6 +24,8 @@ import java.util.List;
  * Date: 18.04.13
  */
 public class ComOpencachingReader implements JSONReader, GPXReader {
+  private static final String LOG_TAG = ComOpencachingReader.class.getName();
+
   /* json attribute keys */
   private static final String ATTR_DESCRIPTION = "description";
   private static final String ATTR_DIFFICULTY = "difficulty";
@@ -37,6 +43,35 @@ public class ComOpencachingReader implements JSONReader, GPXReader {
 
   /* Constructors */
   /* Methods */
+
+  /**
+   * Read an input stream and return the content as string.
+   * @param stream InputStream object with content.
+   * @return A String with the input stream content.
+   * @throws IOException
+   */
+  public String readInputStream(InputStream stream) throws IOException {
+    String result = "";
+    BufferedReader reader;
+
+    reader = new BufferedReader(new InputStreamReader(stream));
+    String line;
+
+    while ((line = reader.readLine()) != null) {
+      if(!result.isEmpty())
+        result = result + "\n";
+      result = result + line;
+    }
+
+    try {
+      reader.close();
+    } catch (IOException e) {
+      Log.e(LOG_TAG, "Error closing stream reader", e);
+    }
+
+    return result;
+  }
+
   @Override
   public DTOGeocache readGPX(String gpxString) throws IllegalFormatException {
     DTOGeocache cache = new DTOGeocache();
@@ -51,7 +86,7 @@ public class ComOpencachingReader implements JSONReader, GPXReader {
       JSONObject jsonCache = new JSONObject(jsonString);
       fillDTOCache(dtoCache, jsonCache);
     } catch (Exception e) {
-      Log.e(ComOpencachingReader.class.getName(), "Could not read json object");
+      Log.e(LOG_TAG, "Could not read json object");
     }
 
     return dtoCache;
@@ -69,7 +104,7 @@ public class ComOpencachingReader implements JSONReader, GPXReader {
         cacheList.add(cache);
       }
     } catch (Exception e) {
-      Log.e(ComOpencachingReader.class.getName(), "Could not read json array");
+      Log.e(LOG_TAG, "Could not read json array");
     }
 
     return cacheList;
