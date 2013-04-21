@@ -41,18 +41,18 @@ public class CacheMapFragment extends Fragment {
   private boolean mNavigationEnabled;
 
   /* Map overlay variables */
-  private ItemizedIconOverlay<MapObject> userOverlay;
-  private ItemizedOverlay<MapObject> cacheOverlay;
-  private ItemizedOverlay<MapObject> aimOverlay;
+  private ItemizedIconOverlay<MapObject> mUserOverlay;
+  private ItemizedOverlay<MapObject> mCacheOverlay;
+  private ItemizedOverlay<MapObject> mAimOverlay;
 
   /****************/
   /* Constructors */
   /****************/
 
   public CacheMapFragment() {
-    userOverlay = null;
-    cacheOverlay = null;
-    aimOverlay = null;
+    mUserOverlay = null;
+    mCacheOverlay = null;
+    mAimOverlay = null;
     mLastZoomLevel = 0;
     mLastPoint = new GeoPoint(0.0,0.0);
   }
@@ -75,7 +75,7 @@ public class CacheMapFragment extends Fragment {
   }
 
   public void updateUserPosition(Location location) {
-    mMapView.getOverlayManager().remove(userOverlay);
+    mMapView.getOverlayManager().remove(mUserOverlay);
 
     final GeoCoordinateConverter converter = new GeoCoordinateConverter();
     final GeoPoint currentPoint =
@@ -89,10 +89,10 @@ public class CacheMapFragment extends Fragment {
     objectList.add(userObject);
 
     /* add overlay to the map */
-    userOverlay = new ItemizedOverlayWithFocus<MapObject>(
+    mUserOverlay = new ItemizedOverlayWithFocus<MapObject>(
         getActivity(), objectList, null);
-    userOverlay.addItem(userObject);
-    mMapView.getOverlayManager().add(userOverlay);
+    mUserOverlay.addItem(userObject);
+    mMapView.getOverlayManager().add(mUserOverlay);
 
     saveLastPointAndZoom(currentPoint);
     mMapView.invalidate();
@@ -105,15 +105,15 @@ public class CacheMapFragment extends Fragment {
   public void updateGeocacheObjects(List<Geocache> cacheList) {
     if(cacheList == null)
       return;
-    mMapView.getOverlayManager().remove(cacheOverlay);
+    mMapView.getOverlayManager().remove(mCacheOverlay);
 
     final List<MapObject> objectList = new ArrayList<MapObject>(cacheList.size());
     fillMapObjectList(cacheList, objectList);
 
     /* add overlay to the map */
-    cacheOverlay = new ItemizedOverlayWithFocus<MapObject>(
+    mCacheOverlay = new ItemizedOverlayWithFocus<MapObject>(
         getActivity(), objectList, null);
-    mMapView.getOverlayManager().add(cacheOverlay);
+    mMapView.getOverlayManager().add(mCacheOverlay);
 
     mMapView.postInvalidate();
   }
