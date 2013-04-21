@@ -114,7 +114,7 @@ public class CacheMapFragment extends Fragment {
         getActivity(), objectList, null);
     mMapView.getOverlayManager().add(cacheOverlay);
 
-    mMapView.invalidate();
+    mMapView.postInvalidate();
   }
 
   @Override
