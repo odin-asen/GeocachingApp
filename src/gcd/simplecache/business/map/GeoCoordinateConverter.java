@@ -15,6 +15,7 @@ import org.osmdroid.util.GeoPoint;
 public class GeoCoordinateConverter {
   private static final double MEGA = 1000000.0;
   private static final double MICRO = 1/MEGA;
+  private static final int DECIMAL_PLACE = 3;
 
   /* Constructors */
   /* Methods */
@@ -35,13 +36,54 @@ public class GeoCoordinateConverter {
    */
   public GeocachingPoint locationToGeocaching(Location location) {
     final GeocachingPoint point = new GeocachingPoint();
-    final int decimalPlace = 3;
     double latitude = location.getLatitude();
     double longitude = location.getLongitude();
 
     getOrientation(point, latitude, longitude);
-    getPositiveCoordinates(point, decimalPlace, latitude, longitude);
+    getPositiveCoordinates(point, DECIMAL_PLACE, latitude, longitude);
 
+    return point;
+  }
+
+  public GeoPoint geocachingToGeoPoint(GeocachingPoint point) {
+    double[] geoDecimal = getGeoDecimal(point);
+
+    return new GeoPoint(decimalToMicroDegree(geoDecimal[0]),
+        decimalToMicroDegree(geoDecimal[1]));
+  }
+
+  /**
+   * Converts the coordinates from {@code point} to a GeocachingPoint object.
+   * The precision of the GeocachingObject is three decimal places for the
+   * latitude and longitude minute values. All values are positive.
+   * @param geoPoint GeoPoint object to convert.
+   * @return A GeocachingPoint object.
+   */
+  public GeocachingPoint geoPointToGeocaching(GeoPoint geoPoint) {
+    final GeocachingPoint point = new GeocachingPoint();
+    double latitude = microToDecimalDegree(geoPoint.getLatitudeE6());
+    double longitude = microToDecimalDegree(geoPoint.getLongitudeE6());
+
+    getOrientation(point, latitude, longitude);
+    getPositiveCoordinates(point, DECIMAL_PLACE, latitude, longitude);
+
+    return point;
+  }
+
+  /**
+   * Converts the coordinates from {@code latitude} and {@code longitude} to
+   * a GeocachingPoint object. The parameters must be in decimal degree format.
+   * Otherwise a weird result might be return.
+   * The precision of the GeocachingObject is three decimal places for the
+   * latitude and longitude minute values. All values are positive.
+   * @param latitude Latitude value of the coordinate.
+   * @param longitude Longitude value of the coordinate.
+   * @return A GeocachingPoint object.
+   */
+  public GeocachingPoint decimalDegreesToGeocaching(double latitude, double longitude) {
+    final GeocachingPoint point = new GeocachingPoint();
+    getPositiveCoordinates(point, DECIMAL_PLACE, latitude, longitude);
+    getOrientation(point, latitude, longitude);
     return point;
   }
 
@@ -66,13 +108,6 @@ public class GeoCoordinateConverter {
         (longitude - (int) longitude) * 60.0, decimalPlace));
   }
 
-  public GeoPoint geocachingToGeoPoint(GeocachingPoint point) {
-    double[] geoDecimal = getGeoDecimal(point);
-
-    return new GeoPoint(decimalToMicroDegree(geoDecimal[0]),
-        decimalToMicroDegree(geoDecimal[1]));
-  }
-
   /**
    * Returns the geo decimal representation of the latitude and
    * longitude values as an array.<br/>
@@ -91,24 +126,6 @@ public class GeoCoordinateConverter {
       longitude = -longitude;
 
     return new double[]{latitude, longitude};
-  }
-
-  /**
-   * Converts the coordinates from {@code point} to a GeocachingPoint object.
-   * The precision of the GeocachingObject is three decimal places for the
-   * latitude and longitude minute values. All values are positive.
-   * @param geoPoint GeoPoint object to convert.
-   * @return A GeocachingPoint object.
-   */
-  public GeocachingPoint geoPointToGeocaching(GeoPoint geoPoint) {
-    final GeocachingPoint point = new GeocachingPoint();
-    double latitude = microToDecimalDegree(geoPoint.getLatitudeE6());
-    double longitude = microToDecimalDegree(geoPoint.getLongitudeE6());
-
-    getOrientation(point, latitude, longitude);
-    getPositiveCoordinates(point, 3, latitude, longitude);
-
-    return point;
   }
 
   /* Rounds a number to a specified decimal place. The maximum precision is */
