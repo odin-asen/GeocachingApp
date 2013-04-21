@@ -38,6 +38,7 @@ public class CacheMapFragment extends Fragment {
 
   private MapView mMapView;
   private MapController mController;
+  private boolean mNavigationEnabled;
 
   /* Map overlay variables */
   private ItemizedIconOverlay<MapObject> userOverlay;
@@ -184,6 +185,18 @@ public class CacheMapFragment extends Fragment {
     return geocache.getId()+" - "+geocache.getOwner()+"\n"
         +"Difficulty: "+geocache.getDifficulty()+"\n"
         +"Terrain: "+geocache.getTerrain();
+  }
+
+  /*********************/
+  /* Getter and Setter */
+  /*********************/
+
+  public void setNavigationEnabled(boolean enabled) {
+    this.mNavigationEnabled = enabled;
+  }
+
+  public boolean isNavigationEnabled() {
+    return mNavigationEnabled;
   }
 
   /* Inner classes */
