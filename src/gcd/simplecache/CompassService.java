@@ -10,14 +10,12 @@ import android.hardware.SensorManager;
 import android.os.IBinder;
 import android.util.Log;
 
-public class CompassService extends Service implements SensorEventListener {
+public class CompassService extends Service implements SensorEventListener, IntentActions {
 	
 	private final Context mContext;
 	private static SensorManager sensorService;
 	private Sensor sensor;
 	
-	private static final String ACTION_ID_COMPASS = "SensorChanged";
-	  
 	public CompassService(Context context) {
 		this.mContext = context;
 		registerSensor();

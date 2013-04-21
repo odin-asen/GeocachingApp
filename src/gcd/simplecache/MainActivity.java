@@ -13,15 +13,10 @@ import android.util.Log;
 import android.view.Menu;
 import android.widget.TabHost;
 
-public class MainActivity extends FragmentActivity {
+public class MainActivity extends FragmentActivity implements IntentActions {
   /* TabSpec IDs */
   private static final String TAG_TS_MAP = "map";
   private static final String TAG_TS_COMPASS = "compass";
-
-  /* Intent action IDs */
-  private static final String ACTION_ID_GPS = "LocationChanged";
-  private static final String ACTION_ID_COMPASS = "SensorChanged";  
-  private static final String ACTION_ID_NAVIGATION = "SetNavigationMode";
 
   private FragmentTabHost mTabHost;
   private GPSService gps;

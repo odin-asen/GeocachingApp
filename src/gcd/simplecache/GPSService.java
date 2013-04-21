@@ -13,7 +13,7 @@ import android.os.IBinder;
 import android.provider.Settings;
 import android.util.Log;
  
-public class GPSService extends Service implements LocationListener {
+public class GPSService extends Service implements LocationListener, IntentActions {
  
     private final Context mContext;
  
@@ -37,8 +37,6 @@ public class GPSService extends Service implements LocationListener {
     // The minimum time between updates in milliseconds
     private static final long MIN_TIME_BW_UPDATES = 10 * 60 * 1; 
  
-    private static final String ACTION_ID_GPS = "LocationChanged";
-    
     // Declaring a Location Manager
     protected LocationManager locationManager;
     
