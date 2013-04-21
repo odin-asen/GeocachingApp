@@ -14,12 +14,15 @@ import android.view.Menu;
 import android.widget.TabHost;
 
 public class MainActivity extends FragmentActivity {
+  /* TabSpec IDs */
   private static final String TAG_TS_MAP = "map";
   private static final String TAG_TS_COMPASS = "compass";
-  
+
+  /* Intent action IDs */
   private static final String ACTION_ID_GPS = "LocationChanged";
   private static final String ACTION_ID_COMPASS = "SensorChanged";  
-  
+  private static final String ACTION_ID_NAVIGATION = "SetNavigationMode";
+
   private FragmentTabHost mTabHost;
   private GPSService gps;
   private CompassService compass;
@@ -79,17 +82,23 @@ public class MainActivity extends FragmentActivity {
 
 		@Override
 		public void onReceive(Context context, Intent intent) {
-			if (intent.getAction().equals(ACTION_ID_GPS)){
+      final String action = intent.getAction();
+
+      /* process intent action */
+      if (action.equals(ACTION_ID_GPS)){
 				Bundle extras = intent.getExtras();
 				Double lat = extras.getDouble("lat");
 				Double lon = extras.getDouble("lon");
         changeLocation(lat, lon);
         Log.d("Loc","Changed");
-			} if (intent.getAction().equals(ACTION_ID_COMPASS)) {
+			} else if (action.equals(ACTION_ID_COMPASS)) {
 				Log.d("Sensor", "Changed");
-			}
+			} else if (action.equals(ACTION_ID_NAVIGATION)) {
+
+      }
 		}
 
+    /* update compass and map for location change */
     private void changeLocation(Double lat, Double lon) {
       final String currentTabTag = mTabHost.getCurrentTabTag();
 
