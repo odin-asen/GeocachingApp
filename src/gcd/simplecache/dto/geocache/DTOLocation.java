@@ -19,9 +19,6 @@ public class DTOLocation implements Serializable {
 
   @Override
   public String toString() {
-    return "DTOLocation{" +
-        "latitude=" + latitude +
-        ", longitude=" + longitude +
-        '}';
+    return "{ " + latitude + ", " + longitude + " }";
   }
 }

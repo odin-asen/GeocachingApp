@@ -49,7 +49,14 @@ public class DTOGeocache implements Serializable {
 
   @Override
   public String toString() {
-    return "DTOGeocache{" +
+    String descrTrunc = "...";
+    if(description != null) {
+      if(description.length() > 20)
+        descrTrunc = description.substring(0,20)+descrTrunc;
+      else descrTrunc = description;
+    }
+
+    return "{" +
         "id='" + id + '\'' +
         ", owner=" + owner +
         ", name='" + name + '\'' +
@@ -59,7 +66,7 @@ public class DTOGeocache implements Serializable {
         ", terrain=" + terrain +
         ", size=" + size +
         ", hint='" + hint + '\'' +
-        ", description='" + description + '\'' +
+        ", description='" + descrTrunc + '\'' +
         '}';
   }
 

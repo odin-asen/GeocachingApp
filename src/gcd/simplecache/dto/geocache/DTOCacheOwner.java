@@ -19,8 +19,7 @@ public class DTOCacheOwner implements Serializable {
 
   @Override
   public String toString() {
-    return "DTOCacheOwner{" +
-        "id='" + id + '\'' +
+    return "{ id=\'" + id + '\'' +
         ", name='" + name + '\'' +
         '}';
   }
