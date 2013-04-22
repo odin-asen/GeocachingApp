@@ -150,12 +150,7 @@ public class CacheMapFragment extends Fragment {
     mController.setZoom(mLastZoomLevel);
     mController.setCenter(mLastPoint);
 
-//    mMapView.invalidate();
-    /* Test code */
-    Location location = new Location("Test");
-    location.setLatitude(45.0);
-    location.setLongitude(9.0);
-    updateUserPosition(location);
+    mMapView.invalidate();
   }
 
   @Override
@@ -291,18 +286,14 @@ public class CacheMapFragment extends Fragment {
   /* Reacts on touching event on the map objects */
   private class MapItemListener implements ItemizedIconOverlay.OnItemGestureListener<MapObject> {
     public static final String SEARCH_DLG_TAG = "search dialog";
-    private boolean mTapped = false;
 
     @Override
     public boolean onItemSingleTapUp(int i, MapObject mapObject) {
-      if(mTapped)
-        return true;
-      /* Create test cache */
-      Geocache cache = new Geocache();
-
-      SearchCacheDialog dialog = new SearchCacheDialog(cache);
-      dialog.show(getFragmentManager(), SEARCH_DLG_TAG);
-      mTapped = false;
+      final Geocache cache = mapObject.getGeocache();
+      if(cache != null) {
+        SearchCacheDialog dialog = new SearchCacheDialog(cache);
+        dialog.show(getFragmentManager(), SEARCH_DLG_TAG);
+      }
 
       /* Return true to prevent calling this method */
       /* for a second magic item */
