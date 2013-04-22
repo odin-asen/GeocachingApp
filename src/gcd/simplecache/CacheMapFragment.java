@@ -207,6 +207,7 @@ public class CacheMapFragment extends Fragment {
 
   public void setDestination(Geocache destination) {
     mDestination = destination;
+    //TODO refresh route
   }
 
   /* Inner classes */
@@ -239,11 +240,15 @@ public class CacheMapFragment extends Fragment {
 
   private class ScrollZoomListener implements MapListener {
     public boolean onScroll(ScrollEvent scrollEvent) {
+      if(mNavigationEnabled)
+        ;//Suppress database fetching;
       mLastPoint = (GeoPoint) mMapView.getMapCenter();
       return true;
     }
 
     public boolean onZoom(ZoomEvent zoomEvent) {
+      if(mNavigationEnabled)
+        ;//Suppress database fetching;
       mLastZoomLevel = zoomEvent.getZoomLevel();
       return true;
     }
