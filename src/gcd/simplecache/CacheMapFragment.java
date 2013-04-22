@@ -39,7 +39,7 @@ public class CacheMapFragment extends Fragment {
   private MapView mMapView;
   private MapController mController;
   private boolean mNavigationEnabled;
-  private Geocache mDestination;
+  private MapObject mDestination;
 
   /* Map overlay variables */
   private ItemizedIconOverlay<MapObject> mUserOverlay;
@@ -48,7 +48,6 @@ public class CacheMapFragment extends Fragment {
 
   /****************/
   /* Constructors */
-  /****************/
 
   public CacheMapFragment() {
     mUserOverlay = null;
@@ -56,11 +55,15 @@ public class CacheMapFragment extends Fragment {
     mAimOverlay = null;
     mLastZoomLevel = 0;
     mLastPoint = new GeoPoint(0.0,0.0);
+    mNavigationEnabled = false;
+    mDestination = new MapObject("", "", new GeoPoint(0.0,0.0));
   }
+
+  /*      End     */
+  /****************/
 
   /***********/
   /* Methods */
-  /***********/
 
   @Override
   public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -128,6 +131,9 @@ public class CacheMapFragment extends Fragment {
         mLastPoint = (GeoPoint) savedInstance.getSerializable(LAST_POINT);
       mLastZoomLevel = savedInstance.getInt(LAST_ZOOM);
     }
+
+    /* initialise stuff that needs a context object */
+    initialiseContextStuff(savedInstance);
     initMap();
   }
 
@@ -155,9 +161,15 @@ public class CacheMapFragment extends Fragment {
     Log.d("map", "save instance");
   }
 
+  /*   End   */
+  /***********/
+
   /*******************/
-  /* private methods */
-  /*******************/
+  /* Private Methods */
+
+  private void initialiseContextStuff(Bundle savedInstance) {
+    mDestination.setMarker(getResources().getDrawable(R.drawable.goal_flag));
+  }
 
   /* Initialise settings for MapView object */
   private void initMap() {
@@ -193,9 +205,15 @@ public class CacheMapFragment extends Fragment {
         +"Terrain: "+geocache.getTerrain();
   }
 
+  private void refreshRoute() {
+
+  }
+
+  /*       End       */
+  /*******************/
+
   /*********************/
   /* Getter and Setter */
-  /*********************/
 
   public void setNavigationEnabled(boolean enabled) {
     this.mNavigationEnabled = enabled;
@@ -205,12 +223,26 @@ public class CacheMapFragment extends Fragment {
     return mNavigationEnabled;
   }
 
+  /**
+   * This method sets a new destination and refreshes the route
+   * if the navigation is enabled. Only the aim, the user and
+   * the route to the aim will be displayed on the map.<br/>
+   * When the method is called and the navigation is disabled,
+   * the map will destroy this destination.<br/>
+   * It should be called in an own thread.
+   * @param destination New destination point.
+   */
   public void setDestination(Geocache destination) {
-    mDestination = destination;
-    //TODO refresh route
+    mDestination.setGeocachingPoint(destination.getPoint());
+    refreshRoute();
   }
 
+  /*       End         */
+  /*********************/
+
+  /*****************/
   /* Inner classes */
+
   /* Reacts on touching event on the map objects */
   private class MapItemListener implements ItemizedIconOverlay.OnItemGestureListener<MapObject> {
     public static final String SEARCH_DLG_TAG = "search dialog";
@@ -253,4 +285,7 @@ public class CacheMapFragment extends Fragment {
       return true;
     }
   }
+
+  /*      End      */
+  /*****************/
 }
