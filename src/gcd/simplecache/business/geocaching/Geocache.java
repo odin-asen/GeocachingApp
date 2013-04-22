@@ -22,6 +22,7 @@ public class Geocache {
   private String mName;
   private String mOwner;
   private String mDescription;
+  private String mHint;
   private float mDifficulty;
   private float mTerrain;
   private float mAwesomeness;
@@ -79,6 +80,14 @@ public class Geocache {
 
   public void setDescription(String description) {
     this.mDescription = description;
+  }
+
+  public String getHint() {
+    return mHint;
+  }
+
+  public void setHint(String hint) {
+    mHint = hint;
   }
 
   public float getAwesomeness() {

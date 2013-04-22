@@ -20,7 +20,7 @@ import gcd.simplecache.business.geocaching.Geocache;
  */
 public class SearchCacheDialog extends DialogFragment implements IntentActions {
 
-  private Geocache geocache;
+  private Geocache mGeocache;
 
   /**
    * Creates a search dialog object.
@@ -29,7 +29,7 @@ public class SearchCacheDialog extends DialogFragment implements IntentActions {
    */
   public SearchCacheDialog(Geocache geocache) throws NullPointerException {
     super();
-    this.geocache = geocache;
+    this.mGeocache = geocache;
   }
 
   @Override
@@ -56,13 +56,13 @@ public class SearchCacheDialog extends DialogFragment implements IntentActions {
   private void fillViewContent(View view) {
     /* set text views */
     TextView textView = (TextView) view.findViewById(R.id.cache_size);
-    textView.setText(Float.toString(geocache.getSize()));
+    textView.setText(Float.toString(mGeocache.getSize()));
     textView = (TextView) view.findViewById(R.id.cache_difficulty);
-    textView.setText(Float.toString(geocache.getDifficulty()));
+    textView.setText(Float.toString(mGeocache.getDifficulty()));
     textView = (TextView) view.findViewById(R.id.cache_terrain);
-    textView.setText(Float.toString(geocache.getTerrain()));
+    textView.setText(Float.toString(mGeocache.getTerrain()));
     textView = (TextView) view.findViewById(R.id.cache_code);
-    textView.setText(geocache.getId());
+    textView.setText(mGeocache.getId());
   }
 
   /***********************************/
@@ -73,7 +73,7 @@ public class SearchCacheDialog extends DialogFragment implements IntentActions {
       /* enable navigation to search for the cache */
       Intent navigationAction = new Intent(ACTION_ID_NAVIGATION);
       navigationAction.putExtra(NAVIGATION_ENABLED, true);
-      navigationAction.putExtra(NAVIGATION_DESTINATION, geocache.getPoint());
+      navigationAction.putExtra(NAVIGATION_DESTINATION, mGeocache.getPoint());
       getActivity().getApplicationContext().sendBroadcast(navigationAction);
     }
   }
@@ -88,12 +88,15 @@ public class SearchCacheDialog extends DialogFragment implements IntentActions {
     public void onClick(DialogInterface dialog, int id) {
       /* show description of the cache */
       Intent navigationAction = new Intent(ACTION_ID_DESCRIPTION);
-      navigationAction.putExtra(DESCRIPTION_ID, geocache.getId());
-      navigationAction.putExtra(DESCRIPTION_NAME, geocache.getName());
-//      navigationAction.putExtra(DESCRIPTION_HINT, geocache.getHint());
-      navigationAction.putExtra(DESCRIPTION_OWNER, geocache.getOwner());
-      navigationAction.putExtra(DESCRIPTION_TEXT, geocache.getDescription());
+      navigationAction.putExtra(DESCRIPTION_ID, mGeocache.getId());
+      navigationAction.putExtra(DESCRIPTION_NAME, mGeocache.getName());
+      navigationAction.putExtra(DESCRIPTION_HINT, mGeocache.getHint());
+      navigationAction.putExtra(DESCRIPTION_OWNER, mGeocache.getOwner());
+      navigationAction.putExtra(DESCRIPTION_TEXT, mGeocache.getDescription());
       getActivity().getApplicationContext().sendBroadcast(navigationAction);
     }
   }
+
+  /*               End               */
+  /***********************************/
 }
