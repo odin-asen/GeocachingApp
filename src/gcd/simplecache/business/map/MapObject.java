@@ -16,6 +16,8 @@ public class MapObject extends OverlayItem {
   /* Constructors */
   public MapObject(String title, String description, GeoPoint geoPoint) {
     super(title, description, geoPoint);
+    mType = ObjectType.TRADITIONAL;
+    mGeocache = null;
   }
 
   /* Methods */

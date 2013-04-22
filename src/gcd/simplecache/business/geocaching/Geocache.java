@@ -32,6 +32,7 @@ public class Geocache {
   /* Constructors */
 
   public Geocache() {
+    setId("");
     setPoint(new GeocachingPoint());
     setName("");
     setOwner("");
@@ -57,6 +58,7 @@ public class Geocache {
       final GeoCoordinateConverter converter = new GeoCoordinateConverter();
       geocache.setPoint(converter.decimalDegreesToGeocaching(dto.location.latitude, dto.location.longitude));
 
+      geocache.setId(dto.id);
       geocache.setName(dto.name);
 
       if(dto.owner != null)
@@ -81,6 +83,7 @@ public class Geocache {
       double[] coordinates = converter.getGeoDecimal(geocache.mPoint);
       dto.location = new DTOLocation(coordinates[0], coordinates[1]);
 
+      dto.id = geocache.mId;
       dto.name = geocache.mName;
       dto.owner = DTOCacheOwner.parseString(geocache.mOwner);
       dto.description = geocache.mDescription;

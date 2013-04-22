@@ -50,6 +50,7 @@ public class CacheMapFragment extends Fragment {
   private ItemizedIconOverlay<MapObject> mUserOverlay;
   private ItemizedOverlay<MapObject> mCacheOverlay;
   private ItemizedOverlay<MapObject> mAimOverlay;
+  private final MapItemListener mMapItemListener;
 
   /****************/
   /* Constructors */
@@ -58,10 +59,11 @@ public class CacheMapFragment extends Fragment {
     mUserOverlay = null;
     mCacheOverlay = null;
     mAimOverlay = null;
-    mLastZoomLevel = 0;
-    mLastPoint = new GeoPoint(0.0,0.0);
+    mLastZoomLevel = 8;
+    mLastPoint = new GeoPoint(50.0,10.0);
     mNavigationEnabled = false;
     mDestination = new MapObject("", "", new GeoPoint(0.0,0.0));
+    mMapItemListener = new MapItemListener();
   }
 
   /*      End     */
@@ -99,7 +101,7 @@ public class CacheMapFragment extends Fragment {
 
     /* add overlay to the map */
     mUserOverlay = new ItemizedOverlayWithFocus<MapObject>(
-        getActivity(), objectList, new MapItemListener());
+        getActivity(), objectList, mMapItemListener);
     mUserOverlay.addItem(userObject);
     mMapView.getOverlayManager().add(mUserOverlay);
 
@@ -121,7 +123,7 @@ public class CacheMapFragment extends Fragment {
 
     /* add overlay to the map */
     mCacheOverlay = new ItemizedOverlayWithFocus<MapObject>(
-        getActivity(), objectList, null);
+        getActivity(), objectList, mMapItemListener);
     mMapView.getOverlayManager().add(mCacheOverlay);
 
     mMapView.postInvalidate();
@@ -194,6 +196,7 @@ public class CacheMapFragment extends Fragment {
           converter.geocachingToGeoPoint(geocache.getPoint()));
       cacheObject.setMarker(getActivity().getResources().getDrawable(R.drawable.treasure));
       cacheObject.setType(MapObject.ObjectType.TRADITIONAL);
+      cacheObject.setGeocache(geocache);
       objectList.add(cacheObject);
     }
   }
@@ -212,12 +215,14 @@ public class CacheMapFragment extends Fragment {
 
     /* add overlay to the map */
     mAimOverlay = new ItemizedOverlayWithFocus<MapObject>(
-        getActivity(), objectList, new MapItemListener());
+        getActivity(), objectList, mMapItemListener);
     mMapView.getOverlayManager().add(mAimOverlay);
   }
 
-  /* Fetches cache information from the cache */
-  /* database and refreshes the map */
+  /**
+   * Fetches cache information from the cache
+   * database and refreshes the map.
+   */
   private void updateGeocacheMap(GeoPoint mapCentre) {
     final GeocachingService service = new ComOpencachingService();
     final ComOpencachingRequestCollection collection =
@@ -291,7 +296,7 @@ public class CacheMapFragment extends Fragment {
     public boolean onItemSingleTapUp(int i, MapObject mapObject) {
       final Geocache cache = mapObject.getGeocache();
       if(cache != null) {
-        SearchCacheDialog dialog = new SearchCacheDialog(cache);
+        SearchCacheDialog dialog = new SearchCacheDialog(cache, mapObject.getDrawable());
         dialog.show(getFragmentManager(), SEARCH_DLG_TAG);
       }
 

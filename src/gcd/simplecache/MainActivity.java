@@ -58,7 +58,10 @@ public class MainActivity extends FragmentActivity implements IntentActions {
   	protected void onResume() {
  		super.onResume();
  		if(!receiverRegistered) {
-  			registerReceiver(receiver, new IntentFilter("LocationChanged"));
+  			registerReceiver(receiver, new IntentFilter(ACTION_ID_GPS));
+  			registerReceiver(receiver, new IntentFilter(ACTION_ID_COMPASS));
+  			registerReceiver(receiver, new IntentFilter(ACTION_ID_DESCRIPTION));
+  			registerReceiver(receiver, new IntentFilter(ACTION_ID_NAVIGATION));
   		}
   	}
 

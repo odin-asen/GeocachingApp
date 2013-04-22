@@ -4,10 +4,12 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 import gcd.simplecache.business.geocaching.Geocache;
 
@@ -21,15 +23,19 @@ import gcd.simplecache.business.geocaching.Geocache;
 public class SearchCacheDialog extends DialogFragment implements IntentActions {
 
   private Geocache mGeocache;
+  private Drawable mTitleIcon;
 
   /**
    * Creates a search dialog object.
    * @param geocache Display information of this geocache.
+   * @param titleIcon Icon to display in the title of the dialog.
    * @throws NullPointerException If {@code geocache} is null.
    */
-  public SearchCacheDialog(Geocache geocache) throws NullPointerException {
+  public SearchCacheDialog(Geocache geocache, Drawable titleIcon)
+      throws NullPointerException {
     super();
     this.mGeocache = geocache;
+    this.mTitleIcon = titleIcon;
   }
 
   @Override
@@ -63,6 +69,14 @@ public class SearchCacheDialog extends DialogFragment implements IntentActions {
     textView.setText(Float.toString(mGeocache.getTerrain()));
     textView = (TextView) view.findViewById(R.id.cache_code);
     textView.setText(mGeocache.getId());
+
+    /* set title */
+    if(mTitleIcon != null) {
+      ImageView imageView = (ImageView) view.findViewById(R.id.cache_type);
+      imageView.setImageDrawable(mTitleIcon);
+      textView = (TextView) view.findViewById(R.id.cache_code);
+      textView.setText(mGeocache.getId());
+    }
   }
 
   /***********************************/
@@ -74,7 +88,7 @@ public class SearchCacheDialog extends DialogFragment implements IntentActions {
       Intent navigationAction = new Intent(ACTION_ID_NAVIGATION);
       navigationAction.putExtra(NAVIGATION_ENABLED, true);
       navigationAction.putExtra(NAVIGATION_DESTINATION, Geocache.toDTO(mGeocache));
-      getActivity().getApplicationContext().sendBroadcast(navigationAction);
+      getActivity().sendBroadcast(navigationAction);
     }
   }
 
@@ -93,7 +107,7 @@ public class SearchCacheDialog extends DialogFragment implements IntentActions {
       navigationAction.putExtra(DESCRIPTION_HINT, mGeocache.getHint());
       navigationAction.putExtra(DESCRIPTION_OWNER, mGeocache.getOwner());
       navigationAction.putExtra(DESCRIPTION_TEXT, mGeocache.getDescription());
-      getActivity().getApplicationContext().sendBroadcast(navigationAction);
+      getActivity().sendBroadcast(navigationAction);
     }
   }
 
