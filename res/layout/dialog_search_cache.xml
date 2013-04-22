@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:orientation="vertical"
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content">
+    <!-- Picture and Name -->
+    <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="64dp"
+            android:background="#FFFFBB33">
+        <ImageView
+                android:id="@+id/cache_type"
+                android:layout_width="64dp"
+                android:layout_height="match_parent"
+                android:scaleType="fitStart" />
+        <TextView
+            android:id="@+id/cache_code"
+            android:layout_height="match_parent"
+            android:layout_width="match_parent"
+            android:layout_weight="1"
+            android:textColor="#FFFFFFFF"
+            android:textSize="48dp"/>
+    </LinearLayout>
+
+    <!-- Cache Size -->
+    <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="32dp" >
+    <TextView
+            android:text="@string/cache_size"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="3"
+            android:fontFamily="bold" />
+    <TextView
+            android:id="@+id/cache_size"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="7"
+            android:fontFamily="italic" />
+    </LinearLayout>
+
+    <!-- Cache Difficulty -->
+    <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="32dp" >
+        <TextView
+                android:text="@string/cache_difficulty"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="3"
+                android:fontFamily="bold" />
+        <TextView
+                android:id="@+id/cache_difficulty"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="7"
+                android:fontFamily="italic" />
+    </LinearLayout>
+
+    <!-- Cache Terrain -->
+    <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="32dp" >
+        <TextView
+                android:text="@string/cache_terrain"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="3"
+                android:fontFamily="bold" />
+        <TextView
+                android:id="@+id/cache_terrain"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="7"
+                android:fontFamily="italic" />
+    </LinearLayout>
+</LinearLayout>

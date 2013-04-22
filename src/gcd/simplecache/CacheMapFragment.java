@@ -207,11 +207,20 @@ public class CacheMapFragment extends Fragment {
   /* Inner classes */
   /* Reacts on touching event on the map objects */
   private class MapItemListener implements ItemizedIconOverlay.OnItemGestureListener<MapObject> {
+    public static final String SEARCH_DLG_TAG = "search dialog";
+    private boolean mTapped = false;
 
     @Override
     public boolean onItemSingleTapUp(int i, MapObject mapObject) {
-      SearchCacheDialog dialog = new SearchCacheDialog();
-      dialog.show(getFragmentManager(), "");
+      if(mTapped)
+        return true;
+      /* Create test cache */
+      Geocache cache = new Geocache();
+
+      SearchCacheDialog dialog = new SearchCacheDialog(cache);
+      dialog.show(getFragmentManager(), SEARCH_DLG_TAG);
+      mTapped = false;
+
       /* Return true to prevent calling this method */
       /* for a second magic item */
       return true;
