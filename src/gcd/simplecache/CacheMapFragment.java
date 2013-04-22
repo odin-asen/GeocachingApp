@@ -201,12 +201,19 @@ public class CacheMapFragment extends Fragment {
   /** formats the string for the description of a map object */
   private String getCacheMapObjectDescription(Geocache geocache) {
     return geocache.getId()+" - "+geocache.getOwner()+"\n"
+        +"Size: "+geocache.getSize()+"\n"
         +"Difficulty: "+geocache.getDifficulty()+"\n"
         +"Terrain: "+geocache.getTerrain();
   }
 
   private void refreshRoute() {
+    final List<MapObject> objectList = new ArrayList<MapObject>(1);
+    objectList.add(mDestination);
 
+    /* add overlay to the map */
+    mAimOverlay = new ItemizedOverlayWithFocus<MapObject>(
+        getActivity(), objectList, new MapItemListener());
+    mMapView.getOverlayManager().add(mAimOverlay);
   }
 
   /*       End       */
@@ -233,8 +240,21 @@ public class CacheMapFragment extends Fragment {
    * @param destination New destination point.
    */
   public void setDestination(Geocache destination) {
-    mDestination.setGeocachingPoint(destination.getPoint());
-    refreshRoute();
+    mDestination = new MapObject(
+        destination.getName(),
+        getCacheMapObjectDescription(destination),
+        new GeoCoordinateConverter().geocachingToGeoPoint(
+            destination.getPoint()));
+    mDestination.setMarker(getActivity().getResources().getDrawable(R.drawable.goal_flag));
+
+    if(mNavigationEnabled) {
+      mMapView.getOverlayManager().remove(mCacheOverlay);
+      refreshRoute();
+    } else {
+      mMapView.getOverlayManager().remove(mAimOverlay);
+    }
+
+    mMapView.postInvalidate();
   }
 
   /*       End         */
