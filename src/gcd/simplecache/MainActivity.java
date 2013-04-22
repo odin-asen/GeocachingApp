@@ -12,6 +12,9 @@ import android.support.v4.app.FragmentTabHost;
 import android.util.Log;
 import android.view.Menu;
 import android.widget.TabHost;
+import gcd.simplecache.business.geocaching.Geocache;
+import gcd.simplecache.dto.geocache.DTOGeocache;
+import gcd.simplecache.dto.geocache.DTOLocation;
 
 public class MainActivity extends FragmentActivity implements IntentActions {
   /* TabSpec IDs */
@@ -81,21 +84,24 @@ public class MainActivity extends FragmentActivity implements IntentActions {
 
       /* process intent action */
       if (action.equals(ACTION_ID_GPS)){
-				Bundle extras = intent.getExtras();
-				Double lat = extras.getDouble("lat");
-				Double lon = extras.getDouble("lon");
-        changeLocation(lat, lon);
+        changeLocation(intent);
         Log.d("Loc","Changed");
 			} else if (action.equals(ACTION_ID_COMPASS)) {
 				Log.d("Sensor", "Changed");
 			} else if (action.equals(ACTION_ID_NAVIGATION)) {
+        String destination = changeNavigation(intent);
+        Log.d("Navigation", "Changed to "+destination);
+      } else if (action.equals(ACTION_ID_DESCRIPTION)) {
 
       }
 		}
 
     /* update compass and map for location change */
-    private void changeLocation(Double lat, Double lon) {
+    private void changeLocation(Intent intent) {
       final String currentTabTag = mTabHost.getCurrentTabTag();
+      final Bundle extras = intent.getExtras();
+      final Double lat = extras.getDouble("lat");
+      final Double lon = extras.getDouble("lon");
 
       if (currentTabTag.equals(TAG_TS_COMPASS)) {
         CompassFragment compass = (CompassFragment) getSupportFragmentManager().findFragmentByTag(TAG_TS_COMPASS);
@@ -107,6 +113,30 @@ public class MainActivity extends FragmentActivity implements IntentActions {
         location.setLongitude(lon);
         map.updateUserPosition(location);
       }
+    }
+
+    /* update compass and map for navigation change */
+    /* returns a string representation of the destination */
+    private String changeNavigation(Intent intent) {
+      final String currentTabTag = mTabHost.getCurrentTabTag();
+
+      /* get navigation properties */
+      final Bundle extras = intent.getExtras();
+      final boolean enabled = extras.getBoolean(NAVIGATION_ENABLED);
+      final DTOGeocache destination =
+          (DTOGeocache) extras.getSerializable(NAVIGATION_DESTINATION);
+
+      if (currentTabTag.equals(TAG_TS_COMPASS)) {
+        //Do compass related stuff
+      } else if(currentTabTag.equals(TAG_TS_MAP)) {
+        CacheMapFragment map = (CacheMapFragment) getSupportFragmentManager().findFragmentByTag(TAG_TS_MAP);
+        map.setNavigationEnabled(enabled);
+        map.setDestination(Geocache.toGeocache(destination));
+      }
+
+      if(destination != null && destination.location != null)
+        return destination.location.toString();
+      else return new DTOLocation(0.0,0.0).toString();
     }
   }
 }

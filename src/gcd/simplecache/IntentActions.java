@@ -17,7 +17,7 @@ public interface IntentActions {
   String ACTION_ID_NAVIGATION = "SetNavigationMode";
   /** boolean */
   String NAVIGATION_ENABLED = "enabled";
-  /** {@link gcd.simplecache.dto.GeocachingPoint} */
+  /** {@link gcd.simplecache.dto.geocache.DTOGeocache} */
   String NAVIGATION_DESTINATION = "destination";
 
   /* Show geocache description constants */

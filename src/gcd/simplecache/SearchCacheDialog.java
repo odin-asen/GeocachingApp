@@ -73,7 +73,7 @@ public class SearchCacheDialog extends DialogFragment implements IntentActions {
       /* enable navigation to search for the cache */
       Intent navigationAction = new Intent(ACTION_ID_NAVIGATION);
       navigationAction.putExtra(NAVIGATION_ENABLED, true);
-      navigationAction.putExtra(NAVIGATION_DESTINATION, mGeocache.getPoint());
+      navigationAction.putExtra(NAVIGATION_DESTINATION, Geocache.toDTO(mGeocache));
       getActivity().getApplicationContext().sendBroadcast(navigationAction);
     }
   }

@@ -39,6 +39,7 @@ public class CacheMapFragment extends Fragment {
   private MapView mMapView;
   private MapController mController;
   private boolean mNavigationEnabled;
+  private Geocache mDestination;
 
   /* Map overlay variables */
   private ItemizedIconOverlay<MapObject> mUserOverlay;
@@ -202,6 +203,10 @@ public class CacheMapFragment extends Fragment {
 
   public boolean isNavigationEnabled() {
     return mNavigationEnabled;
+  }
+
+  public void setDestination(Geocache destination) {
+    mDestination = destination;
   }
 
   /* Inner classes */

@@ -134,4 +134,8 @@ public class Geocache {
 
     return geocache;
   }
+
+  public static DTOGeocache toDTO(Geocache geocache) {
+    return null;  //To change body of created methods use File | Settings | File Templates.
+  }
 }
