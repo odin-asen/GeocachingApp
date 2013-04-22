@@ -5,7 +5,6 @@ import android.app.Dialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
-import gcd.simplecache.R;
 
 /**
  * <p/>
@@ -15,20 +14,35 @@ import gcd.simplecache.R;
 public class SearchCacheDialog extends DialogFragment {
   @Override
   public Dialog onCreateDialog(Bundle savedInstanceState) {
-    // Use the Builder class for convenient dialog construction
     AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-    builder.setMessage(R.string.dialog_search_cache).setPositiveButton(
-        R.string.search_cache, new DialogInterface.OnClickListener() {
-      public void onClick(DialogInterface dialog, int id) {
-        // FIRE ZE MISSILES!
-      }
-    })
-        .setNegativeButton("He-eh!", new DialogInterface.OnClickListener() {
-          public void onClick(DialogInterface dialog, int id) {
-            // User cancelled the dialog
-          }
-        });
-    // Create the AlertDialog object and return it
+    builder.setMessage(R.string.dialog_search_cache);
+
+    /* Add buttons */
+    builder.setPositiveButton(R.string.button_search_cache, new SearchListener());
+    builder.setNegativeButton(R.string.button_cancel, new CancelListener());
+    builder.setNeutralButton(R.string.button_display_description, new DescriptionListener());
+
     return builder.create();
+  }
+
+  /***********************************/
+  /* Listener for the dialog buttons */
+
+  private class SearchListener implements DialogInterface.OnClickListener {
+    public void onClick(DialogInterface dialog, int id) {
+      // FIRE ZE MISSILES!
+    }
+  }
+
+  private class CancelListener implements DialogInterface.OnClickListener {
+    public void onClick(DialogInterface dialog, int id) {
+      // FIRE ZE MISSILES!
+    }
+  }
+
+  private class DescriptionListener implements DialogInterface.OnClickListener {
+    public void onClick(DialogInterface dialog, int id) {
+      // FIRE ZE MISSILES!
+    }
   }
 }

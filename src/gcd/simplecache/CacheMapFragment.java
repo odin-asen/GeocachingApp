@@ -90,7 +90,7 @@ public class CacheMapFragment extends Fragment {
 
     /* add overlay to the map */
     mUserOverlay = new ItemizedOverlayWithFocus<MapObject>(
-        getActivity(), objectList, null);
+        getActivity(), objectList, new MapItemListener());
     mUserOverlay.addItem(userObject);
     mMapView.getOverlayManager().add(mUserOverlay);
 
@@ -138,7 +138,12 @@ public class CacheMapFragment extends Fragment {
     mController.setZoom(mLastZoomLevel);
     mController.setCenter(mLastPoint);
 
-    mMapView.invalidate();
+//    mMapView.invalidate();
+    /* Test code */
+    Location location = new Location("Test");
+    location.setLatitude(45.0);
+    location.setLongitude(9.0);
+    updateUserPosition(location);
   }
 
   @Override
@@ -180,7 +185,7 @@ public class CacheMapFragment extends Fragment {
     }
   }
 
-  /* formats the string for the description of a map object */
+  /** formats the string for the description of a map object */
   private String getCacheMapObjectDescription(Geocache geocache) {
     return geocache.getId()+" - "+geocache.getOwner()+"\n"
         +"Difficulty: "+geocache.getDifficulty()+"\n"
@@ -202,9 +207,14 @@ public class CacheMapFragment extends Fragment {
   /* Inner classes */
   /* Reacts on touching event on the map objects */
   private class MapItemListener implements ItemizedIconOverlay.OnItemGestureListener<MapObject> {
+
     @Override
     public boolean onItemSingleTapUp(int i, MapObject mapObject) {
-      return false;
+      SearchCacheDialog dialog = new SearchCacheDialog();
+      dialog.show(getFragmentManager(), "");
+      /* Return true to prevent calling this method */
+      /* for a second magic item */
+      return true;
     }
 
     @Override
