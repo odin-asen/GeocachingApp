@@ -7,7 +7,11 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import gcd.simplecache.business.geocaching.ComOpencachingService;
 import gcd.simplecache.business.geocaching.Geocache;
+import gcd.simplecache.business.geocaching.GeocachingService;
+import gcd.simplecache.business.geocaching.request.ComOpencachingRequestCollection;
+import gcd.simplecache.business.geocaching.request.com.opencaching.Center;
 import gcd.simplecache.business.map.GeoCoordinateConverter;
 import gcd.simplecache.business.map.MapObject;
 import org.osmdroid.events.DelayedMapListener;
@@ -31,6 +35,7 @@ import java.util.List;
 public class CacheMapFragment extends Fragment {
   private static final String LAST_POINT = "point";
   private static final String LAST_ZOOM = "zoom";
+  private static final String LOG_TAG = CacheMapFragment.class.getName();
 
   /* saved values */
   private GeoPoint mLastPoint;
@@ -216,6 +221,25 @@ public class CacheMapFragment extends Fragment {
     mMapView.getOverlayManager().add(mAimOverlay);
   }
 
+  /* Fetches cache information from the cache */
+  /* database and refreshes the map */
+  private void updateGeocacheMap(GeoPoint mapCentre) {
+    final GeocachingService service = new ComOpencachingService();
+    final ComOpencachingRequestCollection collection =
+        new ComOpencachingRequestCollection();
+    final GeoCoordinateConverter converter = new GeoCoordinateConverter();
+
+    collection.addParameter(new Center(
+        (float) converter.microToDecimalDegree(mapCentre.getLatitudeE6()),
+        (float) converter.microToDecimalDegree(mapCentre.getLongitudeE6())));
+    Log.d(LOG_TAG, "start fetching: "+collection.getRequestParameter());
+    /* service must be called in another thread than main activity */
+    List<Geocache> list = service.fetchDatabase(collection);
+    Log.d(LOG_TAG, "fetched...start updating");
+    updateGeocacheObjects(list);
+    Log.d(LOG_TAG, "finished update");
+  }
+
   /*       End       */
   /*******************/
 
@@ -245,6 +269,7 @@ public class CacheMapFragment extends Fragment {
         getCacheMapObjectDescription(destination),
         new GeoCoordinateConverter().geocachingToGeoPoint(
             destination.getPoint()));
+    mDestination.setGeocache(destination);
     mDestination.setMarker(getActivity().getResources().getDrawable(R.drawable.goal_flag));
 
     if(mNavigationEnabled) {
@@ -292,15 +317,20 @@ public class CacheMapFragment extends Fragment {
 
   private class ScrollZoomListener implements MapListener {
     public boolean onScroll(ScrollEvent scrollEvent) {
-      if(mNavigationEnabled)
-        ;//Suppress database fetching;
       mLastPoint = (GeoPoint) mMapView.getMapCenter();
+      if(!mNavigationEnabled) {
+        /* Run a thread to fetch the cache database */
+        new Thread(new Runnable() {
+          public void run() {
+            updateGeocacheMap(mLastPoint);
+          }
+        }).start();
+      }
+
       return true;
     }
 
     public boolean onZoom(ZoomEvent zoomEvent) {
-      if(mNavigationEnabled)
-        ;//Suppress database fetching;
       mLastZoomLevel = zoomEvent.getZoomLevel();
       return true;
     }
