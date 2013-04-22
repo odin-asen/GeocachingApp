@@ -6,6 +6,8 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.view.LayoutInflater;
+import android.view.View;
+import android.widget.TextView;
 import gcd.simplecache.business.geocaching.Geocache;
 
 /**
@@ -36,7 +38,11 @@ public class SearchCacheDialog extends DialogFragment {
     /* Inflate cache information layout and pass null */
     /* for a parent because its going in the dialog layout */
     LayoutInflater inflater = getActivity().getLayoutInflater();
-    builder.setView(inflater.inflate(R.layout.dialog_search_cache, null));
+    View cacheView = inflater.inflate(R.layout.dialog_search_cache, null);
+
+    fillViewContent(cacheView);
+    builder.setView(cacheView);
+
 
     /* Add buttons */
     builder.setPositiveButton(R.string.button_search_cache, new SearchListener());
@@ -46,12 +52,23 @@ public class SearchCacheDialog extends DialogFragment {
     return builder.create();
   }
 
+  private void fillViewContent(View view) {
+    /* set text views */
+    TextView textView = (TextView) view.findViewById(R.id.cache_size);
+    textView.setText(Float.toString(geocache.getSize()));
+    textView = (TextView) view.findViewById(R.id.cache_difficulty);
+    textView.setText(Float.toString(geocache.getDifficulty()));
+    textView = (TextView) view.findViewById(R.id.cache_terrain);
+    textView.setText(Float.toString(geocache.getTerrain()));
+    textView = (TextView) view.findViewById(R.id.cache_code);
+    textView.setText(geocache.getId());
+  }
+
   /***********************************/
   /* Listener for the dialog buttons */
 
   private class SearchListener implements DialogInterface.OnClickListener {
     public void onClick(DialogInterface dialog, int id) {
-      id = id+1;
     }
   }
 
@@ -63,7 +80,6 @@ public class SearchCacheDialog extends DialogFragment {
 
   private class DescriptionListener implements DialogInterface.OnClickListener {
     public void onClick(DialogInterface dialog, int id) {
-      id = id+1;
     }
   }
 }
