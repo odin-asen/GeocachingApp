@@ -1,6 +1,6 @@
 package gcd.simplecache.business.map;
 
-import gcd.simplecache.dto.GeocachingPoint;
+import gcd.simplecache.business.geocaching.GeocachingPoint;
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.overlay.OverlayItem;
 

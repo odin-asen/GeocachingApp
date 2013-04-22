@@ -1,7 +1,6 @@
 package gcd.simplecache.business.geocaching;
 
 import gcd.simplecache.business.map.GeoCoordinateConverter;
-import gcd.simplecache.dto.GeocachingPoint;
 import gcd.simplecache.dto.geocache.DTOGeocache;
 import org.osmdroid.util.GeoPoint;
 
@@ -38,8 +37,15 @@ public class Geocache {
     return mPoint;
   }
 
+  /**
+   * Set the point value by creating a new instance for the surpassed value.
+   * If null will be surpassed the default constructor will be called.
+   * @param point New geocaching point.
+   */
   public void setPoint(GeocachingPoint point) {
-    this.mPoint = point;
+    if(point == null)
+      this.mPoint = new GeocachingPoint();
+    else this.mPoint = new GeocachingPoint(point);
   }
 
   public float getDifficulty() {

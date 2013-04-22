@@ -1,9 +1,10 @@
 package gcd.simplecache.business.map;
 
 import android.location.Location;
-import gcd.simplecache.dto.GeocachingPoint;
-import gcd.simplecache.dto.Orientation;
+import gcd.simplecache.business.geocaching.GeocachingPoint;
 import org.osmdroid.util.GeoPoint;
+
+import static gcd.simplecache.business.geocaching.GeocachingPoint.Orientation;
 
 /**
  * This class converts some representations of geo coordinates to others.
@@ -90,22 +91,22 @@ public class GeoCoordinateConverter {
   private void getOrientation(GeocachingPoint point, double latitude, double longitude) {
     /* positive latitude is north, negative south orientation */
     if(latitude < 0)
-      point.latOrientation = Orientation.SOUTH;
-    else point.latOrientation = Orientation.NORTH;
+      point.setLatOrientation(Orientation.SOUTH);
+    else point.setLatOrientation(Orientation.NORTH);
     /* positive longitude is east, negative west orientation */
     if(longitude < 0)
-      point.longOrientation = Orientation.WEST;
-    else point.longOrientation = Orientation.EAST;
+      point.setLonOrientation(Orientation.WEST);
+    else point.setLonOrientation(Orientation.EAST);
   }
 
   private void getPositiveCoordinates(GeocachingPoint point, int decimalPlace,
                                       double latitude, double longitude) {
-    point.latDegrees = (int) Math.abs(latitude);
-    point.latMinutes = Math.abs(roundDecimalPlaces(
-        (latitude - (int) latitude) * 60.0, decimalPlace));
-    point.longDegrees = (int) Math.abs(longitude);
-    point.longMinutes = Math.abs(roundDecimalPlaces(
-        (longitude - (int) longitude) * 60.0, decimalPlace));
+    point.setLatDegrees((int) Math.abs(latitude));
+    point.setLatMinutes(Math.abs(roundDecimalPlaces(
+        (latitude - (int) latitude) * 60.0, decimalPlace)));
+    point.setLonDegrees((int) Math.abs(longitude));
+    point.setLonMinutes(Math.abs(roundDecimalPlaces(
+        (longitude - (int) longitude) * 60.0, decimalPlace)));
   }
 
   /**
@@ -118,11 +119,11 @@ public class GeoCoordinateConverter {
    * @return An array with the coordinate values.
    */
   private double[] getGeoDecimal(GeocachingPoint point) {
-    double latitude = point.latDegrees+(point.latMinutes/60.0);
-    double longitude = point.longDegrees+(point.longMinutes/60.0);
-    if(!point.latOrientation.equals(Orientation.NORTH))
+    double latitude = point.getLatDegrees()+(point.getLatMinutes()/60.0);
+    double longitude = point.getLonDegrees()+(point.getLonMinutes()/60.0);
+    if(!point.getLatOrientation().equals(Orientation.NORTH))
       latitude = -latitude;
-    if(!point.longOrientation.equals(Orientation.EAST))
+    if(!point.getLonOrientation().equals(Orientation.EAST))
       longitude = -longitude;
 
     return new double[]{latitude, longitude};
