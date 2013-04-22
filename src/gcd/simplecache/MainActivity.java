@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.drawable.Drawable;
+import android.location.Location;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTabHost;
@@ -20,6 +21,7 @@ public class MainActivity extends FragmentActivity {
   private static final String ACTION_ID_COMPASS = "SensorChanged";  
   
   private FragmentTabHost mTabHost;
+  
   private GPSService gps;
   private CompassService compass;
   private MessageReceiver receiver;
@@ -80,11 +82,10 @@ public class MainActivity extends FragmentActivity {
 		public void onReceive(Context context, Intent intent) {
 			if (intent.getAction() == ACTION_ID_GPS){
 				Bundle extras = intent.getExtras();
-				Double lat = extras.getDouble("lat");
-				Double lon = extras.getDouble("lon");
+				Location loc = extras.getParcelable("loc");
 				if (mTabHost.getCurrentTabTag() == ID_TS_COMPASS) {
 					CompassFragment compass = (CompassFragment) getSupportFragmentManager().findFragmentByTag(ID_TS_COMPASS);
-					compass.update(lat, lon);
+					compass.update(loc);
 				}
 				Log.d("Loc","Changed");
 			} if (intent.getAction() == ACTION_ID_COMPASS) {	
