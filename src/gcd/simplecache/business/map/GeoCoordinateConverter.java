@@ -46,6 +46,11 @@ public class GeoCoordinateConverter {
     return point;
   }
 
+  /**
+   * Converts a GeocachingPoint object to a GeoPoint object.
+   * @param point Object to convert.
+   * @return A GeoPoint object containing the values for latitude and longitude.
+   */
   public GeoPoint geocachingToGeoPoint(GeocachingPoint point) {
     double[] geoDecimal = getGeoDecimal(point);
 
@@ -75,7 +80,7 @@ public class GeoCoordinateConverter {
    * Converts the coordinates from {@code latitude} and {@code longitude} to
    * a GeocachingPoint object. The parameters must be in decimal degree format.
    * Otherwise a weird result might be return.
-   * The precision of the GeocachingObject is three decimal places for the
+   * The precision of the GeocachingObject is {@value #DECIMAL_PLACE} decimal places for the
    * latitude and longitude minute values. All values are positive.
    * @param latitude Latitude value of the coordinate.
    * @param longitude Longitude value of the coordinate.
@@ -86,6 +91,26 @@ public class GeoCoordinateConverter {
     getPositiveCoordinates(point, DECIMAL_PLACE, latitude, longitude);
     getOrientation(point, latitude, longitude);
     return point;
+  }
+
+  /**
+   * Returns the geo decimal representation of the latitude and
+   * longitude values as an array.<br/>
+   * North latitudes are positive and south latitudes are negative values.
+   * East longitudes are positive and west longitudes are negative values.
+   * The first index is the latitude, the second the longitude value.
+   * @param point GeocachingPoint to convert.
+   * @return An array with the coordinate values.
+   */
+  public double[] getGeoDecimal(GeocachingPoint point) {
+    double latitude = point.getLatDegrees()+(point.getLatMinutes()/60.0);
+    double longitude = point.getLonDegrees()+(point.getLonMinutes()/60.0);
+    if(!point.getLatOrientation().equals(Orientation.NORTH))
+      latitude = -latitude;
+    if(!point.getLonOrientation().equals(Orientation.EAST))
+      longitude = -longitude;
+
+    return new double[]{latitude, longitude};
   }
 
   private void getOrientation(GeocachingPoint point, double latitude, double longitude) {
@@ -107,26 +132,6 @@ public class GeoCoordinateConverter {
     point.setLonDegrees((int) Math.abs(longitude));
     point.setLonMinutes(Math.abs(roundDecimalPlaces(
         (longitude - (int) longitude) * 60.0, decimalPlace)));
-  }
-
-  /**
-   * Returns the geo decimal representation of the latitude and
-   * longitude values as an array.<br/>
-   * North latitudes are positive and south latitudes are negative values.
-   * East longitudes are positive and west longitudes are negative values.
-   * The first index is the latitude, the second the longitude value.
-   * @param point GeocachingPoint to convert.
-   * @return An array with the coordinate values.
-   */
-  private double[] getGeoDecimal(GeocachingPoint point) {
-    double latitude = point.getLatDegrees()+(point.getLatMinutes()/60.0);
-    double longitude = point.getLonDegrees()+(point.getLonMinutes()/60.0);
-    if(!point.getLatOrientation().equals(Orientation.NORTH))
-      latitude = -latitude;
-    if(!point.getLonOrientation().equals(Orientation.EAST))
-      longitude = -longitude;
-
-    return new double[]{latitude, longitude};
   }
 
   /* Rounds a number to a specified decimal place. The maximum precision is */

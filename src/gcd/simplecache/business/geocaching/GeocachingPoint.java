@@ -70,6 +70,11 @@ public class GeocachingPoint implements Serializable {
   /*     End      */
   /****************/
 
+  /***********/
+  /* Methods */
+  /*   End   */
+  /***********/
+
   /*******************/
   /* Private Methods */
 

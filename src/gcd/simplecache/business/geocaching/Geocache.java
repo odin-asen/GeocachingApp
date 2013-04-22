@@ -1,7 +1,9 @@
 package gcd.simplecache.business.geocaching;
 
 import gcd.simplecache.business.map.GeoCoordinateConverter;
+import gcd.simplecache.dto.geocache.DTOCacheOwner;
 import gcd.simplecache.dto.geocache.DTOGeocache;
+import gcd.simplecache.dto.geocache.DTOLocation;
 
 /**
  * This class represents a geocache.
@@ -54,14 +56,16 @@ public class Geocache {
     if(dto != null) {
       final GeoCoordinateConverter converter = new GeoCoordinateConverter();
       geocache.setPoint(converter.decimalDegreesToGeocaching(dto.location.latitude, dto.location.longitude));
+
       geocache.setName(dto.name);
+
       if(dto.owner != null)
         geocache.setOwner(dto.owner.toString());
+
       geocache.setDescription(dto.description);
       geocache.setHint(dto.hint);
       geocache.setDifficulty(dto.difficulty);
       geocache.setTerrain(dto.terrain);
-      geocache.setAwesomeness(0.0f);
       geocache.setSize(dto.size);
       geocache.setType(dto.type);
     }
@@ -70,7 +74,24 @@ public class Geocache {
   }
 
   public static DTOGeocache toDTO(Geocache geocache) {
-    return null;  //Todo convert Geocache to DTOGeocache properly
+    final DTOGeocache dto = new DTOGeocache();
+
+    if(geocache != null) {
+      final GeoCoordinateConverter converter = new GeoCoordinateConverter();
+      double[] coordinates = converter.getGeoDecimal(geocache.mPoint);
+      dto.location = new DTOLocation(coordinates[0], coordinates[1]);
+
+      dto.name = geocache.mName;
+      dto.owner = DTOCacheOwner.parseString(geocache.mOwner);
+      dto.description = geocache.mDescription;
+      dto.hint = geocache.mHint;
+      dto.difficulty = geocache.mDifficulty;
+      dto.terrain = geocache.mTerrain;
+      dto.size = geocache.mSize;
+      dto.type = geocache.mType;
+    }
+
+    return dto;
   }
 
   /*   End   */
