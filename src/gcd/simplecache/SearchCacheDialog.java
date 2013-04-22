@@ -3,6 +3,7 @@ package gcd.simplecache;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.view.LayoutInflater;
@@ -17,7 +18,7 @@ import gcd.simplecache.business.geocaching.Geocache;
  * Author: Timm Herrmann<br/>
  * Date: 22.04.13
  */
-public class SearchCacheDialog extends DialogFragment {
+public class SearchCacheDialog extends DialogFragment implements IntentActions {
 
   private Geocache geocache;
 
@@ -69,6 +70,11 @@ public class SearchCacheDialog extends DialogFragment {
 
   private class SearchListener implements DialogInterface.OnClickListener {
     public void onClick(DialogInterface dialog, int id) {
+      /* enable navigation to search for the cache */
+      Intent navigationAction = new Intent(ACTION_ID_NAVIGATION);
+      navigationAction.putExtra(NAVIGATION_ENABLED, true);
+      navigationAction.putExtra(NAVIGATION_DESTINATION, geocache.getPoint());
+      getActivity().getApplicationContext().sendBroadcast(navigationAction);
     }
   }
 
@@ -80,6 +86,14 @@ public class SearchCacheDialog extends DialogFragment {
 
   private class DescriptionListener implements DialogInterface.OnClickListener {
     public void onClick(DialogInterface dialog, int id) {
+      /* show description of the cache */
+      Intent navigationAction = new Intent(ACTION_ID_DESCRIPTION);
+      navigationAction.putExtra(DESCRIPTION_ID, geocache.getId());
+      navigationAction.putExtra(DESCRIPTION_NAME, geocache.getName());
+//      navigationAction.putExtra(DESCRIPTION_HINT, geocache.getHint());
+      navigationAction.putExtra(DESCRIPTION_OWNER, geocache.getOwner());
+      navigationAction.putExtra(DESCRIPTION_TEXT, geocache.getDescription());
+      getActivity().getApplicationContext().sendBroadcast(navigationAction);
     }
   }
 }

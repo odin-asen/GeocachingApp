@@ -1,5 +1,7 @@
 package gcd.simplecache.dto;
 
+import java.io.Serializable;
+
 /**
  * This class represents a geo coordinate. An object has the variables that are
  * used in a common format for geocaching.
@@ -10,7 +12,7 @@ package gcd.simplecache.dto;
  * Author: Timm Herrmann
  * Date: 13.04.2013
  */
-public class GeocachingPoint {
+public class GeocachingPoint implements Serializable {
   public Orientation latOrientation;
   public int latDegrees;
   public double latMinutes;
