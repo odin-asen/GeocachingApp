@@ -7,16 +7,10 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Paint;
-import android.graphics.Point;
 import android.graphics.Rect;
 import android.location.Location;
 import android.util.AttributeSet;
-import android.view.Display;
 import android.view.View;
-import android.view.ViewGroup;
-import android.view.WindowManager;
-import android.widget.Button;
-import android.widget.LinearLayout;
 
 public class CompassView extends View {
 

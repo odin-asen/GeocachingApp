@@ -39,8 +39,8 @@ public class MainActivity extends FragmentActivity implements IntentActions {
     mTabHost.setup(this, getSupportFragmentManager(), R.id.realtabcontent);
 
     /* Add map and compass tabs */
-    addTab(ID_TS_MAP, this.getString(R.string.tab_title_map), null, CacheMapFragment.class);
-    addTab(ID_TS_COMPASS, this.getString(R.string.tab_title_compass), null, CompassFragment.class);
+    addTab(TAG_TS_MAP, this.getString(R.string.tab_title_map), null, CacheMapFragment.class);
+    addTab(TAG_TS_COMPASS, this.getString(R.string.tab_title_compass), null, CompassFragment.class);
 
     receiver = new MessageReceiver();
     receiverRegistered = false;
@@ -61,7 +61,10 @@ public class MainActivity extends FragmentActivity implements IntentActions {
   	protected void onResume() {
  		super.onResume();
  		if(!receiverRegistered) {
-  			registerReceiver(receiver, new IntentFilter("LocationChanged"));
+  			registerReceiver(receiver, new IntentFilter(ACTION_ID_GPS));
+  			registerReceiver(receiver, new IntentFilter(ACTION_ID_COMPASS));
+  			registerReceiver(receiver, new IntentFilter(ACTION_ID_DESCRIPTION));
+  			registerReceiver(receiver, new IntentFilter(ACTION_ID_NAVIGATION));
   		}
   	}
 

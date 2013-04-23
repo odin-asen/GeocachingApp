@@ -22,20 +22,31 @@ public final class R {
     }
     public static final class drawable {
         public static final int arrow=0x7f020000;
-        public static final int ic_launcher=0x7f020001;
+        public static final int goal_flag=0x7f020001;
+        public static final int ic_launcher=0x7f020002;
+        public static final int position_cross=0x7f020003;
+        public static final int treasure=0x7f020004;
     }
     public static final class id {
-        public static final int action_settings=0x7f080005;
-        public static final int cachemap=0x7f080001;
-        public static final int compassView1=0x7f080002;
-        public static final int compassView2=0x7f080003;
-        public static final int compassView3=0x7f080004;
+        public static final int action_settings=0x7f08000c;
+        public static final int cache_code=0x7f080002;
+        public static final int cache_difficulty=0x7f080004;
+        public static final int cache_map_view=0x7f080008;
+        public static final int cache_size=0x7f080003;
+        public static final int cache_terrain=0x7f080005;
+        public static final int cache_type=0x7f080001;
+        public static final int compassView1=0x7f080009;
+        public static final int compassView2=0x7f08000a;
+        public static final int compassView3=0x7f08000b;
+        public static final int map_progress=0x7f080006;
+        public static final int map_progress_text=0x7f080007;
         public static final int realtabcontent=0x7f080000;
     }
     public static final class layout {
         public static final int activity_main=0x7f030000;
-        public static final int fragment_cachemap=0x7f030001;
-        public static final int fragment_compass=0x7f030002;
+        public static final int dialog_search_cache=0x7f030001;
+        public static final int fragment_cachemap=0x7f030002;
+        public static final int fragment_compass=0x7f030003;
     }
     public static final class menu {
         public static final int main=0x7f070000;
@@ -43,6 +54,21 @@ public final class R {
     public static final class string {
         public static final int action_settings=0x7f050001;
         public static final int app_name=0x7f050000;
+        public static final int button_cancel=0x7f050008;
+        public static final int button_display_description=0x7f050007;
+        /**  dialog labels 
+         */
+        public static final int button_search_cache=0x7f050006;
+        public static final int cache_difficulty_terrain=0x7f05000a;
+        public static final int cache_size=0x7f050009;
+        public static final int map_user_here=0x7f050005;
+        /**  map strings 
+         */
+        public static final int map_user_title=0x7f050004;
+        public static final int progress_fetch_cache=0x7f05000c;
+        /**  progress labels 
+         */
+        public static final int progress_ready=0x7f05000b;
         public static final int tab_title_compass=0x7f050003;
         public static final int tab_title_map=0x7f050002;
     }

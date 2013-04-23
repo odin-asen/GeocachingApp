@@ -1,5 +1,6 @@
 package gcd.simplecache.business.geocaching.request.com.opencaching;
 
+import android.text.TextUtils;
 import gcd.simplecache.business.geocaching.request.ComOpencachingParameter;
 
 /**
@@ -26,7 +27,7 @@ public class CacheID extends ComOpencachingParameter {
   private void setValue(String[] ids) {
     String result = "";
     for (String id : ids) {
-      if(!result.isEmpty())
+      if(!TextUtils.isEmpty(result))
         result = result+SEPARATOR;
       result = result+id;
     }

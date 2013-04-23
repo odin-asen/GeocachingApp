@@ -1,5 +1,6 @@
 package gcd.simplecache.data;
 
+import android.text.TextUtils;
 import android.util.Log;
 import gcd.simplecache.dto.geocache.DTOCacheOwner;
 import gcd.simplecache.dto.geocache.DTOGeocache;
@@ -58,7 +59,7 @@ public class ComOpencachingReader implements JSONReader, GPXReader {
     String line;
 
     while ((line = reader.readLine()) != null) {
-      if(!result.isEmpty())
+      if(!TextUtils.isEmpty(result))
         result = result + "\n";
       result = result + line;
     }
