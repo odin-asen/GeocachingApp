@@ -136,14 +136,20 @@ public class ComOpencachingService extends GeocachingService {
   }
 
   /** Read a json string and store it to a list */
-  private List<Geocache> readJSONResultString(ComOpencachingReader reader, String result) {
-    List<Geocache> geocaches;
+  private List<Geocache> readJSONResultString(ComOpencachingReader reader, String result)
+    throws IOException {
     final List<DTOGeocache> dtoGeocaches = reader.readManyJSON(result);
-    geocaches = new ArrayList<Geocache>(dtoGeocaches.size());
+
+    /* could not read json file */
+    if(dtoGeocaches == null)
+      throw new IOException("Could not read json file");
+
+    List<Geocache> geocaches = new ArrayList<Geocache>(dtoGeocaches.size());
 
     for (DTOGeocache dto : dtoGeocaches) {
       geocaches.add(Geocache.toGeocache(dto));
     }
+
     return geocaches;
   }
 

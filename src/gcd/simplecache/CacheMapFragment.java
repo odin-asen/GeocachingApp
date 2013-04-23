@@ -1,5 +1,6 @@
 package gcd.simplecache;
 
+import android.app.Activity;
 import android.location.Location;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -7,11 +8,13 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 import gcd.simplecache.business.geocaching.ComOpencachingService;
 import gcd.simplecache.business.geocaching.Geocache;
 import gcd.simplecache.business.geocaching.GeocachingService;
 import gcd.simplecache.business.geocaching.request.ComOpencachingRequestCollection;
-import gcd.simplecache.business.geocaching.request.com.opencaching.Center;
+import gcd.simplecache.business.geocaching.request.com.opencaching.BBox;
+import gcd.simplecache.business.geocaching.request.com.opencaching.Limit;
 import gcd.simplecache.business.map.GeoCoordinateConverter;
 import gcd.simplecache.business.map.MapObject;
 import org.osmdroid.events.DelayedMapListener;
@@ -19,6 +22,7 @@ import org.osmdroid.events.MapListener;
 import org.osmdroid.events.ScrollEvent;
 import org.osmdroid.events.ZoomEvent;
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
+import org.osmdroid.util.BoundingBoxE6;
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.MapController;
 import org.osmdroid.views.MapView;
@@ -36,6 +40,8 @@ public class CacheMapFragment extends Fragment {
   private static final String LAST_POINT = "point";
   private static final String LAST_ZOOM = "zoom";
   private static final String LOG_TAG = CacheMapFragment.class.getName();
+  private static final int ZOOM_LEVEL_UPDATE_LIMIT = 8;
+  private static final int FETCH_LIMIT = 500;
 
   /* saved values */
   private GeoPoint mLastPoint;
@@ -223,21 +229,41 @@ public class CacheMapFragment extends Fragment {
    * Fetches cache information from the cache
    * database and refreshes the map.
    */
-  private void updateGeocacheMap(GeoPoint mapCentre) {
+  private synchronized void updateGeocacheMap() {
     final GeocachingService service = new ComOpencachingService();
     final ComOpencachingRequestCollection collection =
         new ComOpencachingRequestCollection();
     final GeoCoordinateConverter converter = new GeoCoordinateConverter();
 
-    collection.addParameter(new Center(
-        (float) converter.microToDecimalDegree(mapCentre.getLatitudeE6()),
-        (float) converter.microToDecimalDegree(mapCentre.getLongitudeE6())));
+    final BoundingBoxE6 bbox = mMapView.getProjection().getBoundingBox();
+    collection.addParameter(new BBox(false,
+        (float) converter.microToDecimalDegree(bbox.getLatSouthE6()),
+        (float) converter.microToDecimalDegree(bbox.getLonWestE6()),
+        (float) converter.microToDecimalDegree(bbox.getLatNorthE6()),
+        (float) converter.microToDecimalDegree(bbox.getLonEastE6())));
+    collection.addParameter(new Limit(FETCH_LIMIT));
+
     Log.d(LOG_TAG, "start fetching: "+collection.getRequestParameter());
     /* service must be called in another thread than main activity */
     List<Geocache> list = service.fetchDatabase(collection);
-    Log.d(LOG_TAG, "fetched...start updating");
-    updateGeocacheObjects(list);
-    Log.d(LOG_TAG, "finished update");
+    if(list == null) {
+      Log.d(LOG_TAG, "error fetching");
+      showToastInThread(service.getError(), Toast.LENGTH_LONG);
+    } else {
+      Log.d(LOG_TAG, "fetched...start updating");
+      updateGeocacheObjects(list);
+      Log.d(LOG_TAG, "finished update");
+    }
+  }
+
+  /** Displays a toast in the activity context running in a thread */
+  private void showToastInThread(final String message, final int duration) {
+    final Activity activity = getActivity();
+    activity.runOnUiThread(new Runnable() {
+      public void run() {
+        Toast.makeText(activity.getApplicationContext(), message, duration).show();
+      }
+    });
   }
 
   /*       End       */
@@ -314,21 +340,28 @@ public class CacheMapFragment extends Fragment {
   private class ScrollZoomListener implements MapListener {
     public boolean onScroll(ScrollEvent scrollEvent) {
       mLastPoint = (GeoPoint) mMapView.getMapCenter();
-      if(!mNavigationEnabled) {
-        /* Run a thread to fetch the cache database */
-        new Thread(new Runnable() {
-          public void run() {
-            updateGeocacheMap(mLastPoint);
-          }
-        }).start();
-      }
-
+      mapUpdate(true);
       return true;
     }
 
     public boolean onZoom(ZoomEvent zoomEvent) {
+      final boolean zoomingIn = mLastZoomLevel < zoomEvent.getZoomLevel();
       mLastZoomLevel = zoomEvent.getZoomLevel();
+      mapUpdate(!zoomingIn);
       return true;
+    }
+
+    /** Fetch cache database when allowed */
+    private void mapUpdate(boolean notZoomIn) {
+      if(!mNavigationEnabled && mLastZoomLevel > ZOOM_LEVEL_UPDATE_LIMIT
+          && notZoomIn) {
+        /* Run a thread to fetch the cache database */
+        new Thread(new Runnable() {
+          public void run() {
+            updateGeocacheMap();
+          }
+        }).start();
+      }
     }
   }
 
