@@ -4,6 +4,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.ActivityInfo;
 import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.os.Bundle;
@@ -30,7 +31,8 @@ public class MainActivity extends FragmentActivity {
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-
+    
+    setRequestedOrientation (ActivityInfo.SCREEN_ORIENTATION_PORTRAIT); 
     setContentView(R.layout.activity_main);
     mTabHost = (FragmentTabHost)findViewById(android.R.id.tabhost);
     mTabHost.setup(this, getSupportFragmentManager(), R.id.realtabcontent);

@@ -58,6 +58,7 @@ public class CompassView extends View {
 
 
   private void init() {
+	setBackgroundColor(0xFFFFBB33);
 	paint = new Paint();
     paint.setAntiAlias(true);
     paint.setStrokeWidth(2);
@@ -78,6 +79,7 @@ public class CompassView extends View {
 	//Values for the Compass
     int compassCenterX = getMeasuredWidth() / 2;
     int compassCenterY = getMeasuredHeight() / 4;
+
     float radius = (float) (Math.max(compassCenterX, compassCenterY)* 0.5);
     
     //Measurements for the Compass-characters
@@ -178,5 +180,6 @@ public class CompassView extends View {
 	  return resizedBitmap;
 	   
 	  }
-
+  
+  
 }
