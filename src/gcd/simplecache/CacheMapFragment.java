@@ -36,7 +36,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Map view fragment. This map view shows the caches on a map.
+ * Map view fragment.<br/>
+ * The fragment displays cache map and fetches automatically cache information from
+ * opencaching.com. If it is set, the fragment shows the user's position on the map.
+ * The fragment has a navigation mode. The navigation mode indicates that the user
+ * wants to go to a cache. The map will only display the user icon and the aim icon
+ * with a path to it, when navigation mode is enabled. It will not refresh the cache
+ * icons on the map. In particularly, these icons will be destroyed.
+ * If navigation mode is disabled the cache icons will be refreshed on the map. This
+ * happens also at special conditions. If the zoom level is higher than a specified limit
+ * (you can see a small area on the map) the cache icons will be refreshed when the user
+ * moves the map or zooms out. Nothing happens if the user zooms in.
  */
 public class CacheMapFragment extends Fragment {
   private static final String LAST_POINT = "point";
@@ -127,7 +137,7 @@ public class CacheMapFragment extends Fragment {
    * This method takes a list of cache information and displays it on the map.
    * @param cacheList List with caches to show on the map.
    */
-  public void updateGeocacheObjects(List<Geocache> cacheList) {
+  public void updateCacheOverlay(List<Geocache> cacheList) {
     if(cacheList == null)
       return;
     mMapView.getOverlayManager().remove(mCacheOverlay);
@@ -166,6 +176,7 @@ public class CacheMapFragment extends Fragment {
     mController.setZoom(mLastZoomLevel);
     mController.setCenter(mLastPoint);
 
+    setOverlays();
     mMapView.invalidate();
   }
 
@@ -238,30 +249,44 @@ public class CacheMapFragment extends Fragment {
    * database and refreshes the map.
    */
   private synchronized void updateGeocacheMap() {
-    final GeocachingService service = new ComOpencachingService();
-    final ComOpencachingRequestCollection collection =
-        new ComOpencachingRequestCollection();
-    final GeoCoordinateConverter converter = new GeoCoordinateConverter();
 
-    final BoundingBoxE6 bbox = mMapView.getProjection().getBoundingBox();
-    collection.addParameter(new BBox(false,
-        (float) converter.microToDecimalDegree(bbox.getLatSouthE6()),
-        (float) converter.microToDecimalDegree(bbox.getLonWestE6()),
-        (float) converter.microToDecimalDegree(bbox.getLatNorthE6()),
-        (float) converter.microToDecimalDegree(bbox.getLonEastE6())));
-    collection.addParameter(new Limit(FETCH_LIMIT));
+    /* set up service for database request and fetch data */
+    final CacheDataFetcher fetcher = new CacheDataFetcher().invoke();
+    final List<Geocache> list = fetcher.getList();
+    GeocachingService service = fetcher.getService();
 
-    Log.d(LOG_TAG, "start fetching: "+collection.getRequestParameter());
-    /* service must be called in another thread than main activity */
-    List<Geocache> list = service.fetchDatabase(collection);
-    if(list == null) {
+    if (fetcher.wasSuccessful()) {
+      Log.d(LOG_TAG, "fetched...start updating");
+      updateCacheOverlay(list);
+      Log.d(LOG_TAG, "finished update");
+    } else {
       Log.d(LOG_TAG, "error fetching");
       new ViewInThreadHandler().showToast(service.getError(), Toast.LENGTH_LONG);
-    } else {
-      Log.d(LOG_TAG, "fetched...start updating");
-      updateGeocacheObjects(list);
-      Log.d(LOG_TAG, "finished update");
     }
+  }
+
+  /**
+   * Sets the saved overlay variables on the map.
+   * Depending on the navigation mode it sets specific overlays to null
+   * to save memory.
+   */
+  private void setOverlays() {
+    mMapView.getOverlayManager().remove(mCacheOverlay);
+    mMapView.getOverlayManager().remove(mAimOverlay);
+    mMapView.getOverlayManager().remove(mUserOverlay);
+
+    if(mNavigationEnabled) {
+      mCacheOverlay = null;
+      if(mAimOverlay != null)
+        mMapView.getOverlayManager().add(mAimOverlay);
+    } else {
+      if(mCacheOverlay != null)
+        mMapView.getOverlayManager().add(mCacheOverlay);
+      mAimOverlay = null;
+    }
+
+    if(mUserOverlay != null)
+      mMapView.getOverlayManager().add(mUserOverlay);
   }
 
   /*       End       */
@@ -394,6 +419,52 @@ public class CacheMapFragment extends Fragment {
       });
     }
   }
+
+  /** Fetch geocaching data and make results accessible */
+  private class CacheDataFetcher {
+    private GeocachingService mService;
+    private List<Geocache> mList;
+    private boolean mSuccessful;
+
+    private CacheDataFetcher() {
+      mService = new ComOpencachingService();
+      mList = null;
+      mSuccessful = false;
+    }
+
+    /** prepare request and start fetching */
+    public CacheDataFetcher invoke() {
+      final ComOpencachingRequestCollection collection =
+          new ComOpencachingRequestCollection();
+      final GeoCoordinateConverter converter = new GeoCoordinateConverter();
+
+      final BoundingBoxE6 bbox = mMapView.getProjection().getBoundingBox();
+      collection.addParameter(new BBox(false,
+          (float) converter.microToDecimalDegree(bbox.getLatSouthE6()),
+          (float) converter.microToDecimalDegree(bbox.getLonWestE6()),
+          (float) converter.microToDecimalDegree(bbox.getLatNorthE6()),
+          (float) converter.microToDecimalDegree(bbox.getLonEastE6())));
+      collection.addParameter(new Limit(FETCH_LIMIT));
+
+      mList = mService.fetchDatabase(collection);
+      mSuccessful = mList != null;
+
+      return this;
+    }
+
+    public boolean wasSuccessful() {
+      return mSuccessful;
+    }
+
+    public GeocachingService getService() {
+      return mService;
+    }
+
+    public List<Geocache> getList() {
+      return mList;
+    }
+  }
+
   /*      End      */
   /*****************/
 }

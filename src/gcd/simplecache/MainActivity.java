@@ -92,7 +92,9 @@ public class MainActivity extends FragmentActivity implements IntentActions {
 			} else if (action.equals(ACTION_ID_COMPASS)) {
 				Log.d("Sensor", "Changed");
 			} else if (action.equals(ACTION_ID_NAVIGATION)) {
+        /* Change navigation and go to compass tab */
         String destination = changeNavigation(intent);
+        mTabHost.setCurrentTabByTag(TAG_TS_COMPASS);
         Log.d("Navigation", "Changed to "+destination);
       } else if (action.equals(ACTION_ID_DESCRIPTION)) {
 
