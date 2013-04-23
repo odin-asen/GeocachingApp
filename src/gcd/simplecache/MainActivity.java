@@ -4,6 +4,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.ActivityInfo;
 import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.os.Bundle;
@@ -22,6 +23,7 @@ public class MainActivity extends FragmentActivity implements IntentActions {
   private static final String TAG_TS_COMPASS = "compass";
 
   private FragmentTabHost mTabHost;
+  
   private GPSService gps;
   private CompassService compass;
   private MessageReceiver receiver;
@@ -30,14 +32,15 @@ public class MainActivity extends FragmentActivity implements IntentActions {
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-
+    
+    setRequestedOrientation (ActivityInfo.SCREEN_ORIENTATION_PORTRAIT); 
     setContentView(R.layout.activity_main);
     mTabHost = (FragmentTabHost)findViewById(android.R.id.tabhost);
     mTabHost.setup(this, getSupportFragmentManager(), R.id.realtabcontent);
 
     /* Add map and compass tabs */
-    addTab(TAG_TS_MAP, this.getString(R.string.tab_title_map), null, CacheMapFragment.class);
-    addTab(TAG_TS_COMPASS, this.getString(R.string.tab_title_compass), null, CompassFragment.class);
+    addTab(ID_TS_MAP, this.getString(R.string.tab_title_map), null, CacheMapFragment.class);
+    addTab(ID_TS_COMPASS, this.getString(R.string.tab_title_compass), null, CompassFragment.class);
 
     receiver = new MessageReceiver();
     receiverRegistered = false;
@@ -58,10 +61,7 @@ public class MainActivity extends FragmentActivity implements IntentActions {
   	protected void onResume() {
  		super.onResume();
  		if(!receiverRegistered) {
-  			registerReceiver(receiver, new IntentFilter(ACTION_ID_GPS));
-  			registerReceiver(receiver, new IntentFilter(ACTION_ID_COMPASS));
-  			registerReceiver(receiver, new IntentFilter(ACTION_ID_DESCRIPTION));
-  			registerReceiver(receiver, new IntentFilter(ACTION_ID_NAVIGATION));
+  			registerReceiver(receiver, new IntentFilter("LocationChanged"));
   		}
   	}
 
@@ -105,17 +105,13 @@ public class MainActivity extends FragmentActivity implements IntentActions {
     private void changeLocation(Intent intent) {
       final String currentTabTag = mTabHost.getCurrentTabTag();
       final Bundle extras = intent.getExtras();
-      final Double lat = extras.getDouble("lat");
-      final Double lon = extras.getDouble("lon");
+      final Location location = extras.getParcelable("loc");
 
       if (currentTabTag.equals(TAG_TS_COMPASS)) {
         CompassFragment compass = (CompassFragment) getSupportFragmentManager().findFragmentByTag(TAG_TS_COMPASS);
-        compass.update(lat, lon);
+        compass.update(location);
       } else if(currentTabTag.equals(TAG_TS_MAP)) {
         CacheMapFragment map = (CacheMapFragment) getSupportFragmentManager().findFragmentByTag(TAG_TS_MAP);
-        Location location = new Location(getString(R.string.app_name));
-        location.setLatitude(lat);
-        location.setLongitude(lon);
         map.updateUserPosition(location);
       }
     }

@@ -182,11 +182,14 @@ public class GPSService extends Service implements LocationListener, IntentActio
  
     @Override
     public void onLocationChanged(Location location) {
-    	latitude = location.getLatitude();
-    	longitude = location.getLongitude();
     	Intent intent = new Intent(ACTION_ID_GPS);
-    	intent.putExtra("lat", latitude);
-    	intent.putExtra("lon", longitude);
+    	if (isGPSEnabled) {
+    		location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+    	}
+    	if (isNetworkEnabled) {
+    		location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+    	}
+    	intent.putExtra("loc", location);
     	mContext.sendBroadcast(intent);
     }
  
