@@ -8,6 +8,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 import gcd.simplecache.business.geocaching.ComOpencachingService;
 import gcd.simplecache.business.geocaching.Geocache;
@@ -47,6 +49,8 @@ public class CacheMapFragment extends Fragment {
   private GeoPoint mLastPoint;
   private int mLastZoomLevel;
 
+  private ProgressBar mProgressBar;
+  private TextView mProgressText;
   private MapView mMapView;
   private MapController mController;
   private boolean mNavigationEnabled;
@@ -82,7 +86,10 @@ public class CacheMapFragment extends Fragment {
   public View onCreateView(LayoutInflater inflater, ViewGroup container,
                            Bundle savedInstanceState) {
     View view = inflater.inflate(R.layout.fragment_cachemap, container, false);
-    mMapView = (MapView) view.findViewById(R.id.cachemap);
+    mProgressBar = (ProgressBar) view.findViewById(R.id.map_progress);
+    mProgressBar.setVisibility(ProgressBar.GONE);
+    mProgressText = (TextView) view.findViewById(R.id.map_progress_text);
+    mMapView = (MapView) view.findViewById(R.id.cache_map_view);
     mController = mMapView.getController();
 
     /* Save zoom level after user input */
@@ -99,7 +106,8 @@ public class CacheMapFragment extends Fragment {
         converter.geocachingToGeoPoint(converter.locationToGeocaching(location));
 
     /* set the user object to the map */
-    MapObject userObject = new MapObject("Geocacher", "Current Position", currentPoint);
+    MapObject userObject = new MapObject(getString(R.string.map_user_title),
+        getString(R.string.map_user_here), currentPoint);
     userObject.setType(MapObject.ObjectType.USER);
     userObject.setMarker(getActivity().getResources().getDrawable(R.drawable.position_cross));
     final List<MapObject> objectList = new ArrayList<MapObject>(1);
@@ -248,22 +256,12 @@ public class CacheMapFragment extends Fragment {
     List<Geocache> list = service.fetchDatabase(collection);
     if(list == null) {
       Log.d(LOG_TAG, "error fetching");
-      showToastInThread(service.getError(), Toast.LENGTH_LONG);
+      new ViewInThreadHandler().showToast(service.getError(), Toast.LENGTH_LONG);
     } else {
       Log.d(LOG_TAG, "fetched...start updating");
       updateGeocacheObjects(list);
       Log.d(LOG_TAG, "finished update");
     }
-  }
-
-  /** Displays a toast in the activity context running in a thread */
-  private void showToastInThread(final String message, final int duration) {
-    final Activity activity = getActivity();
-    activity.runOnUiThread(new Runnable() {
-      public void run() {
-        Toast.makeText(activity.getApplicationContext(), message, duration).show();
-      }
-    });
   }
 
   /*       End       */
@@ -318,7 +316,6 @@ public class CacheMapFragment extends Fragment {
   private class MapItemListener implements ItemizedIconOverlay.OnItemGestureListener<MapObject> {
     public static final String SEARCH_DLG_TAG = "search dialog";
 
-    @Override
     public boolean onItemSingleTapUp(int i, MapObject mapObject) {
       final Geocache cache = mapObject.getGeocache();
       if(cache != null) {
@@ -331,7 +328,6 @@ public class CacheMapFragment extends Fragment {
       return true;
     }
 
-    @Override
     public boolean onItemLongPress(int i, MapObject mapObject) {
       return false;
     }
@@ -356,15 +352,48 @@ public class CacheMapFragment extends Fragment {
       if(!mNavigationEnabled && mLastZoomLevel > ZOOM_LEVEL_UPDATE_LIMIT
           && notZoomIn) {
         /* Run a thread to fetch the cache database */
-        new Thread(new Runnable() {
-          public void run() {
-            updateGeocacheMap();
-          }
-        }).start();
+        runUpdateThread();
       }
+    }
+
+    private void runUpdateThread() {
+      final ViewInThreadHandler handler = new ViewInThreadHandler();
+      new Thread(new Runnable() {
+        public void run() {
+          handler.setProgressState(ProgressBar.VISIBLE,
+              getString(R.string.progress_fetch_cache));
+          updateGeocacheMap();
+          handler.setProgressState(ProgressBar.GONE,
+              getString(R.string.progress_ready));
+        }
+      }).start();
     }
   }
 
+  /** Provides methods to display or change UI components */
+  private class ViewInThreadHandler {
+    /** Displays a toast in the activity context running in a thread */
+    private void showToast(final String message, final int duration) {
+      final Activity activity = getActivity();
+      activity.runOnUiThread(new Runnable() {
+        public void run() {
+          Toast.makeText(activity.getApplicationContext(), message, duration).show();
+        }
+      });
+    }
+
+    /**
+     * Change the message of the progress text and visibility of the progress bar.
+     */
+    private void setProgressState(final int visibility, final String text) {
+      getActivity().runOnUiThread(new Runnable() {
+        public void run() {
+          mProgressBar.setVisibility(visibility);
+          mProgressText.setText(text);
+        }
+      });
+    }
+  }
   /*      End      */
   /*****************/
 }

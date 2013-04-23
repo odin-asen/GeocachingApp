@@ -2,9 +2,32 @@
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
               android:layout_width="fill_parent"
-              android:layout_height="fill_parent">
+              android:layout_height="fill_parent"
+              android:orientation="vertical" >
+    <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal" >
+
+        <ProgressBar
+                android:id="@+id/map_progress"
+                style="@android:style/Widget.ProgressBar.Small.Inverse"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="2dp"
+                android:indeterminate="true"
+                android:indeterminateBehavior="cycle"
+                android:visibility="gone"/>
+        <TextView
+                android:text="@string/progress_ready"
+                android:id="@+id/map_progress_text"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_margin="1dp" />
+        </LinearLayout>
     <org.osmdroid.views.MapView
-        android:id="@+id/cachemap"
+        android:id="@+id/cache_map_view"
         android:layout_width="fill_parent"
-        android:layout_height="fill_parent"/>
+        android:layout_height="fill_parent" />
 </LinearLayout>

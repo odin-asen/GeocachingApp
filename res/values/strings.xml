@@ -6,10 +6,18 @@
     <string name="tab_title_map">Map</string>
     <string name="tab_title_compass">Compass</string>
 
+    <!-- map strings -->
+    <string name="map_user_title">Geocacher</string>
+    <string name="map_user_here">You are here!</string>
+
     <!-- dialog labels -->
     <string name="button_search_cache">Let\'s go!</string>
     <string name="button_display_description">Display description</string>
     <string name="button_cancel">Cancel</string>
     <string name="cache_size">Size:</string>
     <string name="cache_difficulty_terrain">Difficulty/Terrain:</string>
+
+    <!-- progress labels -->
+    <string name="progress_ready">Ready</string>
+    <string name="progress_fetch_cache">Fetch cache data</string>
 </resources>
