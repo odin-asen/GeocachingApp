@@ -7,16 +7,10 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Paint;
-import android.graphics.Point;
 import android.graphics.Rect;
 import android.location.Location;
 import android.util.AttributeSet;
-import android.view.Display;
 import android.view.View;
-import android.view.ViewGroup;
-import android.view.WindowManager;
-import android.widget.Button;
-import android.widget.LinearLayout;
 
 public class CompassView extends View {
 
@@ -31,7 +25,7 @@ public class CompassView extends View {
   private double dist = 0.0;
   private int angleToLocation = 90;
   
-  private String n = "N";
+  private String n = getContext().getString(R.string.action_settings);
   private String e = "E";
   private String w = "W";
   private String s = "S";
@@ -122,9 +116,9 @@ public class CompassView extends View {
     //Destination Location Drawing
     canvas.drawText(destination, compassCenterX, locationX, write);
     canvas.drawText(longitude, compassCenterX, locationX+lonHeight, write);
-    canvas.drawText(String.valueOf(dest_lon), lonBounds.width()+compassCenterX, locationX+lonHeight, write);
+    canvas.drawText(String.valueOf(dest_lon), lonWidth+compassCenterX, locationX+lonHeight, write);
     canvas.drawText(latitude, compassCenterX, locationX+(lonHeight)*2, write);
-    canvas.drawText(String.valueOf(dest_lat), lonBounds.width()+compassCenterX, locationX+(lonHeight)*2, write);   
+    canvas.drawText(String.valueOf(dest_lat), lonWidth+compassCenterX, locationX+(lonHeight)*2, write);   
     
     //Navigation Drawing
     float imageCenterY = compassCenterY+radius*3-20;

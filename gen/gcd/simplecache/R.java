@@ -25,12 +25,11 @@ public final class R {
         public static final int ic_launcher=0x7f020001;
     }
     public static final class id {
-        public static final int action_settings=0x7f080005;
         public static final int cachemap=0x7f080001;
         public static final int compassView1=0x7f080002;
-        public static final int compassView2=0x7f080003;
-        public static final int compassView3=0x7f080004;
+        public static final int navigate_to=0x7f080003;
         public static final int realtabcontent=0x7f080000;
+        public static final int stop_navigation=0x7f080004;
     }
     public static final class layout {
         public static final int activity_main=0x7f030000;
@@ -43,6 +42,8 @@ public final class R {
     public static final class string {
         public static final int action_settings=0x7f050001;
         public static final int app_name=0x7f050000;
+        public static final int navigate_to=0x7f050004;
+        public static final int stop_navigation=0x7f050005;
         public static final int tab_title_compass=0x7f050003;
         public static final int tab_title_map=0x7f050002;
     }
