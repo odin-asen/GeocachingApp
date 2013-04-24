@@ -1,5 +1,7 @@
 package gcd.simplecache;
 
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -12,6 +14,7 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTabHost;
 import android.util.Log;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.TabHost;
 import gcd.simplecache.business.geocaching.Geocache;
 import gcd.simplecache.dto.geocache.DTOGeocache;
@@ -21,6 +24,9 @@ public class MainActivity extends FragmentActivity implements IntentActions {
   /* TabSpec IDs */
   private static final String TAG_TS_MAP = "map";
   private static final String TAG_TS_COMPASS = "compass";
+  private static final String NAV_DLG_TAG = "navigatetodialog";
+  
+  private static final int DIALOG_ALERT = 10;
 
   private FragmentTabHost mTabHost;
   
@@ -44,7 +50,7 @@ public class MainActivity extends FragmentActivity implements IntentActions {
 
     receiver = new MessageReceiver();
     receiverRegistered = false;
-
+    
     gps = new GPSService(this);
     compass = new CompassService(this);
   }
@@ -82,6 +88,23 @@ public class MainActivity extends FragmentActivity implements IntentActions {
     mTabHost.addTab(tabSpec, fragmentClass, null);
   }
   
+
+@Override
+  public boolean onOptionsItemSelected(MenuItem item) {
+
+      switch (item.getItemId()) {
+          case R.id.navigate_to:
+        	  NavigateToDialog dialog = new NavigateToDialog();
+        	  dialog.show(getSupportFragmentManager(), "Nav Dialog");
+              return true;
+          case R.id.stop_navigation:
+        	  return true;
+          default:
+              return super.onOptionsItemSelected(item);
+      }
+  }
+  
+   
   public class MessageReceiver extends BroadcastReceiver {
 
 		@Override

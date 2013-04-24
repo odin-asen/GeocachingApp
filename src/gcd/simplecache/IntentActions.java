@@ -1,5 +1,8 @@
 package gcd.simplecache;
 
+import android.app.Dialog;
+import android.os.Bundle;
+
 /**
  * Interface for intent action IDs.
  * <p/>

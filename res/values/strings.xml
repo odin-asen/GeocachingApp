@@ -16,10 +16,19 @@
     <string name="button_search_cache">Let\'s go!</string>
     <string name="button_display_description">Display description</string>
     <string name="button_cancel">Cancel</string>
+    <string name="button_ok">Ok</string>
     <string name="cache_size">Size:</string>
     <string name="cache_difficulty_terrain">Difficulty/Terrain:</string>
 
     <!-- progress labels -->
     <string name="progress_ready">Ready</string>
     <string name="progress_fetch_cache">Fetch cache data</string>
+    <string name="dialog_navigate_to_lat">Latitude:</string>
+    <string name="dialog_navigate_to_lon">Longitude:</string>
+    <string name="degree">°</string>
+    <string name="decimal_degrees">Decimal Degrees</string>
+    <string name="decimal_minutes">Decimal Minutes</string>
+    <string name="longitude">Longitude</string>
+    <string name="latitude">Latitude</string>
+    <string name="minutes">\'</string>
 </resources>
