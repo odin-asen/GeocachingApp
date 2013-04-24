@@ -1,5 +1,6 @@
 package gcd.simplecache.business.geocaching.request.com.opencaching;
 
+import android.text.TextUtils;
 import gcd.simplecache.business.geocaching.request.ComOpencachingParameter;
 
 /**
@@ -37,7 +38,7 @@ public class Status extends ComOpencachingParameter {
   private void setValues(String[] values) {
     value = "";
     for (String s : values) {
-      if(!value.isEmpty())
+      if(!TextUtils.isEmpty(value))
         value = value + SEPARATOR;
       value = value + s;
     }

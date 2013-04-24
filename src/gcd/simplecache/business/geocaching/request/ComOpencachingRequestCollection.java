@@ -1,5 +1,7 @@
 package gcd.simplecache.business.geocaching.request;
 
+import android.text.TextUtils;
+
 /**
  * Sub class of RequestCollection to create a request parameter string for
  * <a href="http://www.opencaching.com">opencaching.com</a>.
@@ -18,7 +20,7 @@ public class ComOpencachingRequestCollection
   public String getRequestParameter() {
     String requestParameters = "";
     for (ComOpencachingParameter parameter : mParameterList) {
-      if(!requestParameters.isEmpty())
+      if(!TextUtils.isEmpty(requestParameters))
         requestParameters = requestParameters + COM_AND;
       requestParameters = requestParameters + parameter.formatString();
     }

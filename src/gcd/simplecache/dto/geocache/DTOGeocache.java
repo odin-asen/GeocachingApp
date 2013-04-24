@@ -1,12 +1,14 @@
 package gcd.simplecache.dto.geocache;
 
+import java.io.Serializable;
+
 /**
  * This data transfer object can be used to store information about a geocache.
  * <p/>
  * Author: Timm Herrmann<br/>
  * Date: 16.04.13
  */
-public class DTOGeocache {
+public class DTOGeocache implements Serializable {
   /* Identification information */
   public String id;
   public DTOCacheOwner owner;
@@ -47,7 +49,14 @@ public class DTOGeocache {
 
   @Override
   public String toString() {
-    return "DTOGeocache{" +
+    String descrTrunc = "...";
+    if(description != null) {
+      if(description.length() > 20)
+        descrTrunc = description.substring(0,20)+descrTrunc;
+      else descrTrunc = description;
+    }
+
+    return "{" +
         "id='" + id + '\'' +
         ", owner=" + owner +
         ", name='" + name + '\'' +
@@ -57,7 +66,7 @@ public class DTOGeocache {
         ", terrain=" + terrain +
         ", size=" + size +
         ", hint='" + hint + '\'' +
-        ", description='" + description + '\'' +
+        ", description='" + descrTrunc + '\'' +
         '}';
   }
 

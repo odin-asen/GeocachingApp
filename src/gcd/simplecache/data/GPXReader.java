@@ -2,8 +2,6 @@ package gcd.simplecache.data;
 
 import gcd.simplecache.dto.geocache.DTOGeocache;
 
-import java.util.IllegalFormatException;
-
 /**
  * A GPXReader object should be able to interpret a gpx formatted geocache file.
  * <p/>
@@ -12,11 +10,10 @@ import java.util.IllegalFormatException;
  */
 public interface GPXReader {
   /**
-   * Reads a gpx formatted string containing the geocache data.
+   * Reads a gpx formatted string containing the geocache data. Returns
+   * null if a problem with the syntax of the file occurred.
    * @param gpxString Gpx formatted string to read.
    * @return A {@link DTOGeocache} object that represents the geocache.
-   * @throws IllegalFormatException If a problem with the syntax of the file
-   * occurred.
    */
-  public DTOGeocache readGPX(String gpxString) throws IllegalFormatException;
+  public DTOGeocache readGPX(String gpxString);
 }
