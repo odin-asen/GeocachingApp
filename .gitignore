@@ -20,6 +20,9 @@
 /gen/gcd/simplecache/BuildConfig.java
 /gen
 
+#Images
+/res/drawable-*
+
 #Tempfiles and log
 *.log
 *.swp

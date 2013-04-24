@@ -46,6 +46,7 @@ public class ComOpencachingReader implements JSONReader, GPXReader {
   /* Methods */
 
   /**
+   * <em>Should be in a helper class.</em>
    * Read an input stream and return the content as string.
    * @param stream InputStream object with content.
    * @return A String with the input stream content.

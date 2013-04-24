@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.location.Location;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,6 +20,7 @@ import gcd.simplecache.business.geocaching.request.com.opencaching.BBox;
 import gcd.simplecache.business.geocaching.request.com.opencaching.Limit;
 import gcd.simplecache.business.map.GeoCoordinateConverter;
 import gcd.simplecache.business.map.MapObject;
+import gcd.simplecache.business.map.RoutingService;
 import org.osmdroid.events.DelayedMapListener;
 import org.osmdroid.events.MapListener;
 import org.osmdroid.events.ScrollEvent;
@@ -31,6 +33,7 @@ import org.osmdroid.views.MapView;
 import org.osmdroid.views.overlay.ItemizedIconOverlay;
 import org.osmdroid.views.overlay.ItemizedOverlay;
 import org.osmdroid.views.overlay.ItemizedOverlayWithFocus;
+import org.osmdroid.views.overlay.OverlayItem;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -65,24 +68,25 @@ public class CacheMapFragment extends Fragment {
   private MapController mController;
   private boolean mNavigationEnabled;
   private MapObject mDestination;
+  private MapObject mUser;
 
   /* Map overlay variables */
   private ItemizedIconOverlay<MapObject> mUserOverlay;
   private ItemizedOverlay<MapObject> mCacheOverlay;
   private ItemizedOverlay<MapObject> mAimOverlay;
+  private ItemizedOverlay<OverlayItem> mRouteOverlay;
   private final MapItemListener mMapItemListener;
 
   /****************/
   /* Constructors */
 
   public CacheMapFragment() {
-    mUserOverlay = null;
-    mCacheOverlay = null;
-    mAimOverlay = null;
+    initialiseOverlays();
     mLastZoomLevel = 8;
     mLastPoint = new GeoPoint(50.0,10.0);
     mNavigationEnabled = false;
     mDestination = new MapObject("", "", new GeoPoint(0.0,0.0));
+    mUser = new MapObject("", "", new GeoPoint(0.0,0.0));
     mMapItemListener = new MapItemListener();
   }
 
@@ -194,8 +198,16 @@ public class CacheMapFragment extends Fragment {
   /*******************/
   /* Private Methods */
 
+  private void initialiseOverlays() {
+    mUserOverlay = null;
+    mCacheOverlay = null;
+    mAimOverlay = null;
+    mRouteOverlay = null;
+  }
+
   private void initialiseContextStuff(Bundle savedInstance) {
-    mDestination.setMarker(getResources().getDrawable(R.drawable.goal_flag));
+//    mDestination.setMarker(getResources().getDrawable(R.drawable.goal_flag));
+//    mUser.setMarker(getResources().getDrawable(R.drawable.position_cross));
   }
 
   /* Initialise settings for MapView object */
@@ -238,6 +250,7 @@ public class CacheMapFragment extends Fragment {
     final List<MapObject> objectList = new ArrayList<MapObject>(1);
     objectList.add(mDestination);
 
+    drawRoutePath();
     /* add overlay to the map */
     mAimOverlay = new ItemizedOverlayWithFocus<MapObject>(
         getActivity(), objectList, mMapItemListener);
@@ -287,6 +300,47 @@ public class CacheMapFragment extends Fragment {
 
     if(mUserOverlay != null)
       mMapView.getOverlayManager().add(mUserOverlay);
+  }
+
+  private void drawRoutePath() {
+    mMapView.getOverlayManager().remove(mRouteOverlay);
+    if(mUser == null || mDestination == null)
+      return;
+
+    final RoutingService service = new RoutingService();
+    final String path = service.getPath(new GeoPoint(50068599, 10158577), mDestination.getPoint());
+
+    if(TextUtils.isEmpty(path)) {
+      new ViewInThreadHandler().showToast(service.getError(), Toast.LENGTH_LONG);
+      return;
+    }
+
+    String[] pairs = path.split(" ");
+    String[] lngLat = pairs[0].split(","); // lngLat[0]=longitude
+    // lngLat[1]=latitude
+    // lngLat[2]=height
+    // src
+    GeoPoint startGP = new GeoPoint((int) (Double.parseDouble(lngLat[1]) * 1E6),
+        (int) (Double.parseDouble(lngLat[0]) * 1E6));
+
+    GeoPoint gp1;
+    GeoPoint gp2 = startGP;
+    final List<OverlayItem> pointList = new ArrayList<OverlayItem>(pairs.length);
+    for (int i = 1; i < pairs.length; i++) // the last one would be
+    // crash
+    {
+      lngLat = pairs[i].split(",");
+      gp1 = gp2;
+      // watch out! For GeoPoint, first:latitude, second:longitude
+      gp2 = new GeoPoint((int) (Double.parseDouble(lngLat[1]) * 1E6),
+          (int) (Double.parseDouble(lngLat[0]) * 1E6));
+      pointList.add(new OverlayItem(Integer.toString(i), "", gp2));
+
+      Log.d(LOG_TAG, "pair:" + pairs[i]);
+    }
+    mRouteOverlay = new ItemizedOverlayWithFocus<OverlayItem>(
+        getActivity(), pointList, null);
+    mMapView.getOverlayManager().add(mRouteOverlay);
   }
 
   /*       End       */
