@@ -12,7 +12,6 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTabHost;
 import android.util.Log;
 import android.view.Menu;
-import android.view.MenuItem;
 import android.widget.TabHost;
 import gcd.simplecache.business.geocaching.Geocache;
 import gcd.simplecache.dto.geocache.DTOGeocache;
@@ -83,14 +82,6 @@ public class MainActivity extends FragmentActivity implements IntentActions {
     mTabHost.addTab(tabSpec, fragmentClass, null);
   }
 
-  @Override
-  public boolean onOptionsItemSelected(MenuItem item) {
-    super.onOptionsItemSelected(item);
-    final CacheMapFragment map = (CacheMapFragment) getSupportFragmentManager().findFragmentByTag(TAG_TS_MAP);
-    map.setNavigationEnabled(false);
-    return true;
-  }
-
   public class MessageReceiver extends BroadcastReceiver {
 
 		@Override
@@ -106,7 +97,7 @@ public class MainActivity extends FragmentActivity implements IntentActions {
 			} else if (action.equals(ACTION_ID_NAVIGATION)) {
         /* Change navigation and go to compass tab */
         String destination = changeNavigation(intent);
-//        mTabHost.setCurrentTabByTag(TAG_TS_COMPASS);
+        mTabHost.setCurrentTabByTag(TAG_TS_COMPASS);
         Log.d("Navigation", "Changed to "+destination);
       } else if (action.equals(ACTION_ID_DESCRIPTION)) {
 

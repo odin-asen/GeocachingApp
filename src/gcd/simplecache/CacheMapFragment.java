@@ -73,8 +73,7 @@ public class CacheMapFragment extends Fragment {
   /* Map overlay variables */
   private ItemizedIconOverlay<MapObject> mUserOverlay;
   private ItemizedOverlay<MapObject> mCacheOverlay;
-  private ItemizedOverlay<MapObject> mAimOverlay;
-  private ItemizedOverlay<OverlayItem> mRouteOverlay;
+  private ItemizedOverlay<OverlayItem> mAimOverlay;
   private final MapItemListener mMapItemListener;
 
   /****************/
@@ -120,17 +119,17 @@ public class CacheMapFragment extends Fragment {
         converter.geocachingToGeoPoint(converter.locationToGeocaching(location));
 
     /* set the user object to the map */
-    MapObject userObject = new MapObject(getString(R.string.map_user_title),
+    mUser = new MapObject(getString(R.string.map_user_title),
         getString(R.string.map_user_here), currentPoint);
-    userObject.setType(MapObject.ObjectType.USER);
-    userObject.setMarker(getActivity().getResources().getDrawable(R.drawable.position_cross));
+    mUser.setType(MapObject.ObjectType.USER);
+    mUser.setMarker(getActivity().getResources().getDrawable(R.drawable.position_cross));
     final List<MapObject> objectList = new ArrayList<MapObject>(1);
-    objectList.add(userObject);
+    objectList.add(mUser);
 
     /* add overlay to the map */
     mUserOverlay = new ItemizedOverlayWithFocus<MapObject>(
         getActivity(), objectList, mMapItemListener);
-    mUserOverlay.addItem(userObject);
+    mUserOverlay.addItem(mUser);
     mMapView.getOverlayManager().add(mUserOverlay);
 
     saveLastPointAndZoom(currentPoint);
@@ -202,7 +201,6 @@ public class CacheMapFragment extends Fragment {
     mUserOverlay = null;
     mCacheOverlay = null;
     mAimOverlay = null;
-    mRouteOverlay = null;
   }
 
   private void initialiseContextStuff(Bundle savedInstance) {
@@ -247,14 +245,38 @@ public class CacheMapFragment extends Fragment {
   }
 
   private void refreshRoute() {
-    final List<MapObject> objectList = new ArrayList<MapObject>(1);
-    objectList.add(mDestination);
+    mMapView.getOverlayManager().remove(mAimOverlay);
 
-    drawRoutePath();
+    /* Get the route if possible */
+    final RoutingService service = new RoutingService();
+    final List<DTOLocation> path;
+    if(mUser == null || mDestination == null)
+      path = null;
+    else path = service.getPath(mUser.getPoint(), mDestination.getPoint());
+
+    final List<OverlayItem> routeList = initialiseRouteList(path);
+
     /* add overlay to the map */
-    mAimOverlay = new ItemizedOverlayWithFocus<MapObject>(
-        getActivity(), objectList, mMapItemListener);
+    mAimOverlay = new ItemizedOverlayWithFocus<OverlayItem>(
+        getActivity(), routeList, null);
     mMapView.getOverlayManager().add(mAimOverlay);
+  }
+
+  private List<OverlayItem> initialiseRouteList(List<DTOLocation> path) {
+    final List<OverlayItem> list;
+    if(path == null) {
+      list = new ArrayList<OverlayItem>(1);
+      list.add(mDestination);
+      new ViewInThreadHandler().showToast("Could not set route path", Toast.LENGTH_LONG);
+    } else {
+      list = new ArrayList<OverlayItem>(path.size()+1);
+      list.add(mDestination);
+
+      for (DTOLocation point : path)
+        list.add(new OverlayItem("","",new GeoPoint(point.latitude, point.longitude)));
+    }
+
+    return list;
   }
 
   /**
@@ -300,29 +322,6 @@ public class CacheMapFragment extends Fragment {
 
     if(mUserOverlay != null)
       mMapView.getOverlayManager().add(mUserOverlay);
-  }
-
-  private void drawRoutePath() {
-    mMapView.getOverlayManager().remove(mRouteOverlay);
-//    if(mUser == null || mDestination == null)
-//      return;
-//
-    final RoutingService service = new RoutingService();
-    final List<DTOLocation> path = service.getPath(new GeoPoint(50068599, 10158577), mDestination.getPoint());
-
-    if(path == null) {
-      new ViewInThreadHandler().showToast(service.getError(), Toast.LENGTH_LONG);
-    } else {
-      final List<OverlayItem> pointList = new ArrayList<OverlayItem>(path.size());
-      for (DTOLocation point : path) {
-        pointList.add(new OverlayItem("","",new GeoPoint(point.latitude, point.longitude)));
-        Log.d(LOG_TAG, point.toString());
-      }
-      mRouteOverlay = new ItemizedOverlayWithFocus<OverlayItem>(
-          getActivity(), pointList, null);
-      mMapView.getOverlayManager().add(mRouteOverlay);
-      mMapView.postInvalidate();
-    }
   }
 
   /*       End       */
