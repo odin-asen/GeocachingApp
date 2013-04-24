@@ -21,21 +21,13 @@ import gcd.simplecache.business.map.GeoCoordinateConverter;
 import gcd.simplecache.business.map.MapObject;
 import gcd.simplecache.business.map.RoutingService;
 import gcd.simplecache.dto.geocache.DTOLocation;
-import org.osmdroid.events.DelayedMapListener;
 import org.osmdroid.events.MapListener;
 import org.osmdroid.events.ScrollEvent;
 import org.osmdroid.events.ZoomEvent;
-import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
-import org.osmdroid.util.BoundingBoxE6;
 import org.osmdroid.util.GeoPoint;
-import org.osmdroid.views.MapController;
 import org.osmdroid.views.MapView;
 import org.osmdroid.views.overlay.ItemizedIconOverlay;
-import org.osmdroid.views.overlay.ItemizedOverlay;
-import org.osmdroid.views.overlay.ItemizedOverlayWithFocus;
-import org.osmdroid.views.overlay.OverlayItem;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -58,36 +50,19 @@ public class CacheMapFragment extends Fragment {
   private static final int ZOOM_LEVEL_UPDATE_LIMIT = 8;
   private static final int FETCH_LIMIT = 500;
 
-  /* saved values */
-  private GeoPoint mLastPoint;
-  private int mLastZoomLevel;
-
   private ProgressBar mProgressBar;
   private TextView mProgressText;
-  private MapView mMapView;
-  private MapController mController;
-  private boolean mNavigationEnabled;
-  private MapObject mDestination;
-  private MapObject mUser;
+  private CacheMapViewContainer mContainer;
 
-  /* Map overlay variables */
-  private ItemizedIconOverlay<MapObject> mUserOverlay;
-  private ItemizedOverlay<MapObject> mCacheOverlay;
-  private ItemizedOverlay<OverlayItem> mAimOverlay;
-  private final MapItemListener mMapItemListener;
+  private boolean mNavigationEnabled;
 
   /****************/
   /* Constructors */
 
   public CacheMapFragment() {
-    initialiseOverlays();
-    /* Set the map to the middle of Europe */
-    mLastZoomLevel = 2;
-    mLastPoint = new GeoPoint(53.330873,10.722656);
     mNavigationEnabled = false;
-    mDestination = new MapObject("", "", new GeoPoint(0.0,0.0));
-    mUser = new MapObject("", "", new GeoPoint(0.0,0.0));
-    mMapItemListener = new MapItemListener();
+    mContainer = new CacheMapViewContainer(
+        new ScrollZoomListener(), new MapItemListener());
   }
 
   /*      End     */
@@ -103,58 +78,13 @@ public class CacheMapFragment extends Fragment {
     mProgressBar = (ProgressBar) view.findViewById(R.id.map_progress);
     mProgressBar.setVisibility(ProgressBar.GONE);
     mProgressText = (TextView) view.findViewById(R.id.map_progress_text);
-    mMapView = (MapView) view.findViewById(R.id.cache_map_view);
-    mController = mMapView.getController();
-
-    /* Save zoom level after user input */
-    mMapView.setMapListener(new DelayedMapListener(new ScrollZoomListener(), 500L));
+    mContainer.setMapView((MapView) view.findViewById(R.id.cache_map_view));
 
     return view;
   }
 
   public void updateUserPosition(Location location) {
-    mMapView.getOverlayManager().remove(mUserOverlay);
-
-    final GeoCoordinateConverter converter = new GeoCoordinateConverter();
-    final GeoPoint currentPoint =
-        converter.geocachingToGeoPoint(converter.locationToGeocaching(location));
-
-    /* set the user object to the map */
-    mUser = new MapObject(getString(R.string.map_user_title),
-        getString(R.string.map_user_here), currentPoint);
-    mUser.setType(MapObject.ObjectType.USER);
-    mUser.setMarker(getActivity().getResources().getDrawable(R.drawable.position_cross));
-    final List<MapObject> objectList = new ArrayList<MapObject>(1);
-    objectList.add(mUser);
-
-    /* add overlay to the map */
-    mUserOverlay = new ItemizedOverlayWithFocus<MapObject>(
-        getActivity(), objectList, mMapItemListener);
-    mUserOverlay.addItem(mUser);
-    mMapView.getOverlayManager().add(mUserOverlay);
-
-    saveLastPointAndZoom(currentPoint);
-    mMapView.invalidate();
-  }
-
-  /**
-   * This method takes a list of cache information and displays it on the map.
-   * @param cacheList List with caches to show on the map.
-   */
-  public void updateCacheOverlay(List<Geocache> cacheList) {
-    if(cacheList == null)
-      return;
-    mMapView.getOverlayManager().remove(mCacheOverlay);
-
-    final List<MapObject> objectList = new ArrayList<MapObject>(cacheList.size());
-    fillMapObjectList(cacheList, objectList);
-
-    /* add overlay to the map */
-    mCacheOverlay = new ItemizedOverlayWithFocus<MapObject>(
-        getActivity(), objectList, mMapItemListener);
-    mMapView.getOverlayManager().add(mCacheOverlay);
-
-    mMapView.postInvalidate();
+    mContainer.updateUserPosition(location);
   }
 
   @Override
@@ -162,33 +92,25 @@ public class CacheMapFragment extends Fragment {
     super.onActivityCreated(savedInstance);
 
     if(savedInstance != null) {
-      if(mLastPoint != null)
-        mLastPoint = (GeoPoint) savedInstance.getSerializable(LAST_POINT);
-      mLastZoomLevel = savedInstance.getInt(LAST_ZOOM);
+      mContainer.setLastView(
+          (GeoPoint) savedInstance.getSerializable(LAST_POINT),
+          savedInstance.getInt(LAST_ZOOM));
     }
-
-    /* initialise stuff that needs a context object */
-    initialiseContextStuff(savedInstance);
-    initMap();
+    mContainer.setContext(getActivity());
   }
 
   @Override
   public void onStart() {
     super.onStart();
 
-    /* Go to the last point */
-    mController.setZoom(mLastZoomLevel);
-    mController.setCenter(mLastPoint);
-
-    setOverlays();
-    mMapView.invalidate();
+    mContainer.initialiseLastState(mNavigationEnabled);
   }
 
   @Override
   public void onSaveInstanceState(Bundle outState) {
     super.onSaveInstanceState(outState);
-    outState.putSerializable(LAST_POINT, mLastPoint);
-    outState.putInt(LAST_ZOOM, mLastZoomLevel);
+    outState.putSerializable(LAST_POINT, mContainer.getLastPoint());
+    outState.putInt(LAST_ZOOM, mContainer.getLastZoomLevel());
     Log.d("map", "save instance");
   }
 
@@ -198,94 +120,11 @@ public class CacheMapFragment extends Fragment {
   /*******************/
   /* Private Methods */
 
-  private void initialiseOverlays() {
-    mUserOverlay = null;
-    mCacheOverlay = null;
-    mAimOverlay = null;
-  }
-
-  private void initialiseContextStuff(Bundle savedInstance) {
-//    mDestination.setMarker(getResources().getDrawable(R.drawable.goal_flag));
-//    mUser.setMarker(getResources().getDrawable(R.drawable.position_cross));
-  }
-
-  /* Initialise settings for MapView object */
-  private void initMap() {
-    mMapView.setTileSource(TileSourceFactory.MAPNIK);
-    mMapView.setBuiltInZoomControls(true);
-    mMapView.setMultiTouchControls(true);
-  }
-
-  /* save last point and zoom to instance variables */
-  private void saveLastPointAndZoom(GeoPoint geoPoint) {
-    mLastZoomLevel = mMapView.getZoomLevel();
-    mLastPoint = geoPoint;
-  }
-
-  /* fills a map object list with geocache objects */
-  private void fillMapObjectList(List<Geocache> cacheList, List<MapObject> objectList) {
-    final GeoCoordinateConverter converter = new GeoCoordinateConverter();
-    for (Geocache geocache : cacheList) {
-      final MapObject cacheObject = new MapObject(
-          geocache.getName(),
-          getCacheMapObjectDescription(geocache),
-          converter.geocachingToGeoPoint(geocache.getPoint()));
-      cacheObject.setMarker(getActivity().getResources().getDrawable(R.drawable.treasure));
-      cacheObject.setType(MapObject.ObjectType.TRADITIONAL);
-      cacheObject.setGeocache(geocache);
-      objectList.add(cacheObject);
-    }
-  }
-
-  /** formats the string for the description of a map object */
-  private String getCacheMapObjectDescription(Geocache geocache) {
-    return geocache.getId()+" - "+geocache.getOwner()+"\n"
-        +"Size: "+geocache.getSize()+"\n"
-        +"Difficulty: "+geocache.getDifficulty()+"\n"
-        +"Terrain: "+geocache.getTerrain();
-  }
-
-  private void refreshRoute() {
-    mMapView.getOverlayManager().remove(mAimOverlay);
-
-    /* Get the route if possible */
-    final RoutingService service = new RoutingService();
-    final List<DTOLocation> path;
-    if(mUser == null || mDestination == null)
-      path = null;
-    else path = service.getPath(mUser.getPoint(), mDestination.getPoint());
-
-    final List<OverlayItem> routeList = initialiseRouteList(path);
-
-    /* add overlay to the map */
-    mAimOverlay = new ItemizedOverlayWithFocus<OverlayItem>(
-        getActivity(), routeList, null);
-    mMapView.getOverlayManager().add(mAimOverlay);
-  }
-
-  private List<OverlayItem> initialiseRouteList(List<DTOLocation> path) {
-    final List<OverlayItem> list;
-    if(path == null) {
-      list = new ArrayList<OverlayItem>(1);
-      list.add(mDestination);
-      new ViewInThreadHandler().showToast("Could not set route path", Toast.LENGTH_LONG);
-    } else {
-      list = new ArrayList<OverlayItem>(path.size()+1);
-      list.add(mDestination);
-
-      for (DTOLocation point : path)
-        list.add(new OverlayItem("","",new GeoPoint(point.latitude, point.longitude)));
-    }
-
-    return list;
-  }
-
   /**
    * Fetches cache information from the cache
    * database and refreshes the map.
    */
   private synchronized void updateGeocacheMap() {
-
     /* set up service for database request and fetch data */
     final CacheDataFetcher fetcher = new CacheDataFetcher().invoke();
     final List<Geocache> list = fetcher.getList();
@@ -293,36 +132,12 @@ public class CacheMapFragment extends Fragment {
 
     if (fetcher.wasSuccessful()) {
       Log.d(LOG_TAG, "fetched...start updating");
-      updateCacheOverlay(list);
+      mContainer.updateGeocaches(list);
       Log.d(LOG_TAG, "finished update");
     } else {
       Log.d(LOG_TAG, "error fetching");
       new ViewInThreadHandler().showToast(service.getError(), Toast.LENGTH_LONG);
     }
-  }
-
-  /**
-   * Sets the saved overlay variables on the map.
-   * Depending on the navigation mode it sets specific overlays to null
-   * to save memory.
-   */
-  private void setOverlays() {
-    mMapView.getOverlayManager().remove(mCacheOverlay);
-    mMapView.getOverlayManager().remove(mAimOverlay);
-    mMapView.getOverlayManager().remove(mUserOverlay);
-
-    if(mNavigationEnabled) {
-      mCacheOverlay = null;
-      if(mAimOverlay != null)
-        mMapView.getOverlayManager().add(mAimOverlay);
-    } else {
-      if(mCacheOverlay != null)
-        mMapView.getOverlayManager().add(mCacheOverlay);
-      mAimOverlay = null;
-    }
-
-    if(mUserOverlay != null)
-      mMapView.getOverlayManager().add(mUserOverlay);
   }
 
   /*       End       */
@@ -349,22 +164,21 @@ public class CacheMapFragment extends Fragment {
    * @param destination New destination point.
    */
   public void setDestination(Geocache destination) {
-    mDestination = new MapObject(
-        destination.getName(),
-        getCacheMapObjectDescription(destination),
-        new GeoCoordinateConverter().geocachingToGeoPoint(
-            destination.getPoint()));
-    mDestination.setGeocache(destination);
-    mDestination.setMarker(getActivity().getResources().getDrawable(R.drawable.goal_flag));
-
-    if(mNavigationEnabled) {
-      mMapView.getOverlayManager().remove(mCacheOverlay);
-      refreshRoute();
-    } else {
-      mMapView.getOverlayManager().remove(mAimOverlay);
+    /* Get the route if possible */
+    final RoutingService service = new RoutingService();
+    final List<DTOLocation> path;
+    final GeoPoint userPoint = mContainer.getUserPoint();
+    if(userPoint == null)
+      path = null;
+    else {
+      final GeoCoordinateConverter converter = new GeoCoordinateConverter();
+      path = service.getPath(userPoint, converter.geocachingToGeoPoint(destination.getPoint()));
+      if(path == null)
+        new ViewInThreadHandler().showToast("Could not set route path", Toast.LENGTH_LONG);
     }
 
-    mMapView.postInvalidate();
+    mContainer.refreshRoute(destination, path);
+    mContainer.updateOverlays();
   }
 
   /*       End         */
@@ -374,7 +188,7 @@ public class CacheMapFragment extends Fragment {
   /* Inner classes */
 
   /* Reacts on touching event on the map objects */
-  private class MapItemListener implements ItemizedIconOverlay.OnItemGestureListener<MapObject> {
+  class MapItemListener implements ItemizedIconOverlay.OnItemGestureListener<MapObject> {
     public static final String SEARCH_DLG_TAG = "search dialog";
 
     public boolean onItemSingleTapUp(int i, MapObject mapObject) {
@@ -396,21 +210,22 @@ public class CacheMapFragment extends Fragment {
 
   private class ScrollZoomListener implements MapListener {
     public boolean onScroll(ScrollEvent scrollEvent) {
-      mLastPoint = (GeoPoint) mMapView.getMapCenter();
+      mContainer.setLastView();
       mapUpdate(true);
       return true;
     }
 
     public boolean onZoom(ZoomEvent zoomEvent) {
-      final boolean zoomingIn = mLastZoomLevel < zoomEvent.getZoomLevel();
-      mLastZoomLevel = zoomEvent.getZoomLevel();
+      final boolean zoomingIn = mContainer.getLastZoomLevel() < zoomEvent.getZoomLevel();
+      mContainer.setLastView();
+      mContainer.setLastView(mContainer.getLastPoint(), zoomEvent.getZoomLevel());
       mapUpdate(!zoomingIn);
       return true;
     }
 
     /** Fetch cache database when allowed */
     private void mapUpdate(boolean notZoomIn) {
-      if(!mNavigationEnabled && mLastZoomLevel > ZOOM_LEVEL_UPDATE_LIMIT
+      if(!mNavigationEnabled && mContainer.getLastZoomLevel() > ZOOM_LEVEL_UPDATE_LIMIT
           && notZoomIn) {
         /* Run a thread to fetch the cache database */
         runUpdateThread();
@@ -472,14 +287,10 @@ public class CacheMapFragment extends Fragment {
     public CacheDataFetcher invoke() {
       final ComOpencachingRequestCollection collection =
           new ComOpencachingRequestCollection();
-      final GeoCoordinateConverter converter = new GeoCoordinateConverter();
 
-      final BoundingBoxE6 bbox = mMapView.getProjection().getBoundingBox();
+      final float[] mapBounds = mContainer.getMapBounds();
       collection.addParameter(new BBox(false,
-          (float) converter.microToDecimalDegree(bbox.getLatSouthE6()),
-          (float) converter.microToDecimalDegree(bbox.getLonWestE6()),
-          (float) converter.microToDecimalDegree(bbox.getLatNorthE6()),
-          (float) converter.microToDecimalDegree(bbox.getLonEastE6())));
+          mapBounds[2], mapBounds[3], mapBounds[0], mapBounds[1]));
       collection.addParameter(new Limit(FETCH_LIMIT));
 
       mList = mService.fetchDatabase(collection);

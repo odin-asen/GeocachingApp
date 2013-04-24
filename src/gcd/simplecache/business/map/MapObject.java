@@ -20,9 +20,33 @@ public class MapObject extends OverlayItem {
     mGeocache = null;
   }
 
+  public MapObject(Geocache geocache) {
+    super(geocache.getName(),
+        getCacheMapObjectDescription(geocache),
+        new GeoCoordinateConverter().geocachingToGeoPoint(geocache.getPoint()));
+    mGeocache = geocache;
+    setType(mGeocache.getType().name());
+  }
+
   /* Methods */
+  /** formats the string for the description of a map object */
+  private static String getCacheMapObjectDescription(Geocache geocache) {
+    return geocache.getId()+" - "+geocache.getOwner()+"\n"
+        +"Size: "+geocache.getSize()+"\n"
+        +"Difficulty: "+geocache.getDifficulty()+"\n"
+        +"Terrain: "+geocache.getTerrain();
+  }
 
   /* Getter and Setter */
+  public void setType(String type) {
+    for (ObjectType objectType : ObjectType.values()) {
+      if(type.equalsIgnoreCase(objectType.name())) {
+        mType = objectType;
+        return;
+      }
+    }
+  }
+
   public void setType(ObjectType type) {
     this.mType = type;
   }

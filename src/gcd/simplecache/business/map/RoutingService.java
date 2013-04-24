@@ -90,7 +90,7 @@ public class RoutingService {
     urlString.append(converter.microToDecimalDegree(dest.getLatitudeE6()));
     urlString.append(",");
     urlString.append(converter.microToDecimalDegree(dest.getLongitudeE6()));
-    urlString.append("&sensor=true&mode=walking");
+    urlString.append("&sensor=true");
 
     return urlString.toString();
   }
