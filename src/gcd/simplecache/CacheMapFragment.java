@@ -303,7 +303,7 @@ public class CacheMapFragment extends Fragment {
   }
 
   private void drawRoutePath() {
-//    mMapView.getOverlayManager().remove(mRouteOverlay);
+    mMapView.getOverlayManager().remove(mRouteOverlay);
 //    if(mUser == null || mDestination == null)
 //      return;
 //
@@ -313,38 +313,16 @@ public class CacheMapFragment extends Fragment {
     if(path == null) {
       new ViewInThreadHandler().showToast(service.getError(), Toast.LENGTH_LONG);
     } else {
+      final List<OverlayItem> pointList = new ArrayList<OverlayItem>(path.size());
       for (DTOLocation point : path) {
+        pointList.add(new OverlayItem("","",new GeoPoint(point.latitude, point.longitude)));
         Log.d(LOG_TAG, point.toString());
       }
+      mRouteOverlay = new ItemizedOverlayWithFocus<OverlayItem>(
+          getActivity(), pointList, null);
+      mMapView.getOverlayManager().add(mRouteOverlay);
+      mMapView.postInvalidate();
     }
-//
-//    String[] pairs = path.split(" ");
-//    String[] lngLat = pairs[0].split(","); // lngLat[0]=longitude
-//    // lngLat[1]=latitude
-//    // lngLat[2]=height
-//    // src
-//    GeoPoint startGP = new GeoPoint((int) (Double.parseDouble(lngLat[1]) * 1E6),
-//        (int) (Double.parseDouble(lngLat[0]) * 1E6));
-//
-//    GeoPoint gp1;
-//    GeoPoint gp2 = startGP;
-//    final List<OverlayItem> pointList = new ArrayList<OverlayItem>(pairs.length);
-//    for (int i = 1; i < pairs.length; i++) // the last one would be
-//    // crash
-//    {
-//      lngLat = pairs[i].split(",");
-//      gp1 = gp2;
-//      // watch out! For GeoPoint, first:latitude, second:longitude
-//      gp2 = new GeoPoint((int) (Double.parseDouble(lngLat[1]) * 1E6),
-//          (int) (Double.parseDouble(lngLat[0]) * 1E6));
-//      pointList.add(new OverlayItem(Integer.toString(i), "", gp2));
-//
-//      Log.d(LOG_TAG, "pair:" + pairs[i]);
-//    }
-//    mRouteOverlay = new ItemizedOverlayWithFocus<OverlayItem>(
-//        getActivity(), pointList, null);
-//    mMapView.getOverlayManager().add(mRouteOverlay);
-
   }
 
   /*       End       */
