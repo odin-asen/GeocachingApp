@@ -22,7 +22,7 @@ public class Geocache {
   private String mOwner;
   private String mDescription;
   private String mHint;
-  private String mType;
+  private CacheType mType;
   private float mDifficulty;
   private float mTerrain;
   private float mAwesomeness;
@@ -91,7 +91,7 @@ public class Geocache {
       dto.difficulty = geocache.mDifficulty;
       dto.terrain = geocache.mTerrain;
       dto.size = geocache.mSize;
-      dto.type = geocache.mType;
+      dto.type = geocache.mType.toString();
     }
 
     return dto;
@@ -228,7 +228,7 @@ public class Geocache {
     this.mSize = size;
   }
 
-  public String getType() {
+  public CacheType getType() {
     return mType;
   }
 
@@ -237,10 +237,13 @@ public class Geocache {
    * be set to an empty string.
    * @param type Cache type.
    */
-  public void setType(String type) {
-    mType = getNoNull(type);
+  public void setType(CacheType type) {
+    mType = type;
   }
 
+  public void setType(String type) {
+    mType = CacheType.parseType(getNoNull(type));
+  }
   /*        End        */
   /*********************/
 

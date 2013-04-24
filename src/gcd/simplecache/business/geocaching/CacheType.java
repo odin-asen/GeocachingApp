@@ -1,4 +1,4 @@
-package gcd.simplecache.dto;
+package gcd.simplecache.business.geocaching;
 
 /**
  * This enumeration represents a geocache type.
@@ -25,7 +25,7 @@ public enum CacheType {
    * is case insensitive. If no enumeration matches,
    * the default object will be returned.
    */
-  CacheType parseCacheType(String description) {
+  static CacheType parseType(String description) {
     if(description == null)
       return DEFAULT;
 
@@ -39,5 +39,9 @@ public enum CacheType {
     }
 
     return DEFAULT;
+  }
+
+  public String toString() {
+    return description;
   }
 }
