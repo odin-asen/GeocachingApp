@@ -1,16 +1,16 @@
 package gcd.simplecache.business.map;
 
 import android.util.Log;
+import gcd.simplecache.data.GoogleDirectionReader;
+import gcd.simplecache.dto.geocache.DTOLocation;
 import org.osmdroid.util.GeoPoint;
-import org.w3c.dom.Document;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.List;
 
 /**
  * <p/>
@@ -22,6 +22,7 @@ public class RoutingService {
   private static final String GEOMETRY_COLLECTION = "GeometryCollection";
 
   private String mError;
+  private String READ_ERROR_USER_MESSAGE;
 
   /****************/
   /* Constructors */
@@ -36,13 +37,15 @@ public class RoutingService {
   /* Methods */
 
   /**
-   * Returns an empty string if the path couldn't be fetched for some reason.
-   * Refer to getError to receive a showable user message.
+   * Returns null if the path couldn't be fetched for some reason.
+   * Refer to getError to receive a printable user message.
    * @param src Starting point.
    * @param dst Destination point.
-   * @return A string with comma separated pairs for the path.
+   * @return A list with DTOLocation objects.
    */
-  public String getPath(GeoPoint src, GeoPoint dst) {
+  public List<DTOLocation> getPath(GeoPoint src, GeoPoint dst) {
+    List<DTOLocation> locations = null;
+
     /* connect to map web service */
     String urlString = buildRequest(src, dst);
     Log.d(LOG_TAG, "Routing fetch URL=" + urlString);
@@ -51,34 +54,21 @@ public class RoutingService {
     /* to get the coordinates(direction route) */
 
     final InputStream input = open(urlString);
-    if(input == null)
-      return "";
-
-    try {
-      final Document doc;
-      final DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-      final DocumentBuilder db = dbf.newDocumentBuilder();
-      doc = db.parse(input);
-
-      if (doc.getElementsByTagName(GEOMETRY_COLLECTION).getLength() > 0) {
-
-        // String path =
-        // doc.getElementsByTagName("GeometryCollection").item(0).getFirstChild().getFirstChild().getNodeName();
-        String path = doc.getElementsByTagName(GEOMETRY_COLLECTION).item(0).getFirstChild().getFirstChild()
-            .getFirstChild().getNodeValue();
-
-        Log.d(LOG_TAG, "path=" + path);
-
-        return path;
+    if(input != null) {
+      READ_ERROR_USER_MESSAGE = "Could not read routing information. Please contact the support!";
+      try {
+        final GoogleDirectionReader reader = new GoogleDirectionReader();
+        final String jsonString = reader.readInputStream(input);
+        locations = reader.readJSON(jsonString);
+        if(locations == null)
+          mError = READ_ERROR_USER_MESSAGE;
+      } catch (Exception e) {
+        Log.e(LOG_TAG, e.getMessage());
+        mError = READ_ERROR_USER_MESSAGE;
       }
-    } catch (Exception e) {
-      /* ParserConfigurationException not cached */
-      /* because there's nothing special configured */
-      Log.e(LOG_TAG, e.getMessage());
-      mError = "Could not read routing information. Please contact the support!";
     }
 
-    return "";
+    return locations;
   }
 
   /*   End   */
@@ -138,6 +128,7 @@ public class RoutingService {
       final HttpURLConnection connection = getHttpConnection(requestURL);
       if(connection.getResponseCode() == HttpURLConnection.HTTP_OK)
         in = connection.getInputStream();
+      else mError = "Wrong http request";
     } catch (IOException e) {
       Log.e(LOG_TAG, e.getMessage());
       mError = "Could not get routing information due to a connection error.";

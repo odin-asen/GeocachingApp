@@ -66,7 +66,7 @@ public class GoogleDirectionReader {
       JSONObject jsonRoutes = new JSONObject(jsonString);
       return getLocationList(jsonRoutes);
     } catch (Exception e) {
-      Log.e(LOG_TAG, "Could not read json object");
+      Log.e(LOG_TAG, "Could not read json object", e);
     }
 
     return null;
@@ -82,20 +82,36 @@ public class GoogleDirectionReader {
   private List<DTOLocation> getLocationList(JSONObject jsonRoute)
       throws JSONException {
     final JSONArray routes = jsonRoute.getJSONArray("routes");
-    final List<DTOLocation> locationList = new ArrayList<DTOLocation>(routes.length());
+    final JSONObject firstRoute = routes.getJSONObject(0);
+    final JSONArray legs = firstRoute.getJSONArray("legs");
 
-    for (int legIndex = 0; legIndex < routes.length(); legIndex++) {
-      final JSONArray legs = routes.getJSONArray(legIndex);
-      fillStepList(locationList, legs);
+    /* Initialise for the case that each leg has one step */
+    final List<DTOLocation> locationList = new ArrayList<DTOLocation>();
+    for (int legIndex = 0; legIndex < legs.length(); legIndex++) {
+      final JSONObject leg = legs.getJSONObject(legIndex);
+      fillStepList(locationList, leg);
     }
     return locationList;
   }
-
+//  "routes": [ {
+//    "summary": "I-40 W",
+//        "legs": [ {
+//      "steps": [ {
+//        "travel_mode": "DRIVING",
+//            "start_location": {
+//          "lat": 41.8507300,
+//              "lng": -87.6512600
+//        },
+//        "end_location": {
+//          "lat": 41.8525800,
+//              "lng": -87.6514100
+//        },
   /** fills a DTOLocation list with information from a legs array */
-  private void fillStepList(List<DTOLocation> stepList, JSONArray legs)
+  private void fillStepList(List<DTOLocation> stepList, JSONObject leg)
       throws JSONException {
-    for (int stepIndex = 0; stepIndex < legs.length(); stepIndex++) {
-      final JSONObject step = legs.getJSONObject(stepIndex);
+    final JSONArray steps = leg.getJSONArray("steps");
+    for (int index = 0; index < steps.length(); index++) {
+      final JSONObject step = steps.getJSONObject(index);
       final JSONObject startLocation = step.getJSONObject("start_location");
 
       /* add location */
