@@ -81,8 +81,9 @@ public class CacheMapFragment extends Fragment {
 
   public CacheMapFragment() {
     initialiseOverlays();
-    mLastZoomLevel = 8;
-    mLastPoint = new GeoPoint(50.0,10.0);
+    /* Set the map to the middle of Europe */
+    mLastZoomLevel = 2;
+    mLastPoint = new GeoPoint(53.330873,10.722656);
     mNavigationEnabled = false;
     mDestination = new MapObject("", "", new GeoPoint(0.0,0.0));
     mUser = new MapObject("", "", new GeoPoint(0.0,0.0));
