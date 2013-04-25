@@ -4,18 +4,9 @@ package gcd.simplecache;
 import android.location.Location;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewGroup.LayoutParams;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.GridView;
-import android.widget.LinearLayout;
-import android.widget.ScrollView;
-import android.widget.TextView;
-import android.widget.Toast;
 
 
 
@@ -25,6 +16,7 @@ import android.widget.Toast;
 	public class CompassFragment extends Fragment {
 	
 	  CompassView cView;
+	  private boolean isNav = false;
 	  
 
 	  	  
@@ -37,10 +29,23 @@ import android.widget.Toast;
 	  
 
 	  
-	  public void update (Location location) {
-		  cView.updateCurrentLoc(location);
+	  public void updateCompass (float azimuth) {
+		  cView.updateCompass(azimuth);
 	  }
-  
+	  
+	  public void updateCurrent (Location location) {
+		  cView.updateCurrentLoc(location);
+		  if (isNav) {
+			  cView.updateNavigation(location);
+		  }
+		  else {}
+	  }
+	  
+	  public void updateDestination(Location location) {
+		  cView.updateDestLoc(location);
+		  isNav = true;		  
+	  }
+	    
 	  
 	  	  	
 }

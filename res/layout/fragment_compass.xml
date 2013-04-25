@@ -7,19 +7,6 @@
     <gcd.simplecache.CompassView
         android:id="@+id/compassView1"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" >
-    </gcd.simplecache.CompassView>
-
-    <gcd.simplecache.CompassView
-        android:id="@+id/compassView2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" >
-    </gcd.simplecache.CompassView>
-
-    <gcd.simplecache.CompassView
-        android:id="@+id/compassView3"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" >
-    </gcd.simplecache.CompassView>
+        android:layout_height="wrap_content" />
 
 </LinearLayout> 

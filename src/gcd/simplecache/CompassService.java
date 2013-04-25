@@ -38,8 +38,10 @@ public class CompassService extends Service implements SensorEventListener, Inte
 	}
 
 	@Override
-	public void onSensorChanged(SensorEvent arg0) {
+	public void onSensorChanged(SensorEvent event) {
+	    float azimuth = event.values[0];
 		Intent intent = new Intent(ACTION_ID_COMPASS);
+		intent.putExtra("azimuth", azimuth);
 		mContext.sendBroadcast(intent);	
 	}
 

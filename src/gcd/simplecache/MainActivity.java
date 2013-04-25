@@ -1,5 +1,7 @@
 package gcd.simplecache;
 
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -12,6 +14,7 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTabHost;
 import android.util.Log;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.TabHost;
 import gcd.simplecache.business.geocaching.Geocache;
 import gcd.simplecache.dto.geocache.DTOGeocache;
@@ -21,6 +24,9 @@ public class MainActivity extends FragmentActivity implements IntentActions {
   /* TabSpec IDs */
   private static final String TAG_TS_MAP = "map";
   private static final String TAG_TS_COMPASS = "compass";
+  private static final String NAV_DLG_TAG = "navigatetodialog";
+  
+  private static final int DIALOG_ALERT = 10;
 
   private FragmentTabHost mTabHost;
   
@@ -44,7 +50,7 @@ public class MainActivity extends FragmentActivity implements IntentActions {
 
     receiver = new MessageReceiver();
     receiverRegistered = false;
-
+    
     gps = new GPSService(this);
     compass = new CompassService(this);
   }
@@ -81,7 +87,24 @@ public class MainActivity extends FragmentActivity implements IntentActions {
     tabSpec.setIndicator(title, icon);
     mTabHost.addTab(tabSpec, fragmentClass, null);
   }
+  
 
+@Override
+  public boolean onOptionsItemSelected(MenuItem item) {
+
+      switch (item.getItemId()) {
+          case R.id.navigate_to:
+        	  NavigateToDialog dialog = new NavigateToDialog();
+        	  dialog.show(getSupportFragmentManager(), "Nav Dialog");
+              return true;
+          case R.id.stop_navigation:
+        	  return true;
+          default:
+              return super.onOptionsItemSelected(item);
+      }
+  }
+  
+   
   public class MessageReceiver extends BroadcastReceiver {
 
 		@Override
@@ -93,11 +116,17 @@ public class MainActivity extends FragmentActivity implements IntentActions {
         changeLocation(intent);
         Log.d("Loc","Changed");
 			} else if (action.equals(ACTION_ID_COMPASS)) {
-				Log.d("Sensor", "Changed");
+				 if (mTabHost.getCurrentTabTag().equals(TAG_TS_COMPASS)) {
+					 	Bundle extras = intent.getExtras();
+					 	float azimuth = extras.getFloat("azimuth");
+				        CompassFragment compass = (CompassFragment) getSupportFragmentManager().findFragmentByTag(TAG_TS_COMPASS);
+				        compass.updateCompass(azimuth);
+				 }
+				 else {}
 			} else if (action.equals(ACTION_ID_NAVIGATION)) {
         /* Change navigation and go to compass tab */
         String destination = changeNavigation(intent);
-        mTabHost.setCurrentTabByTag(TAG_TS_COMPASS);
+	      mTabHost.setCurrentTabByTag(TAG_TS_COMPASS);
         Log.d("Navigation", "Changed to "+destination);
       } else if (action.equals(ACTION_ID_DESCRIPTION)) {
 
@@ -112,7 +141,7 @@ public class MainActivity extends FragmentActivity implements IntentActions {
 
       if (currentTabTag.equals(TAG_TS_COMPASS)) {
         CompassFragment compass = (CompassFragment) getSupportFragmentManager().findFragmentByTag(TAG_TS_COMPASS);
-        compass.update(location);
+        compass.updateCurrent(location);
       } else if(currentTabTag.equals(TAG_TS_MAP)) {
         CacheMapFragment map = (CacheMapFragment) getSupportFragmentManager().findFragmentByTag(TAG_TS_MAP);
         map.updateUserPosition(location);
@@ -131,7 +160,11 @@ public class MainActivity extends FragmentActivity implements IntentActions {
           (DTOGeocache) extras.getSerializable(NAVIGATION_DESTINATION);
 
       if (currentTabTag.equals(TAG_TS_COMPASS)) {
-        //Do compass related stuff
+          CompassFragment compass = (CompassFragment) getSupportFragmentManager().findFragmentByTag(TAG_TS_COMPASS);
+          Location location = new Location("a");
+          location.setLongitude(destination.location.longitude);
+          location.setLatitude(destination.location.latitude);
+          compass.updateDestination(location);
       } else if(currentTabTag.equals(TAG_TS_MAP)) {
         final CacheMapFragment map = (CacheMapFragment) getSupportFragmentManager().findFragmentByTag(TAG_TS_MAP);
         map.setNavigationEnabled(enabled);
