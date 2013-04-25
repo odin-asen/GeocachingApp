@@ -1,6 +1,5 @@
 package gcd.simplecache;
 
-import gcd.simplecache.business.geocaching.GeocachingPoint;
 import gcd.simplecache.business.map.GeoCoordinateConverter;
 import gcd.simplecache.dto.geocache.DTOGeocache;
 import android.app.AlertDialog;
