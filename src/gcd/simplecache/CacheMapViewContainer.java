@@ -3,6 +3,7 @@ package gcd.simplecache;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.location.Location;
+import android.util.Log;
 import gcd.simplecache.business.geocaching.Geocache;
 import gcd.simplecache.business.map.GeoCoordinateConverter;
 import gcd.simplecache.business.map.MapObject;
@@ -31,6 +32,7 @@ import java.util.List;
  * Date: 24.04.13
  */
 public class CacheMapViewContainer {
+  private static final String LOG_TAG = CacheMapViewContainer.class.getName();
   private Context mContext;
 
   /* saved values */
@@ -227,14 +229,18 @@ public class CacheMapViewContainer {
   private Drawable getMapObjectDrawable(MapObject.ObjectType type) {
     int resourceId = R.drawable.goal_flag;
 
+    if(type == null) {
+      Log.e(LOG_TAG, "Normally it would crash, find out, why there is a null pointer");
+      return null;
+    }
     if(type.isUser())
       resourceId = R.drawable.position_cross;
     else if(type.equals(MapObject.ObjectType.TRADITIONAL))
       resourceId = R.drawable.treasure;
     else if(type.equals(MapObject.ObjectType.MULTI))
-      resourceId = R.drawable.treasure;
+      resourceId = R.drawable.multi_treasure;
     else if(type.equals(MapObject.ObjectType.RIDDLE))
-      resourceId = R.drawable.treasure;
+      resourceId = R.drawable.question_mark;
     return mContext.getResources().getDrawable(resourceId);
   }
 
