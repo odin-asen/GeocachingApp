@@ -23,7 +23,7 @@ public class CompassView extends View {
   private double dest_lon = 0.0;
   private double dest_lat = 0.0;
   private double dist = 0.0;
-  private int angleToLocation = 90;
+  private int angleToLocation = 0;
   
   private String n = "N";
   private String e = "E";
@@ -151,10 +151,18 @@ public class CompassView extends View {
   public void updateDestLoc(Location location) {
 	dest_lat = location.getLatitude();
 	dest_lon = location.getLongitude();
+	Location current = new Location("Cur");
+	current.setLongitude(cur_lon);
+	current.setLatitude(cur_lat);
+	dist = location.distanceTo(current);
 	invalidate();
   }
   
   public void updateNavigation(Location location) {
+	Location dest = new Location("dest");
+	dest.setLongitude(dest_lon);
+	dest.setLatitude(dest_lat);
+	angleToLocation = (int)location.bearingTo(dest);
 	invalidate(); 
   }
   

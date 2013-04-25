@@ -16,6 +16,7 @@ import android.view.ViewGroup;
 	public class CompassFragment extends Fragment {
 	
 	  CompassView cView;
+	  private boolean isNav = false;
 	  
 
 	  	  
@@ -28,10 +29,23 @@ import android.view.ViewGroup;
 	  
 
 	  
-	  public void update (Location location) {
-		  cView.updateCurrentLoc(location);
+	  public void updateCompass (float azimuth) {
+		  cView.updateCompass(azimuth);
 	  }
-  
+	  
+	  public void updateCurrent (Location location) {
+		  cView.updateCurrentLoc(location);
+		  if (isNav) {
+			  cView.updateNavigation(location);
+		  }
+		  else {}
+	  }
+	  
+	  public void updateDestination(Location location) {
+		  cView.updateDestLoc(location);
+		  isNav = true;		  
+	  }
+	    
 	  
 	  	  	
 }

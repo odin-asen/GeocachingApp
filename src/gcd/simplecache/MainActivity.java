@@ -116,11 +116,17 @@ public class MainActivity extends FragmentActivity implements IntentActions {
         changeLocation(intent);
         Log.d("Loc","Changed");
 			} else if (action.equals(ACTION_ID_COMPASS)) {
-				Log.d("Sensor", "Changed");
+				 if (mTabHost.getCurrentTabTag().equals(TAG_TS_COMPASS)) {
+					 	Bundle extras = intent.getExtras();
+					 	float azimuth = extras.getFloat("azimuth");
+				        CompassFragment compass = (CompassFragment) getSupportFragmentManager().findFragmentByTag(TAG_TS_COMPASS);
+				        compass.updateCompass(azimuth);
+				 }
+				 else {}
 			} else if (action.equals(ACTION_ID_NAVIGATION)) {
         /* Change navigation and go to compass tab */
         String destination = changeNavigation(intent);
-        mTabHost.setCurrentTabByTag(TAG_TS_COMPASS);
+	    mTabHost.setCurrentTabByTag(TAG_TS_COMPASS);
         Log.d("Navigation", "Changed to "+destination);
       } else if (action.equals(ACTION_ID_DESCRIPTION)) {
 
@@ -135,7 +141,7 @@ public class MainActivity extends FragmentActivity implements IntentActions {
 
       if (currentTabTag.equals(TAG_TS_COMPASS)) {
         CompassFragment compass = (CompassFragment) getSupportFragmentManager().findFragmentByTag(TAG_TS_COMPASS);
-        compass.update(location);
+        compass.updateCurrent(location);
       } else if(currentTabTag.equals(TAG_TS_MAP)) {
         CacheMapFragment map = (CacheMapFragment) getSupportFragmentManager().findFragmentByTag(TAG_TS_MAP);
         map.updateUserPosition(location);
@@ -154,7 +160,11 @@ public class MainActivity extends FragmentActivity implements IntentActions {
           (DTOGeocache) extras.getSerializable(NAVIGATION_DESTINATION);
 
       if (currentTabTag.equals(TAG_TS_COMPASS)) {
-        //Do compass related stuff
+          CompassFragment compass = (CompassFragment) getSupportFragmentManager().findFragmentByTag(TAG_TS_COMPASS);
+          Location location = new Location("a");
+          location.setLongitude(destination.location.longitude);
+          location.setLatitude(destination.location.latitude);
+          compass.updateDestination(location);
       } else if(currentTabTag.equals(TAG_TS_MAP)) {
         CacheMapFragment map = (CacheMapFragment) getSupportFragmentManager().findFragmentByTag(TAG_TS_MAP);
         map.setNavigationEnabled(enabled);
