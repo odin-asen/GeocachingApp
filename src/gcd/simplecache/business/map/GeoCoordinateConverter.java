@@ -16,8 +16,11 @@ import static gcd.simplecache.business.geocaching.GeocachingPoint.Orientation;
 public class GeoCoordinateConverter {
   private static final double MEGA = 1000000.0;
   private static final double MICRO = 1/MEGA;
-  private static final int DECIMAL_PLACE = 3;
-
+  /** Rounding precision for decimal minutes */
+  private static final int DECIMAL_PLACE_DM = 3;
+  /** Rounding precision for decimal degree */
+  private static final int DECIMAL_PLACE_DD = 6;
+  
   /* Constructors */
   /* Methods */
   public double microToDecimalDegree(int microDegrees) {
@@ -41,7 +44,7 @@ public class GeoCoordinateConverter {
     double longitude = location.getLongitude();
 
     getOrientation(point, latitude, longitude);
-    getPositiveCoordinates(point, DECIMAL_PLACE, latitude, longitude);
+    getPositiveCoordinates(point, DECIMAL_PLACE_DM, latitude, longitude);
 
     return point;
   }
@@ -71,7 +74,7 @@ public class GeoCoordinateConverter {
     double longitude = microToDecimalDegree(geoPoint.getLongitudeE6());
 
     getOrientation(point, latitude, longitude);
-    getPositiveCoordinates(point, DECIMAL_PLACE, latitude, longitude);
+    getPositiveCoordinates(point, DECIMAL_PLACE_DM, latitude, longitude);
 
     return point;
   }
@@ -80,7 +83,7 @@ public class GeoCoordinateConverter {
    * Converts the coordinates from {@code latitude} and {@code longitude} to
    * a GeocachingPoint object. The parameters must be in decimal degree format.
    * Otherwise a weird result might be return.
-   * The precision of the GeocachingObject is {@value #DECIMAL_PLACE} decimal places for the
+   * The precision of the GeocachingObject is {@value #DECIMAL_PLACE_DM} decimal places for the
    * latitude and longitude minute values. All values are positive.
    * @param latitude Latitude value of the coordinate.
    * @param longitude Longitude value of the coordinate.
@@ -88,10 +91,16 @@ public class GeoCoordinateConverter {
    */
   public GeocachingPoint decimalDegreesToGeocaching(double latitude, double longitude) {
     final GeocachingPoint point = new GeocachingPoint();
-    getPositiveCoordinates(point, DECIMAL_PLACE, latitude, longitude);
+    getPositiveCoordinates(point, DECIMAL_PLACE_DM, latitude, longitude);
     getOrientation(point, latitude, longitude);
     return point;
   }
+  
+  public double decimalMinutesToDecimalDegrees(int degrees, double minutes) {
+	  double decimalDegree = degrees + roundDecimalPlaces(minutes*60, DECIMAL_PLACE_DD);
+	  return decimalDegree;
+  }
+  
 
   /**
    * Returns the geo decimal representation of the latitude and
