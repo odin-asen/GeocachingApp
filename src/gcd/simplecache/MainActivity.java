@@ -58,19 +58,21 @@ public class MainActivity extends FragmentActivity implements IntentActions {
     super.onPause();
     if(receiverRegistered) {
       unregisterReceiver(receiver);
+      receiverRegistered = false;
     }
   }
   	
  	@Override
-  	protected void onResume() {
+  protected void onResume() {
  		super.onResume();
  		if(!receiverRegistered) {
-  			registerReceiver(receiver, new IntentFilter(ACTION_ID_GPS));
-  			registerReceiver(receiver, new IntentFilter(ACTION_ID_COMPASS));
-  			registerReceiver(receiver, new IntentFilter(ACTION_ID_DESCRIPTION));
-  			registerReceiver(receiver, new IntentFilter(ACTION_ID_NAVIGATION));
-  		}
-  	}
+      registerReceiver(receiver, new IntentFilter(ACTION_ID_GPS));
+      registerReceiver(receiver, new IntentFilter(ACTION_ID_COMPASS));
+      registerReceiver(receiver, new IntentFilter(ACTION_ID_DESCRIPTION));
+      registerReceiver(receiver, new IntentFilter(ACTION_ID_NAVIGATION));
+      receiverRegistered = true;
+    }
+  }
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
