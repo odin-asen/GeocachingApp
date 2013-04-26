@@ -103,7 +103,7 @@ public class CacheMapFragment extends Fragment {
   public void onStart() {
     super.onStart();
 
-    mContainer.initialiseLastState(mNavigationEnabled);
+    mContainer.initialiseLastState(!mNavigationEnabled);
   }
 
   @Override

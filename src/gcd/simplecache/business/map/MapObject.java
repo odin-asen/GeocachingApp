@@ -16,7 +16,7 @@ public class MapObject extends OverlayItem {
   /* Constructors */
   public MapObject(String title, String description, GeoPoint geoPoint) {
     super(title, description, geoPoint);
-    mType = ObjectType.TRADITIONAL;
+    mType = ObjectType.DEFAULT;
     mGeocache = null;
   }
 
@@ -45,6 +45,7 @@ public class MapObject extends OverlayItem {
         return;
       }
     }
+    mType = ObjectType.DEFAULT;
   }
 
   public void setType(ObjectType type) {
@@ -65,11 +66,13 @@ public class MapObject extends OverlayItem {
 
   /* Inner classes */
   public enum ObjectType {
+    DEFAULT,
     AIM,
     MULTI,
     RIDDLE,
     TRADITIONAL,
-    USER;
+    USER,
+    VIRTUAL;
 
     public boolean isGeocache() {
       return !(this.equals(AIM) || this.equals(USER));

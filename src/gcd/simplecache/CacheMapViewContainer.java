@@ -3,7 +3,6 @@ package gcd.simplecache;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.location.Location;
-import android.util.Log;
 import gcd.simplecache.business.geocaching.Geocache;
 import gcd.simplecache.business.map.GeoCoordinateConverter;
 import gcd.simplecache.business.map.MapObject;
@@ -122,7 +121,12 @@ public class CacheMapViewContainer {
     mMapView.postInvalidate();
   }
 
-  /** setContext must have been called before. */
+  /**
+   * setContext must have been called before.
+   * Set path and aim icons on the map. If path is null, only the aim will be set.
+   * @param aim Aim where to go. Must not be null.
+   * @param path List of intermediate location points.
+   */
   public void refreshRoute(Geocache aim, List<DTOLocation> path) {
     mMapView.getOverlayManager().remove(mAimOverlay);
 
@@ -176,18 +180,22 @@ public class CacheMapViewContainer {
     mMapView.setMultiTouchControls(true);
   }
 
+  /**
+   * Returns an overlay item list with the destination and the path.
+   * Path can be null to set only the destination.
+   */
   private List<OverlayItem> initialiseRouteList(List<DTOLocation> path) {
     final List<OverlayItem> list;
     if(path == null) {
       list = new ArrayList<OverlayItem>(1);
-      list.add(mDestination);
     } else {
       list = new ArrayList<OverlayItem>(path.size()+1);
-      list.add(mDestination);
 
       for (DTOLocation point : path)
         list.add(new OverlayItem("","",new GeoPoint(point.latitude, point.longitude)));
     }
+
+    list.add(mDestination);
 
     return list;
   }
@@ -229,18 +237,19 @@ public class CacheMapViewContainer {
   private Drawable getMapObjectDrawable(MapObject.ObjectType type) {
     int resourceId = R.drawable.goal_flag;
 
-    if(type == null) {
-      Log.e(LOG_TAG, "Normally it would crash, find out, why there is a null pointer");
-      return null;
-    }
     if(type.isUser())
       resourceId = R.drawable.position_cross;
-    else if(type.equals(MapObject.ObjectType.TRADITIONAL))
-      resourceId = R.drawable.treasure;
-    else if(type.equals(MapObject.ObjectType.MULTI))
-      resourceId = R.drawable.multi_treasure;
-    else if(type.equals(MapObject.ObjectType.RIDDLE))
-      resourceId = R.drawable.question_mark;
+    else if(type.isGeocache()) {
+      if(type.equals(MapObject.ObjectType.TRADITIONAL))
+        resourceId = R.drawable.treasure;
+      else if(type.equals(MapObject.ObjectType.MULTI))
+        resourceId = R.drawable.multi_treasure;
+      else if(type.equals(MapObject.ObjectType.RIDDLE))
+        resourceId = R.drawable.question_mark;
+      else if(type.equals(MapObject.ObjectType.VIRTUAL))
+        resourceId = R.drawable.question_mark;
+    }
+
     return mContext.getResources().getDrawable(resourceId);
   }
 
