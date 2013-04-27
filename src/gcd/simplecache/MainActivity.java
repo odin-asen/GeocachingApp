@@ -27,9 +27,7 @@ public class MainActivity extends FragmentActivity
   /* TabSpec IDs */
   private static final String TAG_TS_MAP = "map";
   private static final String TAG_TS_COMPASS = "compass";
-  private static final String NAV_DLG_TAG = "navigatetodialog";
-  
-  private static final int DIALOG_ALERT = 10;
+  private static final String TAG_TS_DETAILS = "details";
 
   private FragmentTabHost mTabHost;
   
@@ -63,6 +61,7 @@ public class MainActivity extends FragmentActivity
     /* Add map and compass tabs */
     addTab(TAG_TS_MAP, this.getString(R.string.tab_title_map), null, CacheMapFragment.class);
     addTab(TAG_TS_COMPASS, this.getString(R.string.tab_title_compass), null, CompassFragment.class);
+    addTab(TAG_TS_DETAILS, this.getString(R.string.tab_title_details), null, DetailsFragment.class);
 
     receiver = new MessageReceiver();
     receiverRegistered = false;
@@ -105,9 +104,8 @@ public class MainActivity extends FragmentActivity
     tabSpec.setIndicator(title, icon);
     mTabHost.addTab(tabSpec, fragmentClass, null);
   }
-  
 
-@Override
+  @Override
   public boolean onOptionsItemSelected(MenuItem item) {
     switch (item.getItemId()) {
       case R.id.navigate_to:
