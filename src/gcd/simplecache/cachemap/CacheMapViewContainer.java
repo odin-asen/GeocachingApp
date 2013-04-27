@@ -35,9 +35,8 @@ public class CacheMapViewContainer {
   private static final String LOG_TAG = CacheMapViewContainer.class.getName();
   private Context mContext;
 
-  /* saved values */
   private GeoPoint mLastPoint;
-  private int mLastZoomLevel;
+  private int mZoomLevel;
   private MapObject mDestination;
   private MapObject mUser;
 
@@ -63,7 +62,7 @@ public class CacheMapViewContainer {
     mUser = new MapObject("", "", new GeoPoint(0.0,0.0));
 
     /* Set the map to the middle of Europe */
-    mLastZoomLevel = 2;
+    mZoomLevel = 2;
     mLastPoint = new GeoPoint(53.330873,10.722656);
   }
 
@@ -97,7 +96,6 @@ public class CacheMapViewContainer {
 
     mController.setCenter(currentPoint);
     mController.setZoom(10);
-//    setLastView(currentPoint, 10);
     mMapView.invalidate();
   }
 
@@ -142,16 +140,18 @@ public class CacheMapViewContainer {
   }
 
   /**
-   * Initialises the last state of the map view.
+   * Sets the current view.
    * @param showCaches If true, the caches overlay will be shown and the aim overlay
    *                   with the route will be destroyed. If false the cache overlay
    *                   will be destroyed and the aim overlay with the route will be
    *                   displayed, instead.
+   * @param zoomLevel New zoom level on the map.
+   * @param point New centre point of the map.
    */
-  public void initialiseLastState(boolean showCaches) {
+  public void setView(boolean showCaches, int zoomLevel, GeoPoint point) {
     /* Go to the last point */
-    mController.setZoom(mLastZoomLevel);
-    mController.setCenter(mLastPoint);
+    mController.setZoom(zoomLevel);
+    mController.setCenter(point);
 
     setOverlays(showCaches);
     mMapView.postInvalidate();
@@ -205,7 +205,7 @@ public class CacheMapViewContainer {
    * Sets the saved overlay variables on the map.
    * Depending on the navigation mode it sets specific overlays to null
    * to save memory.
-   * @param showCaches see {@link #initialiseLastState(boolean)}
+   * @param showCaches see {@link #setView}
    */
   private void setOverlays(boolean showCaches) {
     mMapView.getOverlayManager().remove(mCacheOverlay);
@@ -268,19 +268,8 @@ public class CacheMapViewContainer {
     } else mController = null;
   }
 
-  public void setLastView() {
-    setLastView((GeoPoint) mMapView.getMapCenter(), mLastZoomLevel);
-  }
-
-  public void setLastView(GeoPoint lastPoint, int lastZoomLevel) {
-    if(!mLastPoint.equals(lastPoint))
-      mLastPoint = lastPoint;
-    if(mLastZoomLevel != lastZoomLevel)
-      mLastZoomLevel = lastZoomLevel;
-  }
-
-  public int getLastZoomLevel() {
-    return mLastZoomLevel;
+  public void setLastPoint(GeoPoint point) {
+    mLastPoint = new GeoPoint(point);
   }
 
   public GeoPoint getLastPoint() {
@@ -291,6 +280,14 @@ public class CacheMapViewContainer {
     if(mUser == null)
       return null;
     else return mUser.getPoint();
+  }
+
+  public int getZoomLevel() {
+    return mZoomLevel;
+  }
+
+  public void setZoomLevel(int zoomLevel) {
+    mZoomLevel = zoomLevel;
   }
 
   /**

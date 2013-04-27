@@ -46,8 +46,6 @@ import java.util.List;
  * moves the map or zooms out. Nothing happens if the user zooms in.
  */
 public class CacheMapFragment extends Fragment {
-  private static final String LAST_POINT = "point";
-  private static final String LAST_ZOOM = "zoom";
   private static final String LOG_TAG = CacheMapFragment.class.getName();
   private static final int ZOOM_LEVEL_UPDATE_LIMIT = 8;
   private static final int FETCH_LIMIT = 500;
@@ -92,11 +90,6 @@ public class CacheMapFragment extends Fragment {
   public void onActivityCreated(Bundle savedInstance) {
     super.onActivityCreated(savedInstance);
 
-    if(savedInstance != null) {
-      mContainer.setLastView(
-          (GeoPoint) savedInstance.getSerializable(LAST_POINT),
-          savedInstance.getInt(LAST_ZOOM));
-    }
     mContainer.setContext(getActivity());
   }
 
@@ -104,15 +97,8 @@ public class CacheMapFragment extends Fragment {
   public void onStart() {
     super.onStart();
 
-    mContainer.initialiseLastState(!mCacheMapInfo.isNavigating());
-  }
-
-  @Override
-  public void onSaveInstanceState(Bundle outState) {
-    super.onSaveInstanceState(outState);
-    outState.putSerializable(LAST_POINT, mContainer.getLastPoint());
-    outState.putInt(LAST_ZOOM, mContainer.getLastZoomLevel());
-    Log.d("map", "save instance");
+    mContainer.setView(!mCacheMapInfo.isNavigating(), mContainer.getZoomLevel(),
+        mContainer.getLastPoint());
   }
 
   @Override
@@ -214,15 +200,14 @@ public class CacheMapFragment extends Fragment {
 
   private class ScrollZoomListener implements MapListener {
     public boolean onScroll(ScrollEvent scrollEvent) {
-      mContainer.setLastView();
+      mContainer.setLastPoint((GeoPoint) scrollEvent.getSource().getMapCenter());
       mapUpdate(true);
       return true;
     }
 
     public boolean onZoom(ZoomEvent zoomEvent) {
-      final boolean zoomingIn = mContainer.getLastZoomLevel() < zoomEvent.getZoomLevel();
-      mContainer.setLastView();
-      mContainer.setLastView(mContainer.getLastPoint(), zoomEvent.getZoomLevel());
+      final boolean zoomingIn = mContainer.getZoomLevel() < zoomEvent.getZoomLevel();
+      mContainer.setZoomLevel(zoomEvent.getZoomLevel());
       mapUpdate(!zoomingIn);
       return true;
     }
@@ -230,7 +215,7 @@ public class CacheMapFragment extends Fragment {
     /** Fetch cache database when allowed */
     private void mapUpdate(boolean notZoomIn) {
       if(!mCacheMapInfo.isNavigating()
-          && (mContainer.getLastZoomLevel() > ZOOM_LEVEL_UPDATE_LIMIT)
+          && (mContainer.getZoomLevel() > ZOOM_LEVEL_UPDATE_LIMIT)
           && notZoomIn) {
         /* Run a thread to fetch the cache database */
         runUpdateThread();
