@@ -17,14 +17,27 @@
                 android:layout_height="match_parent"
                 android:layout_margin="4dp"
                 android:scaleType="fitCenter" />
-        <TextView
-            android:id="@+id/cache_code"
-            android:layout_height="match_parent"
+        <LinearLayout
+            android:orientation="vertical"
             android:layout_width="match_parent"
-            android:layout_weight="1"
-            android:layout_marginEnd="5dp"
-            android:textColor="#FFFFFFFF"
-            android:textSize="24dp"/>
+            android:layout_height="match_parent"
+            android:layout_marginEnd="5dp" >
+
+            <TextView
+                    android:id="@+id/cache_code"
+                    android:layout_height="match_parent"
+                    android:layout_width="match_parent"
+                    android:layout_weight="1"
+                    android:textColor="#FFFFFFFF"
+                    android:textSize="24dp" />
+            <TextView
+                    android:id="@+id/cache_name"
+                    android:layout_height="match_parent"
+                    android:layout_width="match_parent"
+                    android:layout_weight="1"
+                    android:textColor="#FFFFFFFF"
+                    android:textSize="15dp" />
+        </LinearLayout>
     </LinearLayout>
 
     <!-- Cache Size -->

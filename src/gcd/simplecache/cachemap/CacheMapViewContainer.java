@@ -121,7 +121,7 @@ public class CacheMapViewContainer {
     mMapView.getOverlayManager().remove(mAimOverlay);
 
     mDestination = new MapObject(aim);
-    mDestination.setMarker(mContext.getResources().getDrawable(R.drawable.goal_flag));
+    mDestination.setMarker(mContext.getResources().getDrawable(R.drawable.chequered_flag));
 
     final List<OverlayItem> routeList = initialiseRouteList(path);
 
@@ -227,7 +227,7 @@ public class CacheMapViewContainer {
   }
 
   private Drawable getMapObjectDrawable(MapObject.ObjectType type) {
-    int resourceId = R.drawable.goal_flag;
+    int resourceId = R.drawable.chequered_flag;
 
     if(type.isUser())
       resourceId = R.drawable.position_cross;

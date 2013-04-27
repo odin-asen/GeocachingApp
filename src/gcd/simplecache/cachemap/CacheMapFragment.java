@@ -54,13 +54,11 @@ public class CacheMapFragment extends Fragment {
   private CacheMapViewContainer mContainer;
 
   private CacheMapInfo mCacheMapInfo;
-  private boolean mRouteShown;
 
   /****************/
   /* Constructors */
 
   public CacheMapFragment() {
-    mRouteShown = false;
     mContainer = new CacheMapViewContainer(
         new ScrollZoomListener(), new MapItemListener());
   }

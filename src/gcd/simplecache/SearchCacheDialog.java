@@ -69,6 +69,8 @@ public class SearchCacheDialog extends DialogFragment implements IntentActions {
     textView.setText(Float.toString(mGeocache.getTerrain()));
     textView = (TextView) view.findViewById(R.id.cache_code);
     textView.setText(mGeocache.getId());
+    textView = (TextView) view.findViewById(R.id.cache_name);
+    textView.setText(mGeocache.getName());
 
     /* set title */
     if(mTitleIcon != null) {
