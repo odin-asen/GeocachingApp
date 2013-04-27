@@ -15,10 +15,15 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TabHost;
 import gcd.simplecache.business.geocaching.Geocache;
+import gcd.simplecache.business.geocaching.GeocachingPoint;
+import gcd.simplecache.business.map.GeoCoordinateConverter;
+import gcd.simplecache.cachemap.CacheMapFragment;
+import gcd.simplecache.cachemap.CacheMapInfo;
 import gcd.simplecache.dto.geocache.DTOGeocache;
 import gcd.simplecache.dto.geocache.DTOLocation;
 
-public class MainActivity extends FragmentActivity implements IntentActions {
+public class MainActivity extends FragmentActivity
+    implements IntentActions, CacheMapInfo {
   /* TabSpec IDs */
   private static final String TAG_TS_MAP = "map";
   private static final String TAG_TS_COMPASS = "compass";
@@ -32,6 +37,17 @@ public class MainActivity extends FragmentActivity implements IntentActions {
   private CompassService compass;
   private MessageReceiver receiver;
   private Boolean receiverRegistered;
+
+  /* CacheMapFragment variables */
+  boolean mNavigating;
+  GeocachingPoint mUserPoint;
+  GeocachingPoint mAimPoint;
+
+  public MainActivity() {
+    mNavigating = false;
+    mUserPoint = new GeocachingPoint();
+    mAimPoint = new GeocachingPoint();
+  }
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -91,20 +107,39 @@ public class MainActivity extends FragmentActivity implements IntentActions {
 
 @Override
   public boolean onOptionsItemSelected(MenuItem item) {
+    switch (item.getItemId()) {
+      case R.id.navigate_to:
+        NavigateToDialog dialog = new NavigateToDialog();
+        dialog.show(getSupportFragmentManager(), "Nav Dialog");
+        return true;
+      case R.id.stop_navigation:
 
-      switch (item.getItemId()) {
-          case R.id.navigate_to:
-        	  NavigateToDialog dialog = new NavigateToDialog();
-        	  dialog.show(getSupportFragmentManager(), "Nav Dialog");
-              return true;
-          case R.id.stop_navigation:
-        	  return true;
-          default:
-              return super.onOptionsItemSelected(item);
-      }
+        return true;
+      default:
+        return super.onOptionsItemSelected(item);
+    }
   }
-  
-   
+
+  /***************************/
+  /* Implements CacheMapInfo */
+  /***************************/
+
+  @Override
+  public boolean isNavigating() {
+    return mNavigating;
+  }
+
+  @Override
+  public GeocachingPoint getUserPoint() {
+    return mUserPoint;
+  }
+
+  @Override
+  public GeocachingPoint getAimPoint() {
+    return mAimPoint;
+  }
+
+
   public class MessageReceiver extends BroadcastReceiver {
 
 		@Override
@@ -126,7 +161,6 @@ public class MainActivity extends FragmentActivity implements IntentActions {
 			} else if (action.equals(ACTION_ID_NAVIGATION)) {
         /* Change navigation and go to compass tab */
         String destination = changeNavigation(intent);
-	      mTabHost.setCurrentTabByTag(TAG_TS_COMPASS);
         Log.d("Navigation", "Changed to "+destination);
       } else if (action.equals(ACTION_ID_DESCRIPTION)) {
 
@@ -153,11 +187,13 @@ public class MainActivity extends FragmentActivity implements IntentActions {
     private String changeNavigation(Intent intent) {
       final String currentTabTag = mTabHost.getCurrentTabTag();
 
-      /* get navigation properties */
+      /* get/set navigation properties */
       final Bundle extras = intent.getExtras();
-      final boolean enabled = extras.getBoolean(NAVIGATION_ENABLED);
+      mNavigating = extras.getBoolean(NAVIGATION_ENABLED);
       final DTOGeocache destination =
           (DTOGeocache) extras.getSerializable(NAVIGATION_DESTINATION);
+      mAimPoint = new GeoCoordinateConverter().decimalDegreesToGeocaching(
+          destination.location.latitude, destination.location.longitude);
 
       if (currentTabTag.equals(TAG_TS_COMPASS)) {
           CompassFragment compass = (CompassFragment) getSupportFragmentManager().findFragmentByTag(TAG_TS_COMPASS);
@@ -167,7 +203,6 @@ public class MainActivity extends FragmentActivity implements IntentActions {
           compass.updateDestination(location);
       } else if(currentTabTag.equals(TAG_TS_MAP)) {
         final CacheMapFragment map = (CacheMapFragment) getSupportFragmentManager().findFragmentByTag(TAG_TS_MAP);
-        map.setNavigationEnabled(enabled);
         new Thread(new Runnable() {
           public void run() {
             map.setDestination(Geocache.toGeocache(destination));

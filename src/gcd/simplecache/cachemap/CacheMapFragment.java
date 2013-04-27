@@ -1,4 +1,4 @@
-package gcd.simplecache;
+package gcd.simplecache.cachemap;
 
 import android.app.Activity;
 import android.location.Location;
@@ -11,6 +11,8 @@ import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
+import gcd.simplecache.R;
+import gcd.simplecache.SearchCacheDialog;
 import gcd.simplecache.business.geocaching.ComOpencachingService;
 import gcd.simplecache.business.geocaching.Geocache;
 import gcd.simplecache.business.geocaching.GeocachingService;
@@ -54,13 +56,12 @@ public class CacheMapFragment extends Fragment {
   private TextView mProgressText;
   private CacheMapViewContainer mContainer;
 
-  private boolean mNavigationEnabled;
+  private CacheMapInfo mCacheMapInfo;
 
   /****************/
   /* Constructors */
 
   public CacheMapFragment() {
-    mNavigationEnabled = false;
     mContainer = new CacheMapViewContainer(
         new ScrollZoomListener(), new MapItemListener());
   }
@@ -103,7 +104,7 @@ public class CacheMapFragment extends Fragment {
   public void onStart() {
     super.onStart();
 
-    mContainer.initialiseLastState(!mNavigationEnabled);
+    mContainer.initialiseLastState(!mCacheMapInfo.isNavigating());
   }
 
   @Override
@@ -112,6 +113,17 @@ public class CacheMapFragment extends Fragment {
     outState.putSerializable(LAST_POINT, mContainer.getLastPoint());
     outState.putInt(LAST_ZOOM, mContainer.getLastZoomLevel());
     Log.d("map", "save instance");
+  }
+
+  @Override
+  public void onAttach(Activity activity) {
+    super.onAttach(activity);
+    if (activity instanceof CacheMapInfo) {
+      mCacheMapInfo = (CacheMapInfo) activity;
+    } else {
+      throw new ClassCastException(activity.toString()
+          + " must implement "+CacheMapInfo.class.getName());
+    }
   }
 
   /*   End   */
@@ -145,14 +157,6 @@ public class CacheMapFragment extends Fragment {
 
   /*********************/
   /* Getter and Setter */
-
-  public void setNavigationEnabled(boolean enabled) {
-    this.mNavigationEnabled = enabled;
-  }
-
-  public boolean isNavigationEnabled() {
-    return mNavigationEnabled;
-  }
 
   /**
    * This method sets a new destination and refreshes the route
@@ -225,7 +229,8 @@ public class CacheMapFragment extends Fragment {
 
     /** Fetch cache database when allowed */
     private void mapUpdate(boolean notZoomIn) {
-      if(!mNavigationEnabled && mContainer.getLastZoomLevel() > ZOOM_LEVEL_UPDATE_LIMIT
+      if(!mCacheMapInfo.isNavigating()
+          && (mContainer.getLastZoomLevel() > ZOOM_LEVEL_UPDATE_LIMIT)
           && notZoomIn) {
         /* Run a thread to fetch the cache database */
         runUpdateThread();
