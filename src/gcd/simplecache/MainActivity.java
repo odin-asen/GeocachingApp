@@ -180,6 +180,7 @@ public class MainActivity extends FragmentActivity
       final String currentTabTag = mTabHost.getCurrentTabTag();
       final Bundle extras = intent.getExtras();
       final Location location = extras.getParcelable("loc");
+      mUserPoint = new GeoCoordinateConverter().locationToGeocaching(location);
 
       if (currentTabTag.equals(TAG_TS_COMPASS)) {
         CompassFragment compass = (CompassFragment) getSupportFragmentManager().findFragmentByTag(TAG_TS_COMPASS);

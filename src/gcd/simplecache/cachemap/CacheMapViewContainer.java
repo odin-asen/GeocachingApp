@@ -2,7 +2,6 @@ package gcd.simplecache.cachemap;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
-import android.location.Location;
 import gcd.simplecache.R;
 import gcd.simplecache.business.geocaching.Geocache;
 import gcd.simplecache.business.map.GeoCoordinateConverter;
@@ -73,12 +72,8 @@ public class CacheMapViewContainer {
   /* Methods */
 
   /** setContext must have been called before */
-  public void updateUserPosition(Location location) {
+  public void updateUserPosition(GeoPoint currentPoint) {
     mMapView.getOverlayManager().remove(mUserOverlay);
-
-    final GeoCoordinateConverter converter = new GeoCoordinateConverter();
-    final GeoPoint currentPoint =
-        converter.geocachingToGeoPoint(converter.locationToGeocaching(location));
 
     /* set the user object to the map */
     mUser = new MapObject(mContext.getString(R.string.map_user_title),
@@ -93,10 +88,6 @@ public class CacheMapViewContainer {
         mContext, objectList, mMapItemListener);
     mUserOverlay.addItem(mUser);
     mMapView.getOverlayManager().add(mUserOverlay);
-
-    mController.setCenter(currentPoint);
-    mController.setZoom(10);
-    mMapView.invalidate();
   }
 
   /**

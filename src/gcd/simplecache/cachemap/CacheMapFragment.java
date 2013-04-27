@@ -82,10 +82,6 @@ public class CacheMapFragment extends Fragment {
     return view;
   }
 
-  public void updateUserPosition(Location location) {
-    mContainer.updateUserPosition(location);
-  }
-
   @Override
   public void onActivityCreated(Bundle savedInstance) {
     super.onActivityCreated(savedInstance);
@@ -109,6 +105,15 @@ public class CacheMapFragment extends Fragment {
       throw new ClassCastException(activity.toString()
           + " must implement "+CacheMapInfo.class.getName());
     }
+  }
+
+  public void updateUserPosition(Location location) {
+    final GeoPoint currentPoint =
+        new GeoPoint(location.getLatitude(), location.getLongitude());
+    mContainer.updateUserPosition(currentPoint);
+    if(mCacheMapInfo.isNavigating()) {
+      mContainer.setView(!mCacheMapInfo.isNavigating(), 10, currentPoint);
+    } else mContainer.updateOverlays();
   }
 
   /**
