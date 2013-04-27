@@ -97,8 +97,7 @@ public class CacheMapFragment extends Fragment {
   public void onStart() {
     super.onStart();
 
-    mContainer.setView(!mCacheMapInfo.isNavigating(), mContainer.getZoomLevel(),
-        mContainer.getLastPoint());
+    refresh();
   }
 
   @Override
@@ -110,6 +109,45 @@ public class CacheMapFragment extends Fragment {
       throw new ClassCastException(activity.toString()
           + " must implement "+CacheMapInfo.class.getName());
     }
+  }
+
+  /**
+   * This method sets the destination given by the CachMapInfo object
+   * and refreshes the route if the navigation is enabled.
+   * Only the aim, the user and the route to the aim will
+   * be displayed on the map.<br/>
+   * When the method is called and the navigation is disabled,
+   * the map will destroy this destination.<br/>
+   * It should be called in an own thread.
+   */
+  public void showAim() {
+    if(!mCacheMapInfo.isNavigating())
+      return;
+
+    /* Get the route if possible */
+    final RoutingService service = new RoutingService();
+    final List<DTOLocation> path;
+    final GeoCoordinateConverter converter = new GeoCoordinateConverter();
+    final GeoPoint userPoint =
+        converter.geocachingToGeoPoint(mCacheMapInfo.getUserPoint());
+    final GeoPoint destination =
+        converter.geocachingToGeoPoint(mCacheMapInfo.getAimPoint());
+
+    if(userPoint == null)
+      path = null;
+    else {
+      path = service.getPath(userPoint, destination);
+      if(path == null)
+        new ViewInThreadHandler().showToast("Could not set route path", Toast.LENGTH_LONG);
+    }
+
+    mContainer.refreshRoute(mCacheMapInfo.getCurrentCache(), path);
+    mContainer.updateOverlays();
+  }
+
+  public void refresh() {
+    mContainer.setView(!mCacheMapInfo.isNavigating(), mContainer.getZoomLevel(),
+        mContainer.getLastPoint());
   }
 
   /*   End   */
@@ -143,34 +181,6 @@ public class CacheMapFragment extends Fragment {
 
   /*********************/
   /* Getter and Setter */
-
-  /**
-   * This method sets a new destination and refreshes the route
-   * if the navigation is enabled. Only the aim, the user and
-   * the route to the aim will be displayed on the map.<br/>
-   * When the method is called and the navigation is disabled,
-   * the map will destroy this destination.<br/>
-   * It should be called in an own thread.
-   * @param destination New destination point.
-   */
-  public void setDestination(Geocache destination) {
-    /* Get the route if possible */
-    final RoutingService service = new RoutingService();
-    final List<DTOLocation> path;
-    final GeoPoint userPoint = mContainer.getUserPoint();
-    if(userPoint == null)
-      path = null;
-    else {
-      final GeoCoordinateConverter converter = new GeoCoordinateConverter();
-      path = service.getPath(userPoint, converter.geocachingToGeoPoint(destination.getPoint()));
-      if(path == null)
-        new ViewInThreadHandler().showToast("Could not set route path", Toast.LENGTH_LONG);
-    }
-
-    mContainer.refreshRoute(destination, path);
-    mContainer.updateOverlays();
-  }
-
   /*       End         */
   /*********************/
 

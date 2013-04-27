@@ -1,5 +1,6 @@
 package gcd.simplecache.cachemap;
 
+import gcd.simplecache.business.geocaching.Geocache;
 import gcd.simplecache.business.geocaching.GeocachingPoint;
 
 /**
@@ -9,7 +10,8 @@ import gcd.simplecache.business.geocaching.GeocachingPoint;
  * Date: 27.04.13
  */
 public interface CacheMapInfo {
-  public boolean isNavigating();
-  public GeocachingPoint getUserPoint();
-  public GeocachingPoint getAimPoint();
+  boolean isNavigating();
+  GeocachingPoint getUserPoint();
+  GeocachingPoint getAimPoint();
+  Geocache getCurrentCache();
 }

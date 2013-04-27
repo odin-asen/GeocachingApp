@@ -39,14 +39,16 @@ public class MainActivity extends FragmentActivity
   private Boolean receiverRegistered;
 
   /* CacheMapFragment variables */
-  boolean mNavigating;
-  GeocachingPoint mUserPoint;
-  GeocachingPoint mAimPoint;
+  private boolean mNavigating;
+  private GeocachingPoint mUserPoint;
+  private GeocachingPoint mAimPoint;
+  private Geocache mCurrentCache;
 
   public MainActivity() {
     mNavigating = false;
     mUserPoint = new GeocachingPoint();
     mAimPoint = new GeocachingPoint();
+    mCurrentCache = new Geocache();
   }
 
   @Override
@@ -113,7 +115,9 @@ public class MainActivity extends FragmentActivity
         dialog.show(getSupportFragmentManager(), "Nav Dialog");
         return true;
       case R.id.stop_navigation:
-
+        mNavigating = false;
+        if(mTabHost.getCurrentTabTag().equals(TAG_TS_MAP))
+          ((CacheMapFragment) getSupportFragmentManager().findFragmentByTag(TAG_TS_MAP)).refresh();
         return true;
       default:
         return super.onOptionsItemSelected(item);
@@ -139,6 +143,10 @@ public class MainActivity extends FragmentActivity
     return mAimPoint;
   }
 
+  @Override
+  public Geocache getCurrentCache() {
+    return mCurrentCache;
+  }
 
   public class MessageReceiver extends BroadcastReceiver {
 
@@ -151,13 +159,13 @@ public class MainActivity extends FragmentActivity
         changeLocation(intent);
         Log.d("Loc","Changed");
 			} else if (action.equals(ACTION_ID_COMPASS)) {
-				 if (mTabHost.getCurrentTabTag().equals(TAG_TS_COMPASS)) {
-					 	Bundle extras = intent.getExtras();
-					 	float azimuth = extras.getFloat("azimuth");
-				        CompassFragment compass = (CompassFragment) getSupportFragmentManager().findFragmentByTag(TAG_TS_COMPASS);
-				        compass.updateCompass(azimuth);
-				 }
-				 else {}
+        if (mTabHost.getCurrentTabTag().equals(TAG_TS_COMPASS)) {
+          Bundle extras = intent.getExtras();
+					float azimuth = extras.getFloat("azimuth");
+          CompassFragment compass = (CompassFragment) getSupportFragmentManager().findFragmentByTag(TAG_TS_COMPASS);
+          compass.updateCompass(azimuth);
+        }
+        else {}
 			} else if (action.equals(ACTION_ID_NAVIGATION)) {
         /* Change navigation and go to compass tab */
         String destination = changeNavigation(intent);
@@ -190,29 +198,27 @@ public class MainActivity extends FragmentActivity
       /* get/set navigation properties */
       final Bundle extras = intent.getExtras();
       mNavigating = extras.getBoolean(NAVIGATION_ENABLED);
-      final DTOGeocache destination =
-          (DTOGeocache) extras.getSerializable(NAVIGATION_DESTINATION);
-      mAimPoint = new GeoCoordinateConverter().decimalDegreesToGeocaching(
-          destination.location.latitude, destination.location.longitude);
+      mCurrentCache = Geocache.toGeocache(
+          (DTOGeocache) extras.getSerializable(NAVIGATION_DESTINATION));
+      mAimPoint = mCurrentCache.getPoint();
+      final double[] coordinates = new GeoCoordinateConverter().getGeoDecimal(mAimPoint);
 
       if (currentTabTag.equals(TAG_TS_COMPASS)) {
-          CompassFragment compass = (CompassFragment) getSupportFragmentManager().findFragmentByTag(TAG_TS_COMPASS);
-          Location location = new Location("a");
-          location.setLongitude(destination.location.longitude);
-          location.setLatitude(destination.location.latitude);
-          compass.updateDestination(location);
+        CompassFragment compass = (CompassFragment) getSupportFragmentManager().findFragmentByTag(TAG_TS_COMPASS);
+        Location location = new Location("a");
+        location.setLongitude(coordinates[1]);
+        location.setLatitude(coordinates[0]);
+        compass.updateDestination(location);
       } else if(currentTabTag.equals(TAG_TS_MAP)) {
         final CacheMapFragment map = (CacheMapFragment) getSupportFragmentManager().findFragmentByTag(TAG_TS_MAP);
         new Thread(new Runnable() {
           public void run() {
-            map.setDestination(Geocache.toGeocache(destination));
+            map.showAim();
           }
         }).start();
       }
 
-      if(destination != null && destination.location != null)
-        return destination.location.toString();
-      else return new DTOLocation(0.0,0.0).toString();
+      return new DTOLocation(coordinates[0], coordinates[1]).toString();
     }
   }
 }

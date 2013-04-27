@@ -276,12 +276,6 @@ public class CacheMapViewContainer {
     return new GeoPoint(mLastPoint);
   }
 
-  public GeoPoint getUserPoint() {
-    if(mUser == null)
-      return null;
-    else return mUser.getPoint();
-  }
-
   public int getZoomLevel() {
     return mZoomLevel;
   }
