@@ -163,7 +163,8 @@ public class MainActivity extends FragmentActivity
           Bundle extras = intent.getExtras();
 					float azimuth = extras.getFloat("azimuth");
           CompassFragment compass = (CompassFragment) getSupportFragmentManager().findFragmentByTag(TAG_TS_COMPASS);
-          compass.updateCompass(azimuth);
+          if(compass != null)
+            compass.updateCompass(azimuth);
         }
         else {}
 			} else if (action.equals(ACTION_ID_NAVIGATION)) {
@@ -187,7 +188,7 @@ public class MainActivity extends FragmentActivity
         compass.updateCurrent(location);
       } else if(currentTabTag.equals(TAG_TS_MAP)) {
         CacheMapFragment map = (CacheMapFragment) getSupportFragmentManager().findFragmentByTag(TAG_TS_MAP);
-        map.updateUserPosition(location);
+        map.updateUserPosition();
       }
     }
 

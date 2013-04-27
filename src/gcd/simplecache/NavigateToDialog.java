@@ -54,9 +54,10 @@ public class NavigateToDialog extends DialogFragment implements IntentActions, O
 	private class OkListener implements DialogInterface.OnClickListener {
 		@Override
 		public void onClick(DialogInterface dialog, int which) {
-		      Intent navigationAction = new Intent(ACTION_ID_NAVIGATION);
-		      navigationAction.putExtra(NAVIGATION_DESTINATION, createDTO());
-		      getActivity().sendBroadcast(navigationAction);			
+      Intent navigationAction = new Intent(ACTION_ID_NAVIGATION);
+      navigationAction.putExtra(NAVIGATION_ENABLED, true);
+      navigationAction.putExtra(NAVIGATION_DESTINATION, createDTO());
+		  getActivity().sendBroadcast(navigationAction);
 		}
 	}
 	
@@ -69,7 +70,6 @@ public class NavigateToDialog extends DialogFragment implements IntentActions, O
 
 	@Override
 	public void onCheckedChanged(RadioGroup group, int checkedInt) {
-		// TODO Auto-generated method stub
 		switch (checkedInt) {
 			case R.id.radio_dec_deg:
 				setDegreeEnabled();

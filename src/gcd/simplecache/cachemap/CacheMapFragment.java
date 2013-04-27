@@ -1,7 +1,6 @@
 package gcd.simplecache.cachemap;
 
 import android.app.Activity;
-import android.location.Location;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -55,11 +54,13 @@ public class CacheMapFragment extends Fragment {
   private CacheMapViewContainer mContainer;
 
   private CacheMapInfo mCacheMapInfo;
+  private boolean mRouteShown;
 
   /****************/
   /* Constructors */
 
   public CacheMapFragment() {
+    mRouteShown = false;
     mContainer = new CacheMapViewContainer(
         new ScrollZoomListener(), new MapItemListener());
   }
@@ -107,9 +108,9 @@ public class CacheMapFragment extends Fragment {
     }
   }
 
-  public void updateUserPosition(Location location) {
-    final GeoPoint currentPoint =
-        new GeoPoint(location.getLatitude(), location.getLongitude());
+  public void updateUserPosition() {
+    final GeoPoint currentPoint = new GeoCoordinateConverter()
+        .geocachingToGeoPoint(mCacheMapInfo.getUserPoint());
     mContainer.updateUserPosition(currentPoint);
     if(mCacheMapInfo.isNavigating()) {
       mContainer.setView(!mCacheMapInfo.isNavigating(), 10, currentPoint);
@@ -117,7 +118,7 @@ public class CacheMapFragment extends Fragment {
   }
 
   /**
-   * This method sets the destination given by the CachMapInfo object
+   * This method sets the destination given by the CacheMapInfo object
    * and refreshes the route if the navigation is enabled.
    * Only the aim, the user and the route to the aim will
    * be displayed on the map.<br/>
@@ -151,6 +152,12 @@ public class CacheMapFragment extends Fragment {
   }
 
   public void refresh() {
+    /* show route */
+    new Thread(new Runnable() {
+      public void run() {
+        showAim();
+      }
+    }).start();
     mContainer.setView(!mCacheMapInfo.isNavigating(), mContainer.getZoomLevel(),
         mContainer.getLastPoint());
   }
