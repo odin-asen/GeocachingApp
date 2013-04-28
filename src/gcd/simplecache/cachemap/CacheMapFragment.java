@@ -111,10 +111,13 @@ public class CacheMapFragment extends Fragment {
   public void updateUserPosition() {
     final GeoPoint currentPoint = new GeoCoordinateConverter()
         .geocachingToGeoPoint(mNavigationInfo.getUserPoint());
-    mContainer.updateUserPosition(currentPoint);
     if(mNavigationInfo.isNavigating()) {
+      mContainer.updateUserPosition(currentPoint, getResources().getDrawable(R.drawable.pin_green));
       mContainer.setView(!mNavigationInfo.isNavigating(), 10, currentPoint);
-    } else mContainer.updateOverlays();
+    } else {
+      mContainer.updateUserPosition(currentPoint, getResources().getDrawable(R.drawable.pin_red));
+      mContainer.updateOverlays();
+    }
   }
 
   /**
@@ -143,8 +146,16 @@ public class CacheMapFragment extends Fragment {
   }
 
   public void refresh() {
+    final GeoPoint currentPoint = new GeoCoordinateConverter()
+        .geocachingToGeoPoint(mNavigationInfo.getUserPoint());
+
     /* show route */
     updateAim();
+    /* update user icon */
+    int drawableID = R.drawable.pin_red;
+    if(mNavigationInfo.isNavigating())
+      drawableID = R.drawable.pin_green;
+    mContainer.updateUserPosition(currentPoint, getResources().getDrawable(drawableID));
     mContainer.setView(!mNavigationInfo.isNavigating(), mContainer.getZoomLevel(),
         mContainer.getLastPoint());
   }

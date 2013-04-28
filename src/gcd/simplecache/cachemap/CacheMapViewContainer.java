@@ -72,14 +72,14 @@ public class CacheMapViewContainer {
   /* Methods */
 
   /** setContext must have been called before */
-  public void updateUserPosition(GeoPoint currentPoint) {
+  public void updateUserPosition(GeoPoint currentPoint, Drawable icon) {
     mMapView.getOverlayManager().remove(mUserOverlay);
 
     /* set the user object to the map */
     mUser = new MapObject(mContext.getString(R.string.map_user_title),
         mContext.getString(R.string.map_user_here), currentPoint);
     mUser.setType(MapObject.ObjectType.USER);
-    mUser.setMarker(mContext.getResources().getDrawable(R.drawable.position_cross));
+    mUser.setMarker(icon);
     final List<MapObject> objectList = new ArrayList<MapObject>(1);
     objectList.add(mUser);
 
@@ -222,17 +222,15 @@ public class CacheMapViewContainer {
   private void fillMapObjectList(List<Geocache> cacheList, List<MapObject> objectList) {
     for (Geocache geocache : cacheList) {
       final MapObject cacheObject = new MapObject(geocache);
-      cacheObject.setMarker(getMapObjectDrawable(cacheObject.getType()));
+      cacheObject.setMarker(getCacheDrawable(cacheObject.getType()));
       objectList.add(cacheObject);
     }
   }
 
-  private Drawable getMapObjectDrawable(MapObject.ObjectType type) {
+  private Drawable getCacheDrawable(MapObject.ObjectType type) {
     int resourceId = R.drawable.chequered_flag;
 
-    if(type.isUser())
-      resourceId = R.drawable.position_cross;
-    else if(type.isGeocache()) {
+    if(type.isGeocache()) {
       if(type.equals(MapObject.ObjectType.TRADITIONAL))
         resourceId = R.drawable.treasure;
       else if(type.equals(MapObject.ObjectType.MULTI))

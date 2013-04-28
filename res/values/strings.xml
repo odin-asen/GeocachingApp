@@ -15,7 +15,7 @@
 
     <!-- dialog labels -->
     <string name="button_search_cache">Let\'s go!</string>
-    <string name="button_display_description">Display description</string>
+    <string name="button_fetch_details">Fetch details</string>
     <string name="button_cancel">Cancel</string>
     <string name="button_ok">Okay</string>
     <string name="cache_size">Size:</string>

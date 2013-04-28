@@ -234,7 +234,7 @@ public class MainActivity extends FragmentActivity
         compass.updateDestination(location);
       } else if(currentTabTag.equals(TAG_TS_MAP)) {
         final CacheMapFragment map = (CacheMapFragment) getSupportFragmentManager().findFragmentByTag(TAG_TS_MAP);
-        map.updateAim();
+        map.refresh();
       }
 
       return new DTOLocation(coordinates[0], coordinates[1]).toString();

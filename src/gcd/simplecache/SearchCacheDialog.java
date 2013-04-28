@@ -54,7 +54,7 @@ public class SearchCacheDialog extends DialogFragment implements IntentActions {
     /* Add buttons */
     builder.setPositiveButton(R.string.button_search_cache, new SearchListener());
     builder.setNegativeButton(R.string.button_cancel, new CancelListener());
-    builder.setNeutralButton(R.string.button_display_description, new DescriptionListener());
+    builder.setNeutralButton(R.string.button_fetch_details, new DescriptionListener());
 
     return builder.create();
   }
