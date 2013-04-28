@@ -14,8 +14,14 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TabHost;
+import gcd.simplecache.business.geocaching.ComOpencachingService;
 import gcd.simplecache.business.geocaching.Geocache;
 import gcd.simplecache.business.geocaching.GeocachingPoint;
+import gcd.simplecache.business.geocaching.GeocachingService;
+import gcd.simplecache.business.geocaching.request.ComOpencachingParameter;
+import gcd.simplecache.business.geocaching.request.ComOpencachingRequestCollection;
+import gcd.simplecache.business.geocaching.request.RequestCollection;
+import gcd.simplecache.business.geocaching.request.com.opencaching.Description;
 import gcd.simplecache.business.map.GeoCoordinateConverter;
 import gcd.simplecache.cachemap.CacheMapFragment;
 import gcd.simplecache.dto.geocache.DTOGeocache;
@@ -84,7 +90,7 @@ public class MainActivity extends FragmentActivity
  		if(!receiverRegistered) {
       registerReceiver(receiver, new IntentFilter(ACTION_ID_GPS));
       registerReceiver(receiver, new IntentFilter(ACTION_ID_COMPASS));
-      registerReceiver(receiver, new IntentFilter(ACTION_ID_DESCRIPTION));
+      registerReceiver(receiver, new IntentFilter(ACTION_ID_DETAILS));
       registerReceiver(receiver, new IntentFilter(ACTION_ID_NAVIGATION));
       receiverRegistered = true;
     }
@@ -167,11 +173,29 @@ public class MainActivity extends FragmentActivity
 			} else if (action.equals(ACTION_ID_NAVIGATION)) {
         /* Change navigation and go to compass tab */
         String destination = changeNavigation(intent);
+        updateCacheDetails(mCurrentCache.getId());
         Log.d("Navigation", "Changed to "+destination);
-      } else if (action.equals(ACTION_ID_DESCRIPTION)) {
-
+      } else if (action.equals(ACTION_ID_DETAILS)) {
+        /* update details of the current cache */
+        updateCacheDetails(intent.getExtras().getString(DETAILS_ID));
       }
 		}
+
+    /* Run a thread to update the current cache variable */
+    private void updateCacheDetails(final String id) {
+      /* set the details for the current cache */
+      new Thread(new Runnable() {
+        public void run() {
+          GeocachingService service = new ComOpencachingService();
+          RequestCollection<ComOpencachingParameter> collection =
+              new ComOpencachingRequestCollection();
+          collection.addParameter(new Description(Description.HTML));
+          collection.addParameter(
+              new gcd.simplecache.business.geocaching.request.com.opencaching.Log(0,false));
+          mCurrentCache = service.getCacheInfo(id, collection);
+        }
+      }).start();
+    }
 
     /* update compass and map for location change */
     private void changeLocation(Intent intent) {

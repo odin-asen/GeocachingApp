@@ -103,13 +103,9 @@ public class SearchCacheDialog extends DialogFragment implements IntentActions {
   private class DescriptionListener implements DialogInterface.OnClickListener {
     public void onClick(DialogInterface dialog, int id) {
       /* show description of the cache */
-      Intent navigationAction = new Intent(ACTION_ID_DESCRIPTION);
-      navigationAction.putExtra(DESCRIPTION_ID, mGeocache.getId());
-      navigationAction.putExtra(DESCRIPTION_NAME, mGeocache.getName());
-      navigationAction.putExtra(DESCRIPTION_HINT, mGeocache.getHint());
-      navigationAction.putExtra(DESCRIPTION_OWNER, mGeocache.getOwner());
-      navigationAction.putExtra(DESCRIPTION_TEXT, mGeocache.getDescription());
-      getActivity().sendBroadcast(navigationAction);
+      Intent detailsAction = new Intent(ACTION_ID_DETAILS);
+      detailsAction.putExtra(DETAILS_ID, mGeocache.getId());
+      getActivity().sendBroadcast(detailsAction);
     }
   }
 

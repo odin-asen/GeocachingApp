@@ -3,6 +3,8 @@ package gcd.simplecache;
 import android.app.Activity;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.text.Html;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -55,12 +57,33 @@ public class DetailsFragment extends Fragment {
   /* Private Methods */
 
   private void fillTextFields() {
+    /* Name field */
     TextView textView = (TextView) getView().findViewById(R.id.cache_name);
-    textView.setText(mNavigationInfo.getCurrentCache().getName());
+    String content = mNavigationInfo.getCurrentCache().getName();
+    setTextWithDefault(textView, content, "", false);
+
+    /* Hint field */
     textView = (TextView) getView().findViewById(R.id.cache_hint);
-    textView.setText(mNavigationInfo.getCurrentCache().getHint());
+    content = mNavigationInfo.getCurrentCache().getHint();
+    setTextWithDefault(textView, content, getString(R.string.empty_filler), false);
+
+    /* Description field */
     textView = (TextView) getView().findViewById(R.id.cache_description);
-    textView.setText(mNavigationInfo.getCurrentCache().getDescription());
+    content = mNavigationInfo.getCurrentCache().getDescription();
+    setTextWithDefault(textView, content, getString(R.string.empty_filler), true);
+  }
+
+  /* Sets the content to the text view or def if content is empty */
+  private void setTextWithDefault(TextView view, String content, String def, boolean html) {
+    if(TextUtils.isEmpty(content)) {
+      if(html)
+        view.setText(Html.fromHtml(def));
+      else view.setText(def);
+    } else {
+      if(html)
+        view.setText(Html.fromHtml(content));
+      else view.setText(content);
+    }
   }
 
   /*       End       */

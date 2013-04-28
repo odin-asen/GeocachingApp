@@ -1,8 +1,5 @@
 package gcd.simplecache;
 
-import android.app.Dialog;
-import android.os.Bundle;
-
 /**
  * Interface for intent action IDs.
  * <p/>
@@ -24,15 +21,7 @@ public interface IntentActions {
   String NAVIGATION_DESTINATION = "destination";
 
   /* Show geocache description constants */
-  String ACTION_ID_DESCRIPTION = "ShowDescription";
+  String ACTION_ID_DETAILS = "ShowDetails";
   /** {@link gcd.simplecache.business.geocaching.Geocache#getId()} */
-  String DESCRIPTION_ID = "id";
-  /** {@link gcd.simplecache.business.geocaching.Geocache#getName()} */
-  String DESCRIPTION_NAME = "name";
-  /** {@link gcd.simplecache.business.geocaching.Geocache#getHint()} */
-  String DESCRIPTION_HINT = "hint";
-  /** {@link gcd.simplecache.business.geocaching.Geocache#getOwner()} */
-  String DESCRIPTION_OWNER = "owner";
-  /** {@link gcd.simplecache.business.geocaching.Geocache#getDescription()} */
-  String DESCRIPTION_TEXT = "description";
+  String DETAILS_ID = "id";
 }
