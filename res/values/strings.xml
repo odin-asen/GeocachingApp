@@ -29,6 +29,7 @@
     <string name="hint">Hint</string>
     <string name="description">Description</string>
     <string name="empty_filler">nothing</string>
+    <string name="typeImage">Type</string>
 
     <!-- progress labels -->
     <string name="progress_ready">Ready</string>
