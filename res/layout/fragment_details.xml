@@ -23,7 +23,7 @@
                 android:textStyle="bold"
                 android:text="@string/hint" />
         <TextView
-                android:id="@+id/hint_view"
+                android:id="@+id/cache_hint"
                 android:layout_height="wrap_content"
                 android:layout_width="match_parent"
                 android:layout_margin="5dp"
@@ -36,7 +36,7 @@
                 android:textStyle="bold"
                 android:text="@string/description" />
         <TextView
-                android:id="@+id/description_view"
+                android:id="@+id/cache_description"
                 android:layout_height="wrap_content"
                 android:layout_width="match_parent"
                 android:layout_margin="5dp"

@@ -1,4 +1,4 @@
-package gcd.simplecache.cachemap;
+package gcd.simplecache;
 
 import gcd.simplecache.business.geocaching.Geocache;
 import gcd.simplecache.business.geocaching.GeocachingPoint;
@@ -9,7 +9,7 @@ import gcd.simplecache.business.geocaching.GeocachingPoint;
  * Author: Timm Herrmann<br/>
  * Date: 27.04.13
  */
-public interface CacheMapInfo {
+public interface CacheNavigationInfo {
   boolean isNavigating();
   GeocachingPoint getUserPoint();
   GeocachingPoint getAimPoint();

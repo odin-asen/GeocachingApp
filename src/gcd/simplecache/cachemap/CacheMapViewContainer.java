@@ -178,16 +178,17 @@ public class CacheMapViewContainer {
    */
   private List<OverlayItem> initialiseRouteList(List<DTOLocation> path) {
     final List<OverlayItem> list;
+    /* Add destination at first to get it last drawn */
     if(path == null) {
       list = new ArrayList<OverlayItem>(1);
+      list.add(mDestination);
     } else {
       list = new ArrayList<OverlayItem>(path.size()+1);
+      list.add(mDestination);
 
       for (DTOLocation point : path)
         list.add(new OverlayItem("","",new GeoPoint(point.latitude, point.longitude)));
     }
-
-    list.add(mDestination);
 
     return list;
   }

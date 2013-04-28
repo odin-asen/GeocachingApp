@@ -18,12 +18,11 @@ import gcd.simplecache.business.geocaching.Geocache;
 import gcd.simplecache.business.geocaching.GeocachingPoint;
 import gcd.simplecache.business.map.GeoCoordinateConverter;
 import gcd.simplecache.cachemap.CacheMapFragment;
-import gcd.simplecache.cachemap.CacheMapInfo;
 import gcd.simplecache.dto.geocache.DTOGeocache;
 import gcd.simplecache.dto.geocache.DTOLocation;
 
 public class MainActivity extends FragmentActivity
-    implements IntentActions, CacheMapInfo {
+    implements IntentActions, CacheNavigationInfo {
   /* TabSpec IDs */
   private static final String TAG_TS_MAP = "map";
   private static final String TAG_TS_COMPASS = "compass";
@@ -122,9 +121,9 @@ public class MainActivity extends FragmentActivity
     }
   }
 
-  /***************************/
-  /* Implements CacheMapInfo */
-  /***************************/
+  /**********************************/
+  /* Implements CacheNavigationInfo */
+  /**********************************/
 
   @Override
   public boolean isNavigating() {
@@ -211,11 +210,7 @@ public class MainActivity extends FragmentActivity
         compass.updateDestination(location);
       } else if(currentTabTag.equals(TAG_TS_MAP)) {
         final CacheMapFragment map = (CacheMapFragment) getSupportFragmentManager().findFragmentByTag(TAG_TS_MAP);
-        new Thread(new Runnable() {
-          public void run() {
-            map.showAim();
-          }
-        }).start();
+        map.updateAim();
       }
 
       return new DTOLocation(coordinates[0], coordinates[1]).toString();

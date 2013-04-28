@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
+import gcd.simplecache.CacheNavigationInfo;
 import gcd.simplecache.R;
 import gcd.simplecache.SearchCacheDialog;
 import gcd.simplecache.business.geocaching.ComOpencachingService;
@@ -48,12 +49,13 @@ public class CacheMapFragment extends Fragment {
   private static final String LOG_TAG = CacheMapFragment.class.getName();
   private static final int ZOOM_LEVEL_UPDATE_LIMIT = 8;
   private static final int FETCH_LIMIT = 500;
+  private static final double ROUTING_MAXIMUM = 150.0;
 
   private ProgressBar mProgressBar;
   private TextView mProgressText;
   private CacheMapViewContainer mContainer;
 
-  private CacheMapInfo mCacheMapInfo;
+  private CacheNavigationInfo mNavigationInfo;
 
   /****************/
   /* Constructors */
@@ -98,25 +100,25 @@ public class CacheMapFragment extends Fragment {
   @Override
   public void onAttach(Activity activity) {
     super.onAttach(activity);
-    if (activity instanceof CacheMapInfo) {
-      mCacheMapInfo = (CacheMapInfo) activity;
+    if (activity instanceof CacheNavigationInfo) {
+      mNavigationInfo = (CacheNavigationInfo) activity;
     } else {
       throw new ClassCastException(activity.toString()
-          + " must implement "+CacheMapInfo.class.getName());
+          + " must implement "+CacheNavigationInfo.class.getName());
     }
   }
 
   public void updateUserPosition() {
     final GeoPoint currentPoint = new GeoCoordinateConverter()
-        .geocachingToGeoPoint(mCacheMapInfo.getUserPoint());
+        .geocachingToGeoPoint(mNavigationInfo.getUserPoint());
     mContainer.updateUserPosition(currentPoint);
-    if(mCacheMapInfo.isNavigating()) {
-      mContainer.setView(!mCacheMapInfo.isNavigating(), 10, currentPoint);
+    if(mNavigationInfo.isNavigating()) {
+      mContainer.setView(!mNavigationInfo.isNavigating(), 10, currentPoint);
     } else mContainer.updateOverlays();
   }
 
   /**
-   * This method sets the destination given by the CacheMapInfo object
+   * This method sets the destination given by the CacheNavigationInfo object
    * and refreshes the route if the navigation is enabled.
    * Only the aim, the user and the route to the aim will
    * be displayed on the map.<br/>
@@ -124,39 +126,26 @@ public class CacheMapFragment extends Fragment {
    * the map will destroy this destination.<br/>
    * It should be called in an own thread.
    */
-  public void showAim() {
-    if(!mCacheMapInfo.isNavigating())
+  public void updateAim() {
+    if(!mNavigationInfo.isNavigating())
       return;
 
-    /* Get the route if possible */
-    final RoutingService service = new RoutingService();
-    final List<DTOLocation> path;
-    final GeoCoordinateConverter converter = new GeoCoordinateConverter();
-    final GeoPoint userPoint =
-        converter.geocachingToGeoPoint(mCacheMapInfo.getUserPoint());
-    final GeoPoint destination =
-        converter.geocachingToGeoPoint(mCacheMapInfo.getAimPoint());
-
-    if(userPoint == null)
-      path = null;
-    else {
-      path = service.getPath(userPoint, destination);
-      if(path == null)
-        new ViewInThreadHandler().showToast("Could not set route path", Toast.LENGTH_LONG);
-    }
-
-    mContainer.refreshRoute(mCacheMapInfo.getCurrentCache(), path);
-    mContainer.updateOverlays();
+    final ViewInThreadHandler handler = new ViewInThreadHandler();
+    new Thread(new Runnable() {
+      public void run() {
+        handler.setProgressState(ProgressBar.VISIBLE, getString(R.string.progress_fetch_route));
+        List<DTOLocation> path = determineRoute();
+        mContainer.refreshRoute(mNavigationInfo.getCurrentCache(), path);
+        mContainer.updateOverlays();
+        handler.setProgressState(ProgressBar.GONE, getString(R.string.progress_ready));
+      }
+    }).start();
   }
 
   public void refresh() {
     /* show route */
-    new Thread(new Runnable() {
-      public void run() {
-        showAim();
-      }
-    }).start();
-    mContainer.setView(!mCacheMapInfo.isNavigating(), mContainer.getZoomLevel(),
+    updateAim();
+    mContainer.setView(!mNavigationInfo.isNavigating(), mContainer.getZoomLevel(),
         mContainer.getLastPoint());
   }
 
@@ -186,6 +175,32 @@ public class CacheMapFragment extends Fragment {
     }
   }
 
+  /* Requests a route from a web service */
+  private List<DTOLocation> determineRoute() {
+    List<DTOLocation> path = null;
+
+    /* Get the route if possible */
+    final RoutingService service = new RoutingService();
+    final GeoCoordinateConverter converter = new GeoCoordinateConverter();
+    final GeoPoint userPoint =
+        converter.geocachingToGeoPoint(mNavigationInfo.getUserPoint());
+    final GeoPoint destination =
+        converter.geocachingToGeoPoint(mNavigationInfo.getAimPoint());
+
+    if(userPoint != null) {
+      /* don't request a route for a distance more than 150 km */
+      if((userPoint.distanceTo(destination)/1000.0) < ROUTING_MAXIMUM) {
+        path = service.getPath(userPoint, destination);
+        if(path == null)
+          new ViewInThreadHandler().showToast("Could not set route path", Toast.LENGTH_LONG);
+      } else {
+        new ViewInThreadHandler().showToast("Routing will not be performed. " +
+            "Distance is more than "+Double.toString(ROUTING_MAXIMUM)+"km", Toast.LENGTH_LONG);
+      }
+    }
+
+    return path;
+  }
   /*       End       */
   /*******************/
 
@@ -234,7 +249,7 @@ public class CacheMapFragment extends Fragment {
 
     /** Fetch cache database when allowed */
     private void mapUpdate(boolean notZoomIn) {
-      if(!mCacheMapInfo.isNavigating()
+      if(!mNavigationInfo.isNavigating()
           && (mContainer.getZoomLevel() > ZOOM_LEVEL_UPDATE_LIMIT)
           && notZoomIn) {
         /* Run a thread to fetch the cache database */

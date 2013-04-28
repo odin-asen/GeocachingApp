@@ -33,6 +33,7 @@
     <!-- progress labels -->
     <string name="progress_ready">Ready</string>
     <string name="progress_fetch_cache">Fetch cache data</string>
+    <string name="progress_fetch_route">Fetch routing data</string>
     <string name="dialog_navigate_to_lat">Latitude:</string>
     <string name="dialog_navigate_to_lon">Longitude:</string>
 
