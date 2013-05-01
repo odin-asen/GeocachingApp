@@ -1,4 +1,4 @@
-package gcd.simplecache.cachemap;
+package gcd.simplecache;
 
 import android.app.Activity;
 import android.os.Bundle;
@@ -10,9 +10,6 @@ import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
-import gcd.simplecache.CacheNavigationInfo;
-import gcd.simplecache.R;
-import gcd.simplecache.SearchCacheDialog;
 import gcd.simplecache.business.geocaching.ComOpencachingService;
 import gcd.simplecache.business.geocaching.Geocache;
 import gcd.simplecache.business.geocaching.GeocachingService;

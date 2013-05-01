@@ -1,8 +1,7 @@
-package gcd.simplecache.cachemap;
+package gcd.simplecache;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
-import gcd.simplecache.R;
 import gcd.simplecache.business.geocaching.Geocache;
 import gcd.simplecache.business.map.GeoCoordinateConverter;
 import gcd.simplecache.business.map.MapObject;

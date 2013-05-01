@@ -23,7 +23,6 @@ import gcd.simplecache.business.geocaching.request.ComOpencachingRequestCollecti
 import gcd.simplecache.business.geocaching.request.RequestCollection;
 import gcd.simplecache.business.geocaching.request.com.opencaching.Description;
 import gcd.simplecache.business.map.GeoCoordinateConverter;
-import gcd.simplecache.cachemap.CacheMapFragment;
 import gcd.simplecache.dto.geocache.DTOGeocache;
 import gcd.simplecache.dto.geocache.DTOLocation;
 
