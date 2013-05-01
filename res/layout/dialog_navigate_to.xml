@@ -1,199 +1,232 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical" >
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:background="@color/cache_yellow" >
 
-
-    <RadioGroup
-        android:id="@+id/navGroup"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal" >
-
-        <RadioButton
-            android:id="@+id/radio_dec_deg"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:checked="true"
-            android:text="@string/decimal_degrees" />
-
-        <RadioButton
-            android:id="@+id/radio_dec_min"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/decimal_minutes" />
-    </RadioGroup>
-
-    <LinearLayout
+    <!-- Entire Views -->
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical" >
 
-        <TextView
-            android:id="@+id/decimal_degrees"
+        <RadioGroup
+            android:id="@+id/navGroup"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/decimal_degrees"
-            android:textAppearance="?android:attr/textAppearanceLarge" />
+            android:layout_margin="5dp"
+            android:orientation="horizontal" >
 
-        <TextView
-            android:id="@+id/lon_dec_deg"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/longitude"
-            android:textAppearance="?android:attr/textAppearanceMedium" />
+            <RadioButton
+                android:id="@+id/radio_dec_deg"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checked="true"
+                android:text="@string/decimal_degrees" />
 
+            <RadioButton
+                android:id="@+id/radio_dec_min"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/decimal_minutes" />
+        </RadioGroup>
+
+        <!-- Decimal Degrees layout -->
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" >
-
-            <EditText
-                android:id="@+id/text_lon_dec_deg"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:ems="10"
-                android:inputType="numberDecimal" >
-
-                <requestFocus />
-            </EditText>
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="5dp"
+            android:layout_marginBottom="5dp"
+            android:orientation="vertical" >
 
             <TextView
-                android:id="@+id/lon_dec_deg_deg"
+                android:id="@+id/decimal_degrees"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="@string/degree" />
+                android:text="@string/decimal_degrees"
+                android:textAppearance="?android:attr/textAppearanceLarge" />
+
+            <!-- Decimal Degrees longitude -->
+            <TextView
+                android:id="@+id/lon_dec_deg"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/longitude"
+                android:textAppearance="?android:attr/textAppearanceMedium" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" >
+
+                <EditText
+                    android:id="@+id/text_lon_dec_deg"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:ems="10"
+                    android:inputType="numberDecimal|numberSigned"
+                    android:numeric="signed" >
+
+                    <requestFocus />
+                </EditText>
+
+                <TextView
+                    android:id="@+id/lon_dec_deg_deg"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/degree"
+                    android:textSize="35dp" />
+            </LinearLayout>
+
+            <!-- Decimal Degrees latitude -->
+            <TextView
+                android:id="@+id/lat_dec_deg"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/latitude"
+                android:textAppearance="?android:attr/textAppearanceMedium" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" >
+
+                <EditText
+                    android:id="@+id/text_lat_dec_deg"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:ems="10"
+                    android:inputType="numberDecimal|numberSigned" />
+
+                <TextView
+                    android:id="@+id/lat_dec_deg_deg"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/degree"
+                    android:textSize="35dp" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <!-- Decimal Minutes -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="5dp"
+            android:layout_marginBottom="5dp"
+            android:orientation="vertical" >
+
+            <TextView
+                android:id="@+id/decimal_minutes"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/decimal_minutes"
+                android:textAppearance="?android:attr/textAppearanceLarge" />
+
+            <!-- Decimal Degrees Longitude -->
+            <TextView
+                android:id="@+id/lon_dec_min"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/longitude"
+                android:textAppearance="?android:attr/textAppearanceMedium" />
+
+            <!-- Longitude Degrees -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" >
+
+                <EditText
+                    android:id="@+id/text_lon_dec_min_deg"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:ems="10"
+                    android:inputType="numberSigned" />
+
+                <TextView
+                    android:id="@+id/lon_dec_min_deg"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/degree"
+                    android:textSize="35dp" />
+            </LinearLayout>
+
+            <!-- Longitude Minutes -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" >
+
+                <EditText
+                    android:id="@+id/text_lon_dec_min_min"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:ems="10"
+                    android:inputType="numberDecimal" />
+
+                <TextView
+                    android:id="@+id/lon_dec_min_min"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/minutes"
+                    android:textSize="35dp" />
+            </LinearLayout>
+
+            <!-- Decimal Degrees Latitude -->
+            <TextView
+                android:id="@+id/lat_dec_min"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/latitude"
+                android:textAppearance="?android:attr/textAppearanceMedium" />
+
+            <!-- Latitude Degrees -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" >
+
+                <EditText
+                    android:id="@+id/text_lat_dec_min_deg"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:ems="10"
+                    android:inputType="numberSigned" />
+
+                <TextView
+                    android:id="@+id/lat_dec_min_deg"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/degree"
+                    android:textSize="35dp" />
+            </LinearLayout>
+
+            <!-- Latitude Minutes -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" >
+
+                <EditText
+                    android:id="@+id/text_lat_dec_min_min"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:ems="10"
+                    android:inputType="numberDecimal" />
+
+                <TextView
+                    android:id="@+id/lat_dec_min_min"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/minutes"
+                    android:textSize="35dp" />
+            </LinearLayout>
         </LinearLayout>
     </LinearLayout>
-
-    <TextView
-        android:id="@+id/lat_dec_deg"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/latitude"
-        android:textAppearance="?android:attr/textAppearanceMedium" />
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" >
-
-        <EditText
-            android:id="@+id/text_lat_dec_deg"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:ems="10"
-            android:inputType="numberDecimal" />
-
-        <TextView
-            android:id="@+id/lat_dec_deg_deg"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="@string/degree" />
-    </LinearLayout>
-
-    <TextView
-        android:id="@+id/decimal_minutes"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/decimal_minutes"
-        android:textAppearance="?android:attr/textAppearanceLarge" />
-
-    <TextView
-        android:id="@+id/lon_dec_min"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/longitude"
-        android:textAppearance="?android:attr/textAppearanceMedium" />
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" >
-
-        <EditText
-            android:id="@+id/text_lon_dec_min_deg"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:ems="10"
-            android:inputType="number" />
-
-        <TextView
-            android:id="@+id/lon_dec_min_deg"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="@string/degree" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" >
-
-        <EditText
-            android:id="@+id/text_lon_dec_min_min"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:ems="10"
-            android:inputType="numberDecimal" />
-
-        <TextView
-            android:id="@+id/lon_dec_min_min"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="@string/minutes" />
-    </LinearLayout>
-
-    <TextView
-        android:id="@+id/lat_dec_min"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/latitude"
-        android:textAppearance="?android:attr/textAppearanceMedium" />
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" >
-
-        <EditText
-            android:id="@+id/text_lat_dec_min_deg"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:ems="10"
-            android:inputType="number" />
-
-        <TextView
-            android:id="@+id/lat_dec_min_deg"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="@string/degree" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" >
-
-        <EditText
-            android:id="@+id/text_lat_dec_min_min"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:ems="10"
-            android:inputType="numberDecimal" />
-
-        <TextView
-            android:id="@+id/lat_dec_min_min"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="@string/minutes" />
-    </LinearLayout>
-
-</LinearLayout>
+</ScrollView>
