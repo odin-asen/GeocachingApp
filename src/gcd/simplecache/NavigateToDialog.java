@@ -1,5 +1,7 @@
 package gcd.simplecache;
 
+import android.text.TextUtils;
+import android.widget.Toast;
 import gcd.simplecache.business.map.GeoCoordinateConverter;
 import gcd.simplecache.dto.geocache.DTOGeocache;
 import android.app.AlertDialog;
@@ -21,43 +23,44 @@ public class NavigateToDialog extends DialogFragment implements IntentActions, O
 	private boolean isDegree;
 	
 	public NavigateToDialog()  {
-		
+
 	}
 	
 		
-	 @Override
-	  public Dialog onCreateDialog(Bundle savedInstanceState) {
-		 
-		 AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-		 
-		 LayoutInflater inflater = getActivity().getLayoutInflater();
-		 navView = inflater.inflate(R.layout.dialog_navigate_to, null);
-		 		 
-		 builder.setView(navView);
-		 
-		 navGroup = (RadioGroup)navView.findViewById(R.id.navGroup);
-		 navGroup.setOnCheckedChangeListener(this);
-		 setDegreeEnabled();
-		 
-		 builder.setPositiveButton(R.string.button_ok, new OkListener());
-		 builder.setNegativeButton(R.string.button_cancel, new CancelListener());
-		 
-		 
-		 
-		 return builder.create();		 
-	 }
+  @Override
+  public Dialog onCreateDialog(Bundle savedInstanceState) {
 
-	
+   AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 
-	
-	
+   LayoutInflater inflater = getActivity().getLayoutInflater();
+   navView = inflater.inflate(R.layout.dialog_navigate_to, null);
+
+   builder.setView(navView);
+
+   navGroup = (RadioGroup)navView.findViewById(R.id.navGroup);
+   navGroup.setOnCheckedChangeListener(this);
+   setDegreeEnabled();
+
+   builder.setPositiveButton(R.string.button_ok, new OkListener());
+   builder.setNegativeButton(R.string.button_cancel, new CancelListener());
+
+   return builder.create();
+ }
+
 	private class OkListener implements DialogInterface.OnClickListener {
-		@Override
+
+    @Override
 		public void onClick(DialogInterface dialog, int which) {
-      Intent navigationAction = new Intent(ACTION_ID_NAVIGATION);
-      navigationAction.putExtra(NAVIGATION_ENABLED, true);
-      navigationAction.putExtra(NAVIGATION_DESTINATION, createDTO());
-		  getActivity().sendBroadcast(navigationAction);
+      AlertDialog alert = (AlertDialog) dialog;
+      if(inputIsEmpty()) {
+        Intent navigationAction = new Intent(ACTION_ID_NAVIGATION);
+        navigationAction.putExtra(NAVIGATION_ENABLED, true);
+        navigationAction.putExtra(NAVIGATION_DESTINATION, createDTO());
+        getActivity().sendBroadcast(navigationAction);
+      } else {
+        Toast.makeText(alert.getContext(), "Please fill out all required fields!", Toast.LENGTH_LONG);
+
+      }
 		}
 	}
 	
@@ -138,6 +141,29 @@ public class NavigateToDialog extends DialogFragment implements IntentActions, O
 		return dto;
 	}
 
+  /** Check if the text fields are empty or not. */
+  private boolean inputIsEmpty() {
+    EditText editText;
+    boolean result;
+
+    if(isDegree) {
+      editText = (EditText)navView.findViewById(R.id.text_lon_dec_deg);
+      result = TextUtils.isEmpty(editText.getText().toString());
+      editText = (EditText)navView.findViewById(R.id.text_lat_dec_deg);
+      result = result || TextUtils.isEmpty(editText.getText().toString());
+    } else {
+      editText = (EditText)navView.findViewById(R.id.text_lon_dec_deg);
+      result = TextUtils.isEmpty(editText.getText().toString());
+      editText = (EditText)navView.findViewById(R.id.text_lon_dec_min_min);
+      result = result || TextUtils.isEmpty(editText.getText().toString());
+      editText = (EditText)navView.findViewById(R.id.text_lat_dec_min_deg);
+      result = result || TextUtils.isEmpty(editText.getText().toString());
+      editText = (EditText)navView.findViewById(R.id.text_lat_dec_min_min);
+      result = result || TextUtils.isEmpty(editText.getText().toString());
+    }
+
+    return result;
+  }
 }
 
 

@@ -65,7 +65,7 @@
                     android:layout_weight="1"
                     android:ems="10"
                     android:inputType="numberDecimal|numberSigned"
-                    android:numeric="signed" >
+                    android:hint="@string/decimal_degrees_lon_hint" >
 
                     <requestFocus />
                 </EditText>
@@ -97,7 +97,8 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:ems="10"
-                    android:inputType="numberDecimal|numberSigned" />
+                    android:inputType="numberDecimal|numberSigned"
+                    android:hint="@string/decimal_degrees_lat_hint" />
 
                 <TextView
                     android:id="@+id/lat_dec_deg_deg"
@@ -143,7 +144,8 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:ems="10"
-                    android:inputType="numberSigned" />
+                    android:inputType="numberSigned"
+                    android:hint="@string/decimal_degrees_lon_hint" />
 
                 <TextView
                     android:id="@+id/lon_dec_min_deg"
@@ -165,7 +167,8 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:ems="10"
-                    android:inputType="numberDecimal" />
+                    android:inputType="numberDecimal"
+                    android:hint="@string/decimal_minutes_hint" />
 
                 <TextView
                     android:id="@+id/lon_dec_min_min"
@@ -195,7 +198,8 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:ems="10"
-                    android:inputType="numberSigned" />
+                    android:inputType="numberSigned"
+                    android:hint="@string/decimal_degrees_lat_hint" />
 
                 <TextView
                     android:id="@+id/lat_dec_min_deg"
@@ -217,7 +221,8 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:ems="10"
-                    android:inputType="numberDecimal" />
+                    android:inputType="numberDecimal"
+                    android:hint="@string/decimal_minutes_hint" />
 
                 <TextView
                     android:id="@+id/lat_dec_min_min"
