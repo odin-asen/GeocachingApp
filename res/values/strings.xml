@@ -39,8 +39,8 @@
     <string name="dialog_navigate_to_lon">Longitude:</string>
 
     <!-- hint texts -->
-    <string name="decimal_degrees_lat_hint">+/- sets N/S. Range from -90 to 90</string>
-    <string name="decimal_degrees_lon_hint">+/- sets E/W. Range from -180 to 180</string>
-    <string name="decimal_minutes_hint">Set positive values from 0 to 60</string>
+    <string name="decimal_degrees_lat_hint">- for S (-90 to 90)</string>
+    <string name="decimal_degrees_lon_hint">- for W (-180 to 180)</string>
+    <string name="decimal_minutes_hint">0 to 60</string>
 
 </resources>
